@@ -514,7 +514,7 @@ const ChatInterface = () => {
                     ) : (
                       <>
                         <Zap className="h-3 w-3" />
-                        Trial ({Math.max(0, 3 - subscriptionStatus.trial_questions_used)}/3)
+                        Daily ({Math.max(0, 3 - (subscriptionStatus.daily_questions_used || 0))}/3)
                       </>
                     )}
                   </Badge>
