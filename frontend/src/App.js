@@ -301,47 +301,47 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="py-12" style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <Bot className="h-6 w-6 text-blue-400 mr-2" />
+                <Bot className="h-6 w-6 mr-2" style={{ color: '#c9d6e4' }} />
                 <span className="text-lg font-bold">ONESource-ai</span>
               </div>
-              <p className="text-gray-400">
+              <p style={{ color: '#95a6b7' }}>
                 Your trusted AI mentor for AU/NZ construction industry expertise.
               </p>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#features" className="hover:text-white">Features</a></li>
-                <li><a href="/pricing" className="hover:text-white">Pricing</a></li>
-                <li><a href="/auth" className="hover:text-white">Try Free</a></li>
+              <ul className="space-y-2" style={{ color: '#95a6b7' }}>
+                <li><a href="#features" className="hover:opacity-75">Features</a></li>
+                <li><a href="/pricing" className="hover:opacity-75">Pricing</a></li>
+                <li><a href="/auth" className="hover:opacity-75">Try Free</a></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Help Center</a></li>
-                <li><a href="#" className="hover:text-white">Contact</a></li>
-                <li><a href="#" className="hover:text-white">Feedback</a></li>
+              <ul className="space-y-2" style={{ color: '#95a6b7' }}>
+                <li><a href="#" className="hover:opacity-75">Help Center</a></li>
+                <li><a href="#" className="hover:opacity-75">Contact</a></li>
+                <li><a href="#" className="hover:opacity-75">Feedback</a></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white">Terms of Service</a></li>
+              <ul className="space-y-2" style={{ color: '#95a6b7' }}>
+                <li><a href="#" className="hover:opacity-75">Privacy Policy</a></li>
+                <li><a href="#" className="hover:opacity-75">Terms of Service</a></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <div className="mt-8 pt-8 text-center" style={{ borderTop: '1px solid #4b6b8b', color: '#95a6b7' }}>
             <p>&copy; 2025 ONESource-ai. All rights reserved.</p>
           </div>
         </div>
