@@ -429,6 +429,9 @@ const ChatInterface = () => {
 
   return (
     <div className="h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
+      {/* Feedback Modal */}
+      <FeedbackModal />
+      
       {/* Sidebar */}
       <div className="w-80 border-r flex flex-col" style={{ borderColor: '#c9d6e4', backgroundColor: '#f8fafc' }}>
         {/* Sidebar Header */}
