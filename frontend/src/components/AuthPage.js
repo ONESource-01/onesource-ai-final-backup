@@ -114,14 +114,18 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#f8fafc' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Bot className="h-10 w-10 text-blue-600 mr-3" />
-            <h1 className="text-3xl font-bold text-blue-900">ONESource-ai</h1>
+            <img 
+              src="/onesource-logo.png" 
+              alt="ONESource-ai" 
+              className="h-10 w-auto mr-2"
+              style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(37%) saturate(1651%) hue-rotate(202deg) brightness(94%) contrast(97%)' }}
+            />
           </div>
-          <p className="text-gray-600">
+          <p style={{ color: '#4b6b8b' }}>
             Your AI mentor for AU/NZ Construction Industry
           </p>
         </div>
