@@ -3,11 +3,15 @@ import { useAuth } from '../contexts/AuthContext';
 import { apiEndpoints, setAuthToken } from '../utils/api';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { AlertTriangle, Send, User, Bot, Clock, Crown, Zap, LogOut } from 'lucide-react';
+import { 
+  AlertTriangle, Send, User, Bot, Clock, Crown, Zap, LogOut, 
+  Copy, ThumbsUp, ThumbsDown, Search, Plus, MessageSquare,
+  Edit3, Save, X
+} from 'lucide-react';
 
 const ChatInterface = () => {
   const { user, idToken, logout } = useAuth();
@@ -17,6 +21,11 @@ const ChatInterface = () => {
   const [sessionId, setSessionId] = useState(null);
   const [trialInfo, setTrialInfo] = useState(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showContributionBox, setShowContributionBox] = useState({});
+  const [contributionText, setContributionText] = useState({});
+  const [optInCredit, setOptInCredit] = useState(true);
   const messagesEndRef = useRef(null);
 
   // Set page title for this component
@@ -31,6 +40,7 @@ const ChatInterface = () => {
     if (idToken) {
       setAuthToken(idToken);
       loadSubscriptionStatus();
+      loadChatHistory();
     }
   }, [idToken]);
 
@@ -61,6 +71,68 @@ const ChatInterface = () => {
     } catch (error) {
       console.error('Error loading subscription status:', error);
     }
+  };
+
+  const loadChatHistory = async () => {
+    // Mock chat history - in real app, load from API
+    setChatHistory([
+      { id: 1, title: "Building Height Requirements", timestamp: new Date().toISOString() },
+      { id: 2, title: "Fire Safety Compliance", timestamp: new Date().toISOString() },
+      { id: 3, title: "Structural Engineering Query", timestamp: new Date().toISOString() }
+    ]);
+  };
+
+  const handleNewChat = () => {
+    setMessages([]);
+    setSessionId(null);
+    setShowContributionBox({});
+    setContributionText({});
+  };
+
+  const handleCopyMessage = (messageContent) => {
+    let textToCopy = '';
+    if (typeof messageContent === 'string') {
+      textToCopy = messageContent;
+    } else if (messageContent.technical && messageContent.mentoring) {
+      textToCopy = `Technical Answer:\n${messageContent.technical}\n\nMentoring Insight:\n${messageContent.mentoring}`;
+    } else {
+      textToCopy = messageContent.technical || messageContent;
+    }
+    
+    navigator.clipboard.writeText(textToCopy);
+    // Could show a toast notification here
+  };
+
+  const handleFeedback = async (messageId, feedback) => {
+    // Store feedback - implement API call to save to Firebase
+    console.log(`Feedback for message ${messageId}:`, feedback);
+    // TODO: Implement API call to store feedback
+  };
+
+  const handleContribution = async (messageId) => {
+    const contribution = contributionText[messageId];
+    if (!contribution || !contribution.trim()) return;
+
+    // Store user contribution - implement API call
+    const contributionData = {
+      messageId,
+      userId: user.uid,
+      userEmail: user.email,
+      contribution: contribution.trim(),
+      optInCredit,
+      timestamp: new Date().toISOString(),
+      status: 'pending_review'
+    };
+
+    console.log('User contribution:', contributionData);
+    // TODO: Implement API call to store contribution in Firebase
+    
+    // Hide contribution box and clear text
+    setShowContributionBox(prev => ({ ...prev, [messageId]: false }));
+    setContributionText(prev => ({ ...prev, [messageId]: '' }));
+    
+    // Show success message
+    alert('Thank you for your contribution! It will be reviewed and may be added to our knowledge base.');
   };
 
   const handleSubmit = async (e) => {
@@ -136,7 +208,7 @@ const ChatInterface = () => {
 
   const renderAiResponse = (content) => {
     if (typeof content === 'string') {
-      return <div className="prose prose-sm max-w-none">{content}</div>;
+      return <div className="prose prose-sm max-w-none" style={{ color: '#0f2f57' }}>{content}</div>;
     }
 
     if (content.format === 'dual' && content.technical && content.mentoring) {
@@ -145,9 +217,9 @@ const ChatInterface = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🛠️</span>
-              <h4 className="font-semibold text-blue-700">Technical Answer</h4>
+              <h4 className="font-semibold" style={{ color: '#0f2f57' }}>Technical Answer</h4>
             </div>
-            <div className="prose prose-sm max-w-none bg-blue-50 p-3 rounded-lg">
+            <div className="prose prose-sm max-w-none p-3 rounded-lg" style={{ backgroundColor: '#c9d6e4', color: '#0f2f57' }}>
               {content.technical}
             </div>
           </div>
@@ -157,9 +229,9 @@ const ChatInterface = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-lg">🧐</span>
-              <h4 className="font-semibold text-green-700">Mentoring Insight</h4>
+              <h4 className="font-semibold" style={{ color: '#4b6b8b' }}>Mentoring Insight</h4>
             </div>
-            <div className="prose prose-sm max-w-none bg-green-50 p-3 rounded-lg">
+            <div className="prose prose-sm max-w-none p-3 rounded-lg" style={{ backgroundColor: '#c9d6e4', color: '#4b6b8b' }}>
               {content.mentoring}
             </div>
           </div>
@@ -168,18 +240,203 @@ const ChatInterface = () => {
     }
 
     return (
-      <div className="prose prose-sm max-w-none">
+      <div className="prose prose-sm max-w-none" style={{ color: '#0f2f57' }}>
         {content.technical || content}
       </div>
     );
   };
 
+  const MessageActions = ({ messageId, content }) => (
+    <div className="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => handleCopyMessage(content)}
+        className="h-8 px-2"
+      >
+        <Copy className="h-3 w-3" />
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => handleFeedback(messageId, 'positive')}
+        className="h-8 px-2"
+      >
+        <ThumbsUp className="h-3 w-3" />
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => handleFeedback(messageId, 'negative')}
+        className="h-8 px-2"
+      >
+        <ThumbsDown className="h-3 w-3" />
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: !prev[messageId] }))}
+        className="h-8 px-2"
+        style={{ color: '#4b6b8b' }}
+      >
+        <Edit3 className="h-3 w-3" />
+        <span className="ml-1 text-xs">Add Knowledge</span>
+      </Button>
+    </div>
+  );
+
+  const ContributionBox = ({ messageId }) => (
+    <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: '#f8fafc', border: '2px solid #c9d6e4' }}>
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="font-semibold text-sm" style={{ color: '#0f2f57' }}>
+          💡 Share Your Knowledge
+        </h4>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: false }))}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      <p className="text-xs mb-3" style={{ color: '#4b6b8b' }}>
+        Add your mentoring insights, best practices, or lessons learned to help other construction professionals.
+      </p>
+      <textarea
+        className="w-full p-3 rounded border resize-none"
+        style={{ borderColor: '#95a6b7', minHeight: '80px' }}
+        placeholder="Share your insights, best practices, or lessons learned..."
+        value={contributionText[messageId] || ''}
+        onChange={(e) => setContributionText(prev => ({ ...prev, [messageId]: e.target.value }))}
+      />
+      <div className="flex items-center justify-between mt-3">
+        <label className="flex items-center text-xs" style={{ color: '#4b6b8b' }}>
+          <input
+            type="checkbox"
+            checked={optInCredit}
+            onChange={(e) => setOptInCredit(e.target.checked)}
+            className="mr-2"
+          />
+          Credit me if this contribution is added to the knowledge base
+        </label>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: false }))}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => handleContribution(messageId)}
+            style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
+          >
+            <Save className="h-3 w-3 mr-1" />
+            Submit
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
+      {/* Sidebar */}
+      <div className="w-80 border-r flex flex-col" style={{ borderColor: '#c9d6e4', backgroundColor: '#f8fafc' }}>
+        {/* Sidebar Header */}
+        <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
+          <Button
+            onClick={handleNewChat}
+            className="w-full justify-start mb-4"
+            style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Chat
+          </Button>
+          
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 h-4 w-4" style={{ color: '#95a6b7' }} />
+            <Input
+              placeholder="Search conversations..."
+              className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+        
+        {/* Chat History */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <h3 className="font-semibold text-sm mb-3" style={{ color: '#4b6b8b' }}>Recent Conversations</h3>
+          <div className="space-y-2">
+            {chatHistory.map((chat) => (
+              <div
+                key={chat.id}
+                className="p-3 rounded-lg cursor-pointer hover:bg-opacity-50 transition-colors"
+                style={{ backgroundColor: '#c9d6e4' }}
+              >
+                <div className="flex items-start gap-2">
+                  <MessageSquare className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#4b6b8b' }} />
+                  <div>
+                    <p className="font-medium text-sm line-clamp-2" style={{ color: '#0f2f57' }}>
+                      {chat.title}
+                    </p>
+                    <p className="text-xs mt-1" style={{ color: '#95a6b7' }}>
+                      {new Date(chat.timestamp).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* User Info */}
+        <div className="p-4 border-t" style={{ borderColor: '#c9d6e4' }}>
+          {user && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" style={{ borderColor: '#95a6b7', color: '#4b6b8b' }}>
+                  {user.email}
+                </Badge>
+                {subscriptionStatus && (
+                  <Badge 
+                    variant={subscriptionStatus.subscription_active ? "default" : "secondary"}
+                    className="flex items-center gap-1"
+                  >
+                    {subscriptionStatus.subscription_active ? (
+                      <>
+                        <Crown className="h-3 w-3" />
+                        {subscriptionStatus.subscription_tier.charAt(0).toUpperCase() + subscriptionStatus.subscription_tier.slice(1)}
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="h-3 w-3" />
+                        Trial ({Math.max(0, 3 - subscriptionStatus.trial_questions_used)}/3)
+                      </>
+                    )}
+                  </Badge>
+                )}
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={logout}
+                className="h-8"
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="border-b px-6 py-4 flex items-center justify-between" style={{ borderColor: '#c9d6e4', backgroundColor: '#f8fafc' }}>
+        <header className="border-b px-6 py-4 flex items-center justify-between" style={{ borderColor: '#c9d6e4' }}>
           <div className="flex items-center">
             <img 
               src="/onesource-logo.png" 
@@ -188,237 +445,185 @@ const ChatInterface = () => {
             />
             <div>
               <h1 className="text-lg font-semibold" style={{ color: '#0f2f57' }}>Construction Compliance Chat</h1>
+              <p className="text-sm" style={{ color: '#95a6b7' }}>AI-powered design compliance assistance</p>
             </div>
           </div>
-            <div className="flex items-center gap-2">
-              {user && (
-                <>
-                  <Badge variant="outline" className="ml-4">
-                    {user.email}
-                  </Badge>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={async () => {
-                      const confirmLogout = window.confirm(
-                        '🔒 Are you sure you want to log out?\n\n' +
-                        '✅ Your profile and subscription will be saved\n' +
-                        '⚠️ Current chat session will be lost\n' +
-                        '💡 Tip: Complete any important conversations before logging out'
-                      );
-                      
-                      if (confirmLogout) {
-                        await logout();
-                        window.location.href = '/';
-                      }
-                    }}
-                    className="text-gray-600 hover:text-red-600"
-                    title="Logout - Your data will be preserved"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
-              {subscriptionStatus && (
-                <Badge 
-                  variant={subscriptionStatus.subscription_active ? "default" : "secondary"}
-                  className="flex items-center gap-1"
-                >
-                  {subscriptionStatus.subscription_active ? (
-                    <>
-                      <Crown className="h-3 w-3" />
-                      {subscriptionStatus.subscription_tier.charAt(0).toUpperCase() + subscriptionStatus.subscription_tier.slice(1)}
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="h-3 w-3" />
-                      Trial ({Math.max(0, 3 - subscriptionStatus.trial_questions_used)}/3)
-                    </>
-                  )}
-                </Badge>
-              )}
-            </div>
-          </CardTitle>
-          
-          {/* Trial Warning and Upgrade Prompt */}
-          {trialInfo && (
-            <Alert className={trialInfo.subscription_required ? "border-red-200 bg-red-50" : "border-blue-200 bg-blue-50"}>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription className="flex items-center justify-between">
-                <span className={trialInfo.subscription_required ? "text-red-700" : "text-blue-700"}>
-                  {trialInfo.message}
-                </span>
-                <div className="flex gap-2 ml-4">
-                  <Button 
-                    size="sm" 
-                    onClick={() => window.location.href = '/pricing'}
-                    className={trialInfo.subscription_required ? "bg-red-600 hover:bg-red-700" : ""}
-                  >
-                    {trialInfo.subscription_required ? 'Upgrade Now' : 'View Plans'}
-                  </Button>
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
+        </header>
 
-          {/* Upgrade Banner for Trial Users */}
-          {subscriptionStatus && !subscriptionStatus.subscription_active && (
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-4 mt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold mb-1">🚀 Unlock Full Construction Expertise</h3>
-                  <p className="text-sm opacity-90">
-                    Get unlimited questions, priority responses, and advanced features
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    size="sm" 
-                    variant="secondary"
-                    onClick={() => window.location.href = '/pricing'}
-                    className="bg-white text-blue-600 hover:bg-gray-100"
-                  >
-                    From $4.90/month
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </CardHeader>
-
-        <CardContent className="flex-1 flex flex-col min-h-0">
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4 min-h-0">
-            {messages.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg mb-2">Welcome to ONESource-ai!</p>
-                <p className="text-sm">
-                  Ask me anything about AU/NZ construction standards, building codes, 
-                  engineering practices, and more.
-                </p>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-2 max-w-2xl mx-auto">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setInputMessage("What are the minimum ceiling heights for residential buildings in Australia?")}
-                  >
-                    Building height requirements
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setInputMessage("How do I calculate stormwater drainage for a commercial project?")}
-                  >
-                    Drainage calculations
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setInputMessage("What fire rating is required for steel structures?")}
-                  >
-                    Fire safety requirements
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setInputMessage("Explain the difference between NCC and BCA")}
-                  >
-                    Building codes explained
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {messages.map((message) => (
-              <div 
-                key={message.id} 
-                className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+        {/* Trial Warning */}
+        {trialInfo && (
+          <Alert className={`mx-6 mt-4 ${trialInfo.subscription_required ? "border-red-200 bg-red-50" : "border-blue-200 bg-blue-50"}`}>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="flex items-center justify-between">
+              <span className={trialInfo.subscription_required ? "text-red-700" : "text-blue-700"}>
+                {trialInfo.message}
+              </span>
+              <Button 
+                size="sm" 
+                onClick={() => window.location.href = '/pricing'}
+                className={trialInfo.subscription_required ? "bg-red-600 hover:bg-red-700" : ""}
               >
-                {message.type === 'ai' && (
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                      <Bot className="h-4 w-4 text-white" />
-                    </div>
-                  </div>
-                )}
-                
-                <div className={`max-w-[80%] ${message.type === 'user' ? 'order-first' : ''}`}>
-                  <div className={`rounded-lg p-3 ${
-                    message.type === 'user' 
-                      ? 'bg-blue-600 text-white ml-auto' 
-                      : message.error 
-                        ? 'bg-red-50 border border-red-200' 
-                        : 'bg-gray-50 border'
-                  }`}>
-                    {message.type === 'user' ? (
-                      <p>{message.content}</p>
-                    ) : (
-                      renderAiResponse(message.content)
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                    <Clock className="h-3 w-3" />
-                    {new Date(message.timestamp).toLocaleTimeString()}
-                    {message.tokensUsed && (
-                      <span>• {message.tokensUsed} tokens</span>
-                    )}
-                  </div>
-                </div>
+                {trialInfo.subscription_required ? 'Upgrade Now' : 'View Plans'}
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
-                {message.type === 'user' && (
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                      <User className="h-4 w-4 text-white" />
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto">
+          {messages.length === 0 ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center max-w-2xl mx-auto p-8">
+                <Bot className="h-16 w-16 mx-auto mb-6" style={{ color: '#c9d6e4' }} />
+                <h2 className="text-2xl font-bold mb-4" style={{ color: '#0f2f57' }}>
+                  Welcome to ONESource-ai
+                </h2>
+                <p className="text-lg mb-6" style={{ color: '#4b6b8b' }}>
+                  Your Digital Design Compliance Partner for AU/NZ Construction
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Button 
+                    variant="outline" 
+                    className="text-left p-4 h-auto"
+                    onClick={() => setInputMessage("What are the minimum ceiling heights for residential buildings in Australia?")}
+                    style={{ borderColor: '#c9d6e4' }}
+                  >
+                    <div>
+                      <div className="font-medium" style={{ color: '#0f2f57' }}>Building Height Requirements</div>
+                      <div className="text-sm mt-1" style={{ color: '#95a6b7' }}>Minimum ceiling heights for residential</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="text-left p-4 h-auto"
+                    onClick={() => setInputMessage("How do I calculate stormwater drainage for a commercial project?")}
+                    style={{ borderColor: '#c9d6e4' }}
+                  >
+                    <div>
+                      <div className="font-medium" style={{ color: '#0f2f57' }}>Drainage Calculations</div>
+                      <div className="text-sm mt-1" style={{ color: '#95a6b7' }}>Stormwater for commercial projects</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="text-left p-4 h-auto"
+                    onClick={() => setInputMessage("What fire rating is required for steel structures?")}
+                    style={{ borderColor: '#c9d6e4' }}
+                  >
+                    <div>
+                      <div className="font-medium" style={{ color: '#0f2f57' }}>Fire Safety Requirements</div>
+                      <div className="text-sm mt-1" style={{ color: '#95a6b7' }}>Fire ratings for steel structures</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="text-left p-4 h-auto"
+                    onClick={() => setInputMessage("Explain the difference between NCC and BCA")}
+                    style={{ borderColor: '#c9d6e4' }}
+                  >
+                    <div>
+                      <div className="font-medium" style={{ color: '#0f2f57' }}>Building Codes</div>
+                      <div className="text-sm mt-1" style={{ color: '#95a6b7' }}>NCC vs BCA differences</div>
+                    </div>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto">
+              {messages.map((message) => (
+                <div key={message.id} className="group">
+                  <div className={`px-6 py-6 ${message.type === 'ai' ? 'bg-gray-50' : 'bg-white'}`}>
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0">
+                        {message.type === 'ai' ? (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f2f57' }}>
+                            <Bot className="h-4 w-4" style={{ color: '#f8fafc' }} />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#4b6b8b' }}>
+                            <User className="h-4 w-4" style={{ color: '#f8fafc' }} />
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        {message.type === 'user' ? (
+                          <p style={{ color: '#0f2f57' }}>{message.content}</p>
+                        ) : (
+                          <div>
+                            {renderAiResponse(message.content)}
+                            <MessageActions messageId={message.id} content={message.content} />
+                            {showContributionBox[message.id] && (
+                              <ContributionBox messageId={message.id} />
+                            )}
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center gap-2 mt-2 text-xs" style={{ color: '#95a6b7' }}>
+                          <Clock className="h-3 w-3" />
+                          {new Date(message.timestamp).toLocaleTimeString()}
+                          {message.tokensUsed && (
+                            <span>• {message.tokensUsed} tokens</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
-            ))}
-            
-            {loading && (
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-white" />
+                </div>
+              ))}
+              
+              {loading && (
+                <div className="px-6 py-6 bg-gray-50">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f2f57' }}>
+                        <Bot className="h-4 w-4" style={{ color: '#f8fafc' }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2" style={{ borderColor: '#0f2f57' }}></div>
+                      <span className="text-sm" style={{ color: '#4b6b8b' }}>Thinking...</span>
+                    </div>
                   </div>
                 </div>
-                <div className="bg-gray-50 border rounded-lg p-3">
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                    <span className="text-sm text-gray-600">Thinking...</span>
-                  </div>
-                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+
+        {/* Input Form */}
+        <div className="border-t p-4" style={{ borderColor: '#c9d6e4' }}>
+          <div className="max-w-4xl mx-auto">
+            <form onSubmit={handleSubmit} className="flex gap-3">
+              <div className="flex-1 relative">
+                <Input
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="Ask about design codes, compliance requirements, or construction standards..."
+                  disabled={loading}
+                  className="pr-12 py-3"
+                  style={{ borderColor: '#c9d6e4' }}
+                />
+                <Button 
+                  type="submit" 
+                  disabled={loading || !inputMessage.trim()}
+                  size="icon"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8"
+                  style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
               </div>
-            )}
-            
-            <div ref={messagesEndRef} />
+            </form>
+            <p className="text-xs mt-2 text-center" style={{ color: '#95a6b7' }}>
+              ONESource-ai can make mistakes. Check important compliance requirements with official sources.
+            </p>
           </div>
-
-          {/* Input Form */}
-          <form onSubmit={handleSubmit} className="flex gap-2 pt-4 border-t">
-            <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask about AU/NZ construction standards, codes, or practices..."
-              disabled={loading}
-              className="flex-1"
-            />
-            <Button 
-              type="submit" 
-              disabled={loading || !inputMessage.trim()}
-              size="icon"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
-
-          <p className="text-xs text-gray-500 mt-2 text-center">
-            👀 Was this answer unclear or incorrect? Please provide feedback.
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
