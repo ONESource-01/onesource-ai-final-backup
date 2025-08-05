@@ -250,7 +250,8 @@ const AuthPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full"
+                className="w-full hover:opacity-90"
+                style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
               >
                 {loading ? (
                   <>
