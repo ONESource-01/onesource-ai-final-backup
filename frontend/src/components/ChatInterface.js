@@ -77,12 +77,18 @@ const ChatInterface = () => {
   };
 
   const loadChatHistory = async () => {
-    // Mock chat history - in real app, load from API
-    setChatHistory([
-      { id: 1, title: "Building Height Requirements", timestamp: new Date().toISOString() },
-      { id: 2, title: "Fire Safety Compliance", timestamp: new Date().toISOString() },
-      { id: 3, title: "Structural Engineering Query", timestamp: new Date().toISOString() }
-    ]);
+    try {
+      const response = await apiEndpoints.getChatHistory(20);
+      setChatHistory(response.data.chat_history);
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+      // Fallback to mock data
+      setChatHistory([
+        { session_id: 1, title: "Building Height Requirements", timestamp: new Date().toISOString() },
+        { session_id: 2, title: "Fire Safety Compliance", timestamp: new Date().toISOString() },
+        { session_id: 3, title: "Structural Engineering Query", timestamp: new Date().toISOString() }
+      ]);
+    }
   };
 
   const handleNewChat = () => {
