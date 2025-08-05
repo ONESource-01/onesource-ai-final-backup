@@ -26,6 +26,9 @@ const ChatInterface = () => {
   const [showContributionBox, setShowContributionBox] = useState({});
   const [contributionText, setContributionText] = useState({});
   const [optInCredit, setOptInCredit] = useState(true);
+  const [feedbackModal, setFeedbackModal] = useState({ show: false, messageId: null, type: null });
+  const [feedbackText, setFeedbackText] = useState('');
+  const [copySuccess, setCopySuccess] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Set page title for this component
