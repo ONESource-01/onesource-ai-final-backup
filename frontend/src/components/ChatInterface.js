@@ -62,13 +62,14 @@ const ChatInterface = () => {
       
       // Set trial info based on subscription status
       if (response.data.subscription_tier === 'starter' && !response.data.subscription_active) {
-        const remaining = Math.max(0, 3 - response.data.trial_questions_used);
+        const remaining = Math.max(0, 3 - (response.data.daily_questions_used || 0));
         setTrialInfo({
           remaining_questions: remaining,
           message: remaining > 0 
-            ? `You have ${remaining} free questions remaining`
-            : 'Trial limit reached - upgrade to continue asking questions',
-          subscription_required: remaining === 0
+            ? `You have ${remaining} free questions remaining today`
+            : 'Daily limit reached - 3 questions per day for free users. Try again tomorrow or upgrade!',
+          subscription_required: remaining === 0,
+          reset_time: remaining === 0 ? 'tomorrow' : null
         });
       }
     } catch (error) {
