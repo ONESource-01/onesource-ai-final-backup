@@ -271,20 +271,23 @@ const ChatInterface = () => {
   };
 
   const MessageActions = ({ messageId, content }) => (
-    <div className="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+    <div className="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
       <Button
         size="sm"
         variant="ghost"
         onClick={() => handleCopyMessage(content)}
-        className="h-8 px-2"
+        className="h-8 px-2 hover:bg-gray-100"
+        title="Copy response"
       >
         <Copy className="h-3 w-3" />
+        {copySuccess && <span className="ml-1 text-xs text-green-600">Copied!</span>}
       </Button>
       <Button
         size="sm"
         variant="ghost"
         onClick={() => handleFeedback(messageId, 'positive')}
-        className="h-8 px-2"
+        className="h-8 px-2 hover:bg-gray-100"
+        title="Good response"
       >
         <ThumbsUp className="h-3 w-3" />
       </Button>
@@ -292,7 +295,8 @@ const ChatInterface = () => {
         size="sm"
         variant="ghost"
         onClick={() => handleFeedback(messageId, 'negative')}
-        className="h-8 px-2"
+        className="h-8 px-2 hover:bg-gray-100"
+        title="Poor response"
       >
         <ThumbsDown className="h-3 w-3" />
       </Button>
@@ -300,8 +304,9 @@ const ChatInterface = () => {
         size="sm"
         variant="ghost"
         onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: !prev[messageId] }))}
-        className="h-8 px-2"
+        className="h-8 px-2 hover:bg-gray-100"
         style={{ color: '#4b6b8b' }}
+        title="Add your knowledge"
       >
         <Edit3 className="h-3 w-3" />
         <span className="ml-1 text-xs">Add Knowledge</span>
