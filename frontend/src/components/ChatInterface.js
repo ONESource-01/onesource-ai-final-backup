@@ -314,7 +314,61 @@ const ChatInterface = () => {
     </div>
   );
 
-  const ContributionBox = ({ messageId }) => (
+  const FeedbackModal = () => (
+    feedbackModal.show && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-96 max-w-sm mx-4" style={{ backgroundColor: '#f8fafc' }}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-lg" style={{ color: '#0f2f57' }}>
+              {feedbackModal.type === 'positive' ? '👍 Great Response!' : '👎 Response Feedback'}
+            </h3>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setFeedbackModal({ show: false, messageId: null, type: null })}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <p className="text-sm mb-4" style={{ color: '#4b6b8b' }}>
+            {feedbackModal.type === 'positive' 
+              ? 'Tell us what made this response helpful:'
+              : 'Help us improve by sharing what was wrong or missing:'
+            }
+          </p>
+          
+          <textarea
+            className="w-full p-3 rounded border resize-none"
+            style={{ borderColor: '#95a6b7', minHeight: '100px' }}
+            placeholder={feedbackModal.type === 'positive' 
+              ? 'What was particularly helpful about this response?'
+              : 'What was incorrect, missing, or could be improved?'
+            }
+            value={feedbackText}
+            onChange={(e) => setFeedbackText(e.target.value)}
+          />
+          
+          <div className="flex items-center justify-end gap-2 mt-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setFeedbackModal({ show: false, messageId: null, type: null })}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={submitFeedback}
+              style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
+            >
+              Submit Feedback
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  );
     <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: '#f8fafc', border: '2px solid #c9d6e4' }}>
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-semibold text-sm" style={{ color: '#0f2f57' }}>
