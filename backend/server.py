@@ -56,6 +56,23 @@ class ChatQuestion(BaseModel):
     question: str
     session_id: Optional[str] = None
 
+class ChatFeedback(BaseModel):
+    message_id: str
+    feedback_type: str  # 'positive' or 'negative'
+    comment: Optional[str] = None
+
+class KnowledgeContribution(BaseModel):
+    message_id: str
+    contribution: str
+    opt_in_credit: bool = True
+
+class ChatHistoryRequest(BaseModel):
+    limit: int = 50
+
+class PaymentRequest(BaseModel):
+    package_id: str
+    origin_url: str
+
 class PaymentRequest(BaseModel):
     package_id: str
     origin_url: str
