@@ -561,7 +561,15 @@ const ChatInterface = () => {
           {messages.length === 0 ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center max-w-2xl mx-auto p-8">
-                <Bot className="h-16 w-16 mx-auto mb-6" style={{ color: '#c9d6e4' }} />
+                {/* Logo */}
+                <div className="flex justify-center mb-8">
+                  <img 
+                    src="/onesource-logo.png" 
+                    alt="ONESource-ai" 
+                    className="h-20 w-auto"
+                  />
+                </div>
+                
                 <h2 className="text-2xl font-bold mb-4" style={{ color: '#0f2f57' }}>
                   Welcome to ONESource-ai
                 </h2>
