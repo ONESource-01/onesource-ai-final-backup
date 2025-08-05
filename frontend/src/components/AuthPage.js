@@ -269,7 +269,8 @@ const AuthPage = () => {
                 <button
                   onClick={handleForgotPassword}
                   disabled={loading}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                  className="text-sm underline hover:opacity-75"
+                  style={{ color: '#4b6b8b' }}
                 >
                   Forgot your password?
                 </button>
@@ -277,7 +278,7 @@ const AuthPage = () => {
             )}
 
             <div className="text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm" style={{ color: '#4b6b8b' }}>
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
                 <button
                   onClick={() => {
@@ -286,7 +287,8 @@ const AuthPage = () => {
                     setSuccess('');
                     setFormData({ email: '', password: '', confirmPassword: '' });
                   }}
-                  className="ml-1 text-blue-600 hover:text-blue-800 underline"
+                  className="ml-1 underline hover:opacity-75"
+                  style={{ color: '#0f2f57' }}
                 >
                   {isSignUp ? 'Sign In' : 'Sign Up'}
                 </button>
@@ -294,9 +296,9 @@ const AuthPage = () => {
             </div>
 
             {isSignUp && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-800 mb-2">What you get:</h4>
-                <ul className="text-sm text-blue-700 space-y-1">
+              <div className="rounded-lg p-4" style={{ backgroundColor: '#c9d6e4', border: '1px solid #95a6b7' }}>
+                <h4 className="font-semibold mb-2" style={{ color: '#0f2f57' }}>What you get:</h4>
+                <ul className="text-sm space-y-1" style={{ color: '#4b6b8b' }}>
                   <li>• 3 free expert construction questions</li>
                   <li>• Dual-layer responses (Technical + Mentoring)</li>
                   <li>• AU/NZ building standards coverage</li>
