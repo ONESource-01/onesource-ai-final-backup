@@ -119,24 +119,25 @@ const ChatInterface = () => {
   };
 
   const submitFeedback = async () => {
-    const feedbackData = {
-      messageId: feedbackModal.messageId,
-      userId: user.uid,
-      userEmail: user.email,
-      feedback: feedbackModal.type,
-      comment: feedbackText.trim(),
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('User feedback:', feedbackData);
-    // TODO: Implement API call to store feedback in Firebase
-    
-    // Close modal and reset
-    setFeedbackModal({ show: false, messageId: null, type: null });
-    setFeedbackText('');
-    
-    // Show success message
-    alert('Thank you for your feedback! This helps us improve our responses.');
+    try {
+      const feedbackData = {
+        message_id: feedbackModal.messageId,
+        feedback_type: feedbackModal.type,
+        comment: feedbackText.trim()
+      };
+      
+      await apiEndpoints.submitFeedback(feedbackData);
+      
+      // Close modal and reset
+      setFeedbackModal({ show: false, messageId: null, type: null });
+      setFeedbackText('');
+      
+      // Show success message
+      alert('Thank you for your feedback! This helps us improve our responses.');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert('Error submitting feedback. Please try again.');
+    }
   };
 
   const handleContribution = async (messageId) => {
