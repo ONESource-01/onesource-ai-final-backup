@@ -468,9 +468,13 @@ const ChatInterface = () => {
           <div className="space-y-2">
             {chatHistory.map((chat) => (
               <div
-                key={chat.id}
+                key={chat.session_id}
                 className="p-3 rounded-lg cursor-pointer hover:bg-opacity-50 transition-colors"
                 style={{ backgroundColor: '#c9d6e4' }}
+                onClick={() => {
+                  // TODO: Load specific chat session
+                  console.log('Loading chat session:', chat.session_id);
+                }}
               >
                 <div className="flex items-start gap-2">
                   <MessageSquare className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#4b6b8b' }} />
