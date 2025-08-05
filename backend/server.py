@@ -245,10 +245,13 @@ async def ask_question(
             user_profile = await firebase_service.get_user_profile(uid)
             trial_warning = False
             
-            # Increment trial count if still on trial
+            # Increment daily count if still on trial
             if (subscription["subscription_tier"] == "starter" and 
                 not subscription["subscription_active"]):
-                await firebase_service.update_user_trial_count(uid, 1)
+                # Get today's date for daily limit tracking
+                today = datetime.utcnow().date()
+                daily_usage_key = f"daily_questions_{today.strftime('%Y%m%d')}"
+                await firebase_service.update_user_daily_count(uid, daily_usage_key, 1)
         
         # Get AI response
         ai_response = await construction_ai.get_construction_response(
