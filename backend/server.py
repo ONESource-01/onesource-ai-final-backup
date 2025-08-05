@@ -293,10 +293,14 @@ async def ask_question(
             # Add subscription info for authenticated users
             subscription = await firebase_service.check_user_subscription(current_user["uid"])
             if subscription["subscription_tier"] == "starter" and not subscription["subscription_active"]:
-                remaining = max(0, 3 - subscription["trial_questions_used"])
+                # Get today's date for daily limit checking
+                today = datetime.utcnow().date()
+                daily_usage_key = f"daily_questions_{today.strftime('%Y%m%d')}"
+                daily_questions_used = subscription.get(daily_usage_key, 0)
+                remaining = max(0, 3 - daily_questions_used)
                 response_data["trial_info"] = {
                     "remaining_questions": remaining,
-                    "message": f"You have {remaining} free questions remaining" if remaining > 0 else "Trial limit reached - upgrade to continue"
+                    "message": f"You have {remaining} free questions remaining today" if remaining > 0 else "Daily limit reached - 3 questions per day for free users"
                 }
         
         return response_data
