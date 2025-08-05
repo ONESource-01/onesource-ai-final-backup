@@ -173,7 +173,7 @@ const LandingPage = () => {
               )}
             </div>
 
-            <div className="rounded-lg p-4 max-w-2xl mx-auto" style={{ backgroundColor: 'rgba(201, 214, 228, 0.9)', border: '1px solid #95a6b7' }}>
+            <div className="rounded-lg p-4 max-w-2xl mx-auto" style={{ backgroundColor: 'rgba(201, 214, 228, 0.95)', border: '1px solid #95a6b7' }}>
               <div className="flex items-center justify-center" style={{ color: '#0f2f57' }}>
                 <Shield className="h-5 w-5 mr-2" />
                 <span className="font-semibold">Trusted by construction professionals across Australia & New Zealand</span>
