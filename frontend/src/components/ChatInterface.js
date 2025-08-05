@@ -102,14 +102,35 @@ const ChatInterface = () => {
       textToCopy = messageContent.technical || messageContent;
     }
     
-    navigator.clipboard.writeText(textToCopy);
-    // Could show a toast notification here
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    });
   };
 
   const handleFeedback = async (messageId, feedback) => {
-    // Store feedback - implement API call to save to Firebase
-    console.log(`Feedback for message ${messageId}:`, feedback);
-    // TODO: Implement API call to store feedback
+    setFeedbackModal({ show: true, messageId, type: feedback });
+  };
+
+  const submitFeedback = async () => {
+    const feedbackData = {
+      messageId: feedbackModal.messageId,
+      userId: user.uid,
+      userEmail: user.email,
+      feedback: feedbackModal.type,
+      comment: feedbackText.trim(),
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('User feedback:', feedbackData);
+    // TODO: Implement API call to store feedback in Firebase
+    
+    // Close modal and reset
+    setFeedbackModal({ show: false, messageId: null, type: null });
+    setFeedbackText('');
+    
+    // Show success message
+    alert('Thank you for your feedback! This helps us improve our responses.');
   };
 
   const handleContribution = async (messageId) => {
