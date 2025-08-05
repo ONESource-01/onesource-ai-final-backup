@@ -130,12 +130,12 @@ const AuthPage = () => {
           </p>
         </div>
 
-        <Card>
+        <Card style={{ backgroundColor: '#f8fafc', borderColor: '#c9d6e4' }}>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl" style={{ color: '#0f2f57' }}>
               {isSignUp ? 'Create Account' : 'Sign In'}
             </CardTitle>
-            <p className="text-gray-600">
+            <p style={{ color: '#4b6b8b' }}>
               {isSignUp 
                 ? 'Get started with your free trial'
                 : 'Welcome back! Continue your construction journey'
@@ -143,11 +143,11 @@ const AuthPage = () => {
             </p>
             
             {/* Demo Notice */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-              <div className="flex items-center justify-center text-blue-800">
+            <div className="rounded-lg p-3 mt-4" style={{ backgroundColor: '#c9d6e4', border: '1px solid #95a6b7' }}>
+              <div className="flex items-center justify-center" style={{ color: '#0f2f57' }}>
                 <span className="text-sm font-medium">🎯 DEMO MODE</span>
               </div>
-              <p className="text-xs text-blue-700 mt-1">
+              <p className="text-xs mt-1" style={{ color: '#4b6b8b' }}>
                 Use any email/password to sign in and test the full application
               </p>
             </div>
