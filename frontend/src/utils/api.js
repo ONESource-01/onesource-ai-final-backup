@@ -40,6 +40,11 @@ export const apiEndpoints = {
 
   // General
   getStatus: () => api.get('/status'),
+
+  // Admin/Developer endpoints
+  getAdminFeedback: () => api.get('/admin/feedback'),
+  getAdminContributions: (status = 'pending_review') => api.get('/admin/contributions', { params: { status } }),
+  reviewContribution: (contributionId, status, reviewNotes) => api.put(`/admin/contributions/${contributionId}`, { status, review_notes: reviewNotes }),
 };
 
 export default api;
