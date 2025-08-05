@@ -3,6 +3,9 @@ import firebase_admin
 from firebase_admin import credentials, firestore, auth
 from typing import Dict, Any, Optional
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 class FirebaseService:
     def __init__(self):
