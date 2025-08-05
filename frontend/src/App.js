@@ -147,12 +147,11 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-5xl font-bold mb-6" style={{ color: '#0f2f57' }}>
-              Your AI Mentor for
-              <span className="block" style={{ color: '#4b6b8b' }}>AU/NZ Construction Industry</span>
+              Your Digital Design
+              <span className="block" style={{ color: '#4b6b8b' }}>Compliance Partner</span>
             </h1>
             <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: '#4b6b8b' }}>
-              Get expert guidance on building codes, engineering standards, and construction practices 
-              with dual-layer responses combining technical accuracy and mentoring insights.
+              Interpret design codes, apply regulations, and verify compliance across every stage of construction – from planning to delivery.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
