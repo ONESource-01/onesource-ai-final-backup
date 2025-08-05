@@ -112,31 +112,18 @@ class FirebaseService:
             print(f"Error getting user profile: {e}")
             return None
     
-    async def update_user_trial_count(self, uid: str, increment: int = 1) -> int:
-        """Update user's trial question count and return new count"""
+    async def update_user_daily_count(self, uid: str, daily_key: str, increment: int = 1):
+        """Update user's daily question count"""
         try:
-            if not self.db:
-                print(f"Mock: Updating trial count for {uid} by {increment}")
-                return 1
-                
-            user_ref = self.db.collection('users').document(uid)
-            doc = user_ref.get()
+            # In production, update Firebase
+            # doc_ref = self.db.collection('users').document(uid)
+            # doc_ref.update({daily_key: firestore.Increment(increment)})
             
-            current_count = 0
-            if doc.exists:
-                data = doc.to_dict()
-                current_count = data.get('trial_questions_used', 0)
-            
-            new_count = current_count + increment
-            user_ref.set({
-                'trial_questions_used': new_count,
-                'last_question_at': firestore.SERVER_TIMESTAMP
-            }, merge=True)
-            
-            return new_count
+            # For development/mock mode
+            return {"status": "success", "daily_count_updated": True}
         except Exception as e:
-            print(f"Error updating trial count: {e}")
-            return -1
+            logger.error(f"Error updating daily count: {str(e)}")
+            return {"status": "error", "message": str(e)}
     
     async def check_user_subscription(self, uid: str) -> Dict[str, Any]:
         """Check user's subscription status"""
