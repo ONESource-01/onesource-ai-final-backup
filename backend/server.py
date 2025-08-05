@@ -73,10 +73,6 @@ class PaymentRequest(BaseModel):
     package_id: str
     origin_url: str
 
-class PaymentRequest(BaseModel):
-    package_id: str
-    origin_url: str
-
 # Authentication dependency
 async def get_current_user(request: Request, credentials = Depends(security)) -> Dict[str, Any]:
     """Verify Firebase token and return user info"""
