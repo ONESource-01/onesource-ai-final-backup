@@ -314,8 +314,10 @@ const ChatInterface = () => {
     </div>
   );
 
-  const FeedbackModal = () => (
-    feedbackModal.show && (
+  const FeedbackModal = () => {
+    if (!feedbackModal.show) return null;
+    
+    return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6 w-96 max-w-sm mx-4" style={{ backgroundColor: '#f8fafc' }}>
           <div className="flex items-center justify-between mb-4">
@@ -367,8 +369,10 @@ const ChatInterface = () => {
           </div>
         </div>
       </div>
-    )
-  );
+    );
+  };
+
+  const ContributionBox = ({ messageId }) => (
     <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: '#f8fafc', border: '2px solid #c9d6e4' }}>
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-semibold text-sm" style={{ color: '#0f2f57' }}>
