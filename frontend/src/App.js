@@ -312,8 +312,7 @@ const LandingPage = () => {
                 <img 
                   src="/onesource-logo.png" 
                   alt="ONESource-ai" 
-                  className="h-6 w-auto mr-3"
-                  style={{ filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(469%) hue-rotate(175deg) brightness(104%) contrast(99%)' }}
+                  className="h-12 w-auto mr-3"
                 />
               </div>
               <p style={{ color: '#95a6b7' }}>
