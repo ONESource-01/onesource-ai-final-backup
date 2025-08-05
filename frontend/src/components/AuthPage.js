@@ -309,7 +309,7 @@ const AuthPage = () => {
           </CardContent>
         </Card>
 
-        <div className="text-center mt-6 text-xs text-gray-500">
+        <div className="text-center mt-6 text-xs" style={{ color: '#95a6b7' }}>
           By continuing, you agree to our Terms of Service and Privacy Policy
         </div>
       </div>
