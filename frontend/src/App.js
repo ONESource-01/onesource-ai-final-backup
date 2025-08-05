@@ -103,8 +103,7 @@ const LandingPage = () => {
               <img 
                 src="/onesource-logo.png" 
                 alt="ONESource-ai" 
-                className="h-8 w-auto mr-2"
-                style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(37%) saturate(1651%) hue-rotate(202deg) brightness(94%) contrast(97%)' }}
+                className="h-16 w-auto mr-3"
               />
             </div>
             <nav className="flex items-center space-x-6">
