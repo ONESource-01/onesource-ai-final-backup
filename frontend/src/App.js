@@ -310,8 +310,12 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <Bot className="h-6 w-6 mr-2" style={{ color: '#c9d6e4' }} />
-                <span className="text-lg font-bold">ONESource-ai</span>
+                <img 
+                  src="/onesource-logo.png" 
+                  alt="ONESource-ai" 
+                  className="h-6 w-auto mr-3"
+                  style={{ filter: 'brightness(0) saturate(100%) invert(95%) sepia(8%) saturate(469%) hue-rotate(175deg) brightness(104%) contrast(99%)' }}
+                />
               </div>
               <p style={{ color: '#95a6b7' }}>
                 Your trusted AI mentor for AU/NZ construction industry expertise.
