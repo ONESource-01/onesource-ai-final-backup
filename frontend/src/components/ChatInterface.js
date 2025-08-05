@@ -144,26 +144,25 @@ const ChatInterface = () => {
     const contribution = contributionText[messageId];
     if (!contribution || !contribution.trim()) return;
 
-    // Store user contribution - implement API call
-    const contributionData = {
-      messageId,
-      userId: user.uid,
-      userEmail: user.email,
-      contribution: contribution.trim(),
-      optInCredit,
-      timestamp: new Date().toISOString(),
-      status: 'pending_review'
-    };
+    try {
+      const contributionData = {
+        message_id: messageId,
+        contribution: contribution.trim(),
+        opt_in_credit: optInCredit
+      };
 
-    console.log('User contribution:', contributionData);
-    // TODO: Implement API call to store contribution in Firebase
-    
-    // Hide contribution box and clear text
-    setShowContributionBox(prev => ({ ...prev, [messageId]: false }));
-    setContributionText(prev => ({ ...prev, [messageId]: '' }));
-    
-    // Show success message
-    alert('Thank you for your contribution! It will be reviewed and may be added to our knowledge base.');
+      await apiEndpoints.submitContribution(contributionData);
+      
+      // Hide contribution box and clear text
+      setShowContributionBox(prev => ({ ...prev, [messageId]: false }));
+      setContributionText(prev => ({ ...prev, [messageId]: '' }));
+      
+      // Show success message
+      alert('Thank you for your contribution! It will be reviewed and may be added to our knowledge base.');
+    } catch (error) {
+      console.error('Error submitting contribution:', error);
+      alert('Error submitting contribution. Please try again.');
+    }
   };
 
   const handleSubmit = async (e) => {
