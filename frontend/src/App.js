@@ -277,21 +277,23 @@ const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      <section className="py-20" style={{ backgroundColor: '#0f2f57' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-3xl font-bold mb-4" style={{ color: '#f8fafc' }}>
             Ready to Get Expert Construction Guidance?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
+          <p className="text-xl mb-8" style={{ color: '#c9d6e4' }}>
             Start with 3 free questions. No credit card required.
           </p>
           
           {user ? (
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4" asChild>
+            <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild 
+              style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
               <a href="/chat">Start Asking Questions</a>
             </Button>
           ) : (
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4" asChild>
+            <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild 
+              style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
               <a href="/auth">Try Free Now</a>
             </Button>
           )}
