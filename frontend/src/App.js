@@ -94,27 +94,27 @@ const LandingPage = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-blue-200">
+      <header style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #c9d6e4' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Bot className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-2xl font-bold text-blue-900">ONESource-ai</h1>
+              <Bot className="h-8 w-8 mr-3" style={{ color: '#0f2f57' }} />
+              <h1 className="text-2xl font-bold" style={{ color: '#0f2f57' }}>ONESource-ai</h1>
             </div>
             <nav className="flex items-center space-x-6">
-              <a href="#features" className="text-gray-600 hover:text-blue-600">Features</a>
-              <a href="#pricing" className="text-gray-600 hover:text-blue-600">Pricing</a>
+              <a href="#features" className="hover:opacity-75 transition-opacity" style={{ color: '#4b6b8b' }}>Features</a>
+              <a href="#pricing" className="hover:opacity-75 transition-opacity" style={{ color: '#4b6b8b' }}>Pricing</a>
               {user ? (
                 <div className="flex items-center space-x-4">
-                  <Badge variant="outline">{user.email}</Badge>
-                  <Button asChild>
+                  <Badge variant="outline" style={{ borderColor: '#95a6b7', color: '#4b6b8b' }}>{user.email}</Badge>
+                  <Button asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }} className="hover:opacity-90">
                     <a href="/chat">Go to Chat</a>
                   </Button>
                 </div>
               ) : (
-                <Button asChild>
+                <Button asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }} className="hover:opacity-90">
                   <a href="/auth">Sign In</a>
                 </Button>
               )}
