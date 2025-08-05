@@ -140,7 +140,7 @@ const LandingPage = () => {
         {/* Overlay for text readability */}
         <div 
           className="absolute inset-0" 
-          style={{ backgroundColor: 'rgba(248, 250, 252, 0.85)' }}
+          style={{ backgroundColor: 'rgba(248, 250, 252, 0.6)' }}
         />
         
         {/* Content */}
