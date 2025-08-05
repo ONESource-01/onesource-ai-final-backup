@@ -293,6 +293,243 @@ async def ask_question(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing question: {str(e)}")
 
+# Feedback Routes
+@api_router.post("/chat/feedback")
+async def submit_feedback(
+    feedback_data: ChatFeedback,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Submit feedback for a chat response"""
+    try:
+        uid = current_user["uid"]
+        
+        # Prepare feedback data for storage
+        feedback_record = {
+            "feedback_id": str(uuid.uuid4()),
+            "message_id": feedback_data.message_id,
+            "user_id": uid,
+            "user_email": current_user.get("email"),
+            "feedback_type": feedback_data.feedback_type,
+            "comment": feedback_data.comment,
+            "timestamp": datetime.utcnow(),
+            "status": "submitted"
+        }
+        
+        # Store feedback in MongoDB
+        await db.chat_feedback.insert_one(feedback_record)
+        
+        return {
+            "message": "Feedback submitted successfully",
+            "feedback_id": feedback_record["feedback_id"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error submitting feedback: {str(e)}")
+
+@api_router.post("/chat/contribution")
+async def submit_contribution(
+    contribution_data: KnowledgeContribution,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Submit knowledge contribution"""
+    try:
+        uid = current_user["uid"]
+        
+        # Prepare contribution data for storage
+        contribution_record = {
+            "contribution_id": str(uuid.uuid4()),
+            "message_id": contribution_data.message_id,
+            "user_id": uid,
+            "user_email": current_user.get("email"),
+            "user_name": current_user.get("name", current_user.get("email", "Unknown")),
+            "contribution": contribution_data.contribution,
+            "opt_in_credit": contribution_data.opt_in_credit,
+            "timestamp": datetime.utcnow(),
+            "status": "pending_review",  # pending_review, approved, rejected
+            "reviewed_by": None,
+            "reviewed_at": None,
+            "review_notes": None
+        }
+        
+        # Store contribution in MongoDB
+        await db.knowledge_contributions.insert_one(contribution_record)
+        
+        return {
+            "message": "Knowledge contribution submitted successfully! It will be reviewed and may be added to our knowledge base.",
+            "contribution_id": contribution_record["contribution_id"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error submitting contribution: {str(e)}")
+
+@api_router.get("/chat/history")
+async def get_chat_history(
+    limit: int = 50,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get user's chat history"""
+    try:
+        uid = current_user["uid"]
+        
+        # Get conversations for this user
+        cursor = db.conversations.find(
+            {"user_id": uid},
+            sort=[("timestamp", -1)],
+            limit=limit
+        )
+        conversations = await cursor.to_list(length=limit)
+        
+        # Group by session_id and create chat history entries
+        session_groups = {}
+        for conv in conversations:
+            session_id = conv.get("session_id", "unknown")
+            if session_id not in session_groups:
+                session_groups[session_id] = {
+                    "session_id": session_id,
+                    "title": conv.get("question", "Untitled Chat")[:50] + "..." if len(conv.get("question", "")) > 50 else conv.get("question", "Untitled Chat"),
+                    "timestamp": conv.get("timestamp"),
+                    "messages": []
+                }
+            session_groups[session_id]["messages"].append({
+                "question": conv.get("question"),
+                "response": conv.get("formatted_response"),
+                "timestamp": conv.get("timestamp")
+            })
+        
+        # Convert to list and sort by timestamp
+        chat_history = list(session_groups.values())
+        chat_history.sort(key=lambda x: x.get("timestamp", datetime.min), reverse=True)
+        
+        return {"chat_history": chat_history}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving chat history: {str(e)}")
+
+@api_router.get("/chat/session/{session_id}")
+async def get_chat_session(
+    session_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get specific chat session messages"""
+    try:
+        uid = current_user["uid"]
+        
+        # Get all messages for this session and user
+        cursor = db.conversations.find(
+            {"session_id": session_id, "user_id": uid},
+            sort=[("timestamp", 1)]
+        )
+        conversations = await cursor.to_list(length=1000)
+        
+        messages = []
+        for conv in conversations:
+            # Add user message
+            messages.append({
+                "id": f"user_{conv['_id']}",
+                "type": "user",
+                "content": conv.get("question"),
+                "timestamp": conv.get("timestamp").isoformat() if conv.get("timestamp") else None
+            })
+            
+            # Add AI response
+            messages.append({
+                "id": f"ai_{conv['_id']}",
+                "type": "ai", 
+                "content": conv.get("formatted_response"),
+                "timestamp": conv.get("timestamp").isoformat() if conv.get("timestamp") else None,
+                "tokensUsed": conv.get("tokens_used")
+            })
+        
+        return {"messages": messages, "session_id": session_id}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving chat session: {str(e)}")
+
+# Developer/Admin Routes
+@api_router.get("/admin/feedback")
+async def get_feedback_for_review(
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get feedback for developer review (basic admin function)"""
+    try:
+        # Basic admin check - in production, you'd want proper admin roles
+        # For now, we'll just return the data for any authenticated user
+        
+        cursor = db.chat_feedback.find(
+            {},
+            sort=[("timestamp", -1)],
+            limit=100
+        )
+        feedback = await cursor.to_list(length=100)
+        
+        # Clean up MongoDB ObjectId
+        for item in feedback:
+            item["_id"] = str(item["_id"])
+        
+        return {"feedback": feedback}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving feedback: {str(e)}")
+
+@api_router.get("/admin/contributions")
+async def get_contributions_for_review(
+    status: str = "pending_review",
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get knowledge contributions for developer review"""
+    try:
+        # Basic admin check - in production, you'd want proper admin roles
+        
+        query = {"status": status} if status != "all" else {}
+        cursor = db.knowledge_contributions.find(
+            query,
+            sort=[("timestamp", -1)],
+            limit=100
+        )
+        contributions = await cursor.to_list(length=100)
+        
+        # Clean up MongoDB ObjectId
+        for item in contributions:
+            item["_id"] = str(item["_id"])
+        
+        return {"contributions": contributions}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving contributions: {str(e)}")
+
+@api_router.put("/admin/contributions/{contribution_id}")
+async def review_contribution(
+    contribution_id: str,
+    status: str,  # approved, rejected
+    review_notes: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Review and update contribution status"""
+    try:
+        uid = current_user["uid"]
+        
+        update_data = {
+            "status": status,
+            "reviewed_by": uid,
+            "reviewed_at": datetime.utcnow(),
+            "review_notes": review_notes
+        }
+        
+        result = await db.knowledge_contributions.update_one(
+            {"contribution_id": contribution_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Contribution not found")
+        
+        return {"message": f"Contribution {status} successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reviewing contribution: {str(e)}")
+
 # Payment Routes
 @api_router.post("/payment/checkout")
 async def create_checkout_session(
