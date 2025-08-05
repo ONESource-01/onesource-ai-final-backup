@@ -127,34 +127,35 @@ const LandingPage = () => {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-5xl font-bold text-blue-900 mb-6">
+            <h1 className="text-5xl font-bold mb-6" style={{ color: '#0f2f57' }}>
               Your AI Mentor for
-              <span className="block text-indigo-600">AU/NZ Construction Industry</span>
+              <span className="block" style={{ color: '#4b6b8b' }}>AU/NZ Construction Industry</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: '#4b6b8b' }}>
               Get expert guidance on building codes, engineering standards, and construction practices 
               with dual-layer responses combining technical accuracy and mentoring insights.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               {user ? (
-                <Button size="lg" className="text-lg px-8 py-4" asChild>
+                <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
                   <a href="/chat">Start Asking Questions</a>
                 </Button>
               ) : (
                 <>
-                  <Button size="lg" className="text-lg px-8 py-4" asChild>
+                  <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
                     <a href="/auth">Try 3 Questions Free</a>
                   </Button>
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-4" asChild>
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-4 hover:bg-opacity-5" asChild 
+                    style={{ borderColor: '#4b6b8b', color: '#4b6b8b' }}>
                     <a href="#features">Learn More</a>
                   </Button>
                 </>
               )}
             </div>
 
-            <div className="bg-green-100 border border-green-300 rounded-lg p-4 max-w-2xl mx-auto">
-              <div className="flex items-center justify-center text-green-800">
+            <div className="rounded-lg p-4 max-w-2xl mx-auto" style={{ backgroundColor: '#c9d6e4', border: '1px solid #95a6b7' }}>
+              <div className="flex items-center justify-center" style={{ color: '#0f2f57' }}>
                 <Shield className="h-5 w-5 mr-2" />
                 <span className="font-semibold">Trusted by construction professionals across Australia & New Zealand</span>
               </div>
