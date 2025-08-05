@@ -155,16 +155,16 @@ const AuthPage = () => {
 
           <CardContent className="space-y-6">
             {error && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertDescription className="text-red-700">
+              <Alert style={{ backgroundColor: '#fef2f2', borderColor: '#fecaca' }}>
+                <AlertDescription style={{ color: '#dc2626' }}>
                   {error}
                 </AlertDescription>
               </Alert>
             )}
 
             {success && (
-              <Alert className="border-green-200 bg-green-50">
-                <AlertDescription className="text-green-700">
+              <Alert style={{ backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }}>
+                <AlertDescription style={{ color: '#16a34a' }}>
                   {success}
                 </AlertDescription>
               </Alert>
