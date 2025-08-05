@@ -166,7 +166,7 @@ const LandingPage = () => {
                     <a href="/auth">Try 3 Questions Free</a>
                   </Button>
                   <Button size="lg" variant="outline" className="text-lg px-8 py-4 hover:bg-opacity-5" asChild 
-                    style={{ borderColor: '#4b6b8b', color: '#4b6b8b', backgroundColor: 'rgba(248, 250, 252, 0.9)' }}>
+                    style={{ borderColor: '#4b6b8b', color: '#4b6b8b', backgroundColor: 'rgba(248, 250, 252, 0.95)', border: '2px solid #4b6b8b' }}>
                     <a href="#features">Learn More</a>
                   </Button>
                 </>
