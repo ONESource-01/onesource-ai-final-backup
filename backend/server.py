@@ -218,18 +218,28 @@ async def ask_question(
             
             # Check if user can ask questions
             if (subscription["subscription_tier"] == "starter" and 
-                not subscription["subscription_active"] and
-                trial_questions_used >= 3):
+                not subscription["subscription_active"]):
                 
-                raise HTTPException(
-                    status_code=402,
-                    detail={
-                        "error": "Trial limit exceeded",
-                        "message": "You've used all 3 free questions. Please upgrade to continue.",
-                        "trial_questions_used": trial_questions_used,
-                        "subscription_required": True
-                    }
-                )
+                # Get today's date for daily limit checking
+                today = datetime.utcnow().date()
+                
+                # Get or create today's usage tracking
+                daily_usage_key = f"daily_questions_{today.strftime('%Y%m%d')}"
+                daily_questions_used = subscription.get(daily_usage_key, 0)
+                
+                if daily_questions_used >= 3:
+                    raise HTTPException(
+                        status_code=402,
+                        detail={
+                            "message": "Daily question limit reached. You can ask 3 more questions tomorrow, or upgrade to unlimited access.",
+                            "trial_info": {
+                                "remaining_questions": 0,
+                                "subscription_required": True,
+                                "reset_time": "tomorrow",
+                                "message": "Daily limit reached - 3 questions per day for free users. Upgrade for unlimited access!"
+                            }
+                        }
+                    )
             
             # Get user profile for context
             user_profile = await firebase_service.get_user_profile(uid)
