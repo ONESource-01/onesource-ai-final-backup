@@ -121,8 +121,7 @@ const AuthPage = () => {
             <img 
               src="/onesource-logo.png" 
               alt="ONESource-ai" 
-              className="h-10 w-auto mr-2"
-              style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(37%) saturate(1651%) hue-rotate(202deg) brightness(94%) contrast(97%)' }}
+              className="h-20 w-auto mr-2"
             />
           </div>
           <p style={{ color: '#4b6b8b' }}>
