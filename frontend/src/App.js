@@ -68,6 +68,7 @@ const AppContent = () => {
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
+      <Route path="/admin" element={<AdminDashboard />} />
       
       {/* Protected Routes */}
       <Route 
