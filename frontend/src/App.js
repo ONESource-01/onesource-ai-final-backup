@@ -165,28 +165,28 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
+      <section id="features" className="py-20" style={{ backgroundColor: '#c9d6e4' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold mb-4" style={{ color: '#0f2f57' }}>
               Built for Construction Professionals
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl" style={{ color: '#4b6b8b' }}>
               Specialized AI trained on AU/NZ building standards and industry practices
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <Card>
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Bot className="h-6 w-6 text-blue-600 mr-2" />
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Bot className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
                   Dual-Layer Responses
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p style={{ color: '#4b6b8b' }}>
                   Get both technical answers with clause references and mentoring insights 
                   from experienced industry professionals.
                 </p>
@@ -194,15 +194,15 @@ const LandingPage = () => {
             </Card>
 
             {/* Feature 2 */}
-            <Card>
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Shield className="h-6 w-6 text-blue-600 mr-2" />
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Shield className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
                   AU/NZ Standards
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p style={{ color: '#4b6b8b' }}>
                   Trained on Australian and New Zealand building codes, NCC, BCA, 
                   and industry-specific standards (AS/NZS).
                 </p>
@@ -210,15 +210,15 @@ const LandingPage = () => {
             </Card>
 
             {/* Feature 3 */}
-            <Card>
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="h-6 w-6 text-blue-600 mr-2" />
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Users className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
                   Multi-Discipline Support
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p style={{ color: '#4b6b8b' }}>
                   Supports architects, engineers (structural, civil, mechanical, electrical), 
                   building surveyors, and construction managers.
                 </p>
@@ -226,15 +226,15 @@ const LandingPage = () => {
             </Card>
 
             {/* Feature 4 */}
-            <Card>
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Zap className="h-6 w-6 text-blue-600 mr-2" />
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Zap className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
                   Instant Expertise
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p style={{ color: '#4b6b8b' }}>
                   Get immediate access to construction knowledge without waiting 
                   for consultations or searching through lengthy documents.
                 </p>
@@ -242,15 +242,15 @@ const LandingPage = () => {
             </Card>
 
             {/* Feature 5 */}
-            <Card>
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Bot className="h-6 w-6 text-blue-600 mr-2" />
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Bot className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
                   Context-Aware
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p style={{ color: '#4b6b8b' }}>
                   Adapts responses based on your profession, sector (residential, commercial, 
                   healthcare) and specific project requirements.
                 </p>
@@ -258,15 +258,15 @@ const LandingPage = () => {
             </Card>
 
             {/* Feature 6 */}
-            <Card>
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Shield className="h-6 w-6 text-blue-600 mr-2" />
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Shield className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
                   Compliance Focus
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">
+                <p style={{ color: '#4b6b8b' }}>
                   Emphasis on regulatory compliance, safety standards, and best practices 
                   to keep your projects on track.
                 </p>
