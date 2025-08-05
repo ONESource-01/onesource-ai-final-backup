@@ -277,52 +277,45 @@ const ChatInterface = () => {
   };
 
   const MessageActions = ({ messageId, content }) => (
-    <div className="flex items-center gap-1 mt-3 pt-2 border-t" style={{ borderColor: '#e5e7eb', opacity: 0.7 }}>
-      <div className="text-xs" style={{ color: '#95a6b7', marginRight: '8px' }}>Rate this response:</div>
+    <div className="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
       <Button
         size="sm"
         variant="ghost"
         onClick={() => handleCopyMessage(content)}
-        className="h-7 px-2 text-xs"
-        style={{ borderColor: '#c9d6e4', color: '#4b6b8b' }}
+        className="h-8 px-2 hover:bg-gray-100"
         title="Copy response"
       >
-        <Copy className="h-3 w-3 mr-1" />
-        Copy
-        {copySuccess && <span className="ml-1 text-green-600">✓</span>}
+        <Copy className="h-3 w-3" />
+        {copySuccess && <span className="ml-1 text-xs text-green-600">Copied!</span>}
       </Button>
       <Button
         size="sm"
-        variant="outline"
+        variant="ghost"
         onClick={() => handleFeedback(messageId, 'positive')}
-        className="h-7 px-2 text-xs"
-        style={{ borderColor: '#16a34a', color: '#16a34a' }}
+        className="h-8 px-2 hover:bg-gray-100"
         title="Good response"
       >
-        <ThumbsUp className="h-3 w-3 mr-1" />
-        Good
+        <ThumbsUp className="h-3 w-3" />
       </Button>
       <Button
         size="sm"
-        variant="outline"
+        variant="ghost"
         onClick={() => handleFeedback(messageId, 'negative')}
-        className="h-7 px-2 text-xs"
-        style={{ borderColor: '#dc2626', color: '#dc2626' }}
+        className="h-8 px-2 hover:bg-gray-100"
         title="Poor response"
       >
-        <ThumbsDown className="h-3 w-3 mr-1" />
-        Poor
+        <ThumbsDown className="h-3 w-3" />
       </Button>
       <Button
         size="sm"
-        variant="outline"
+        variant="ghost"
         onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: !prev[messageId] }))}
-        className="h-7 px-2 text-xs"
-        style={{ borderColor: '#4b6b8b', color: '#4b6b8b' }}
+        className="h-8 px-2 hover:bg-gray-100"
+        style={{ color: '#4b6b8b' }}
         title="Add your knowledge"
       >
-        <Edit3 className="h-3 w-3 mr-1" />
-        Add Knowledge
+        <Edit3 className="h-3 w-3" />
+        <span className="ml-1 text-xs">Add Knowledge</span>
       </Button>
     </div>
   );
