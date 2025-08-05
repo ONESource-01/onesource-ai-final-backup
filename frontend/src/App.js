@@ -100,8 +100,12 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Bot className="h-8 w-8 mr-3" style={{ color: '#0f2f57' }} />
-              <h1 className="text-2xl font-bold" style={{ color: '#0f2f57' }}>ONESource-ai</h1>
+              <img 
+                src="/onesource-logo.png" 
+                alt="ONESource-ai" 
+                className="h-8 w-auto mr-2"
+                style={{ filter: 'brightness(0) saturate(100%) invert(13%) sepia(37%) saturate(1651%) hue-rotate(202deg) brightness(94%) contrast(97%)' }}
+              />
             </div>
             <nav className="flex items-center space-x-6">
               <a href="#features" className="hover:opacity-75 transition-opacity" style={{ color: '#4b6b8b' }}>Features</a>
