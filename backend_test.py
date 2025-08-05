@@ -346,6 +346,262 @@ class BackendTester:
         else:
             self.log_test("Webhook with Mock Signature", False, "Unexpected success with mock signature", data)
     
+    async def test_chat_feedback_system(self):
+        """Test chat feedback endpoints"""
+        print("\n=== Testing Chat Feedback System ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test feedback submission without auth (should fail)
+        feedback_data = {
+            "message_id": "test_message_123",
+            "feedback_type": "positive",
+            "comment": "This response was very helpful for understanding building codes."
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/feedback", feedback_data)
+        
+        if not success and status == 401:
+            self.log_test("Feedback without auth (should fail)", True, "Correctly rejected unauthenticated feedback")
+        else:
+            self.log_test("Feedback without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test positive feedback submission with auth
+        success, data, status = await self.make_request("POST", "/chat/feedback", feedback_data, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "message" in data and "feedback_id" in data:
+                self.log_test("Positive Feedback Submission", True, f"Feedback ID: {data['feedback_id']}")
+            else:
+                self.log_test("Positive Feedback Submission", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Positive Feedback Submission", False, f"Status: {status}", data)
+        
+        # Test negative feedback with comment
+        negative_feedback = {
+            "message_id": "test_message_456",
+            "feedback_type": "negative",
+            "comment": "The response didn't address the specific AS/NZS standards I asked about."
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/feedback", negative_feedback, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "message" in data and "feedback_id" in data:
+                self.log_test("Negative Feedback with Comment", True, f"Feedback ID: {data['feedback_id']}")
+            else:
+                self.log_test("Negative Feedback with Comment", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Negative Feedback with Comment", False, f"Status: {status}", data)
+        
+        # Test feedback without comment
+        simple_feedback = {
+            "message_id": "test_message_789",
+            "feedback_type": "positive"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/feedback", simple_feedback, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "message" in data and "feedback_id" in data:
+                self.log_test("Feedback without Comment", True, f"Feedback ID: {data['feedback_id']}")
+            else:
+                self.log_test("Feedback without Comment", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Feedback without Comment", False, f"Status: {status}", data)
+
+    async def test_knowledge_contribution_system(self):
+        """Test knowledge contribution endpoints"""
+        print("\n=== Testing Knowledge Contribution System ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test contribution submission without auth (should fail)
+        contribution_data = {
+            "message_id": "test_message_123",
+            "contribution": "According to AS/NZS 1170.1, the minimum live load for office buildings is 3.0 kPa for general areas and 4.0 kPa for corridors and stairs.",
+            "opt_in_credit": True
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/contribution", contribution_data)
+        
+        if not success and status == 401:
+            self.log_test("Contribution without auth (should fail)", True, "Correctly rejected unauthenticated contribution")
+        else:
+            self.log_test("Contribution without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test knowledge contribution with credit opt-in
+        success, data, status = await self.make_request("POST", "/chat/contribution", contribution_data, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "message" in data and "contribution_id" in data:
+                self.log_test("Knowledge Contribution (with credit)", True, f"Contribution ID: {data['contribution_id']}")
+            else:
+                self.log_test("Knowledge Contribution (with credit)", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Knowledge Contribution (with credit)", False, f"Status: {status}", data)
+        
+        # Test knowledge contribution without credit opt-in
+        no_credit_contribution = {
+            "message_id": "test_message_456",
+            "contribution": "For fire-rated assemblies in commercial buildings, refer to AS 1530.4 for testing requirements and AS 1684 for timber construction details.",
+            "opt_in_credit": False
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/contribution", no_credit_contribution, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "message" in data and "contribution_id" in data:
+                self.log_test("Knowledge Contribution (no credit)", True, f"Contribution ID: {data['contribution_id']}")
+            else:
+                self.log_test("Knowledge Contribution (no credit)", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Knowledge Contribution (no credit)", False, f"Status: {status}", data)
+
+    async def test_chat_history_system(self):
+        """Test chat history endpoints"""
+        print("\n=== Testing Chat History System ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test chat history without auth (should fail)
+        success, data, status = await self.make_request("GET", "/chat/history")
+        
+        if not success and status == 401:
+            self.log_test("Chat history without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Chat history without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test chat history retrieval with auth
+        success, data, status = await self.make_request("GET", "/chat/history", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "chat_history" in data and isinstance(data["chat_history"], list):
+                self.log_test("Chat History Retrieval", True, f"Retrieved {len(data['chat_history'])} chat sessions")
+            else:
+                self.log_test("Chat History Retrieval", False, "Invalid chat history format", data)
+        else:
+            self.log_test("Chat History Retrieval", False, f"Status: {status}", data)
+        
+        # Test chat history with limit parameter
+        success, data, status = await self.make_request("GET", "/chat/history?limit=10", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "chat_history" in data:
+                self.log_test("Chat History with Limit", True, f"Retrieved {len(data['chat_history'])} sessions (limit=10)")
+            else:
+                self.log_test("Chat History with Limit", False, "Missing chat_history field", data)
+        else:
+            self.log_test("Chat History with Limit", False, f"Status: {status}", data)
+        
+        # Test specific chat session retrieval
+        test_session_id = "test_session_123"
+        success, data, status = await self.make_request("GET", f"/chat/session/{test_session_id}", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "messages" in data and "session_id" in data:
+                self.log_test("Specific Chat Session Retrieval", True, f"Retrieved {len(data['messages'])} messages for session {data['session_id']}")
+            else:
+                self.log_test("Specific Chat Session Retrieval", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Specific Chat Session Retrieval", False, f"Status: {status}", data)
+
+    async def test_admin_endpoints(self):
+        """Test admin/developer endpoints"""
+        print("\n=== Testing Admin/Developer Endpoints ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test admin feedback retrieval without auth (should fail)
+        success, data, status = await self.make_request("GET", "/admin/feedback")
+        
+        if not success and status == 401:
+            self.log_test("Admin feedback without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Admin feedback without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test admin feedback retrieval with auth
+        success, data, status = await self.make_request("GET", "/admin/feedback", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "feedback" in data and isinstance(data["feedback"], list):
+                self.log_test("Admin Feedback Retrieval", True, f"Retrieved {len(data['feedback'])} feedback items")
+            else:
+                self.log_test("Admin Feedback Retrieval", False, "Invalid feedback format", data)
+        else:
+            self.log_test("Admin Feedback Retrieval", False, f"Status: {status}", data)
+        
+        # Test admin contributions retrieval without auth (should fail)
+        success, data, status = await self.make_request("GET", "/admin/contributions")
+        
+        if not success and status == 401:
+            self.log_test("Admin contributions without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Admin contributions without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test admin contributions retrieval with auth
+        success, data, status = await self.make_request("GET", "/admin/contributions", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "contributions" in data and isinstance(data["contributions"], list):
+                self.log_test("Admin Contributions Retrieval", True, f"Retrieved {len(data['contributions'])} contributions")
+            else:
+                self.log_test("Admin Contributions Retrieval", False, "Invalid contributions format", data)
+        else:
+            self.log_test("Admin Contributions Retrieval", False, f"Status: {status}", data)
+        
+        # Test contributions with status filter
+        success, data, status = await self.make_request("GET", "/admin/contributions?status=approved", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "contributions" in data:
+                self.log_test("Admin Contributions with Status Filter", True, f"Retrieved {len(data['contributions'])} approved contributions")
+            else:
+                self.log_test("Admin Contributions with Status Filter", False, "Missing contributions field", data)
+        else:
+            self.log_test("Admin Contributions with Status Filter", False, f"Status: {status}", data)
+        
+        # Test contribution review (approve)
+        test_contribution_id = "test_contribution_123"
+        review_data = {
+            "status": "approved",
+            "review_notes": "Excellent contribution with accurate AS/NZS references."
+        }
+        
+        # First, we need to create a contribution to review
+        contribution_data = {
+            "message_id": "test_message_for_review",
+            "contribution": "Test contribution for review process",
+            "opt_in_credit": True
+        }
+        
+        # Create the contribution first
+        create_success, create_data, create_status = await self.make_request("POST", "/chat/contribution", contribution_data, mock_headers)
+        
+        if create_success and isinstance(create_data, dict) and "contribution_id" in create_data:
+            contribution_id = create_data["contribution_id"]
+            
+            # Now test the review endpoint
+            success, data, status = await self.make_request("PUT", f"/admin/contributions/{contribution_id}?status=approved&review_notes=Test approval", headers=mock_headers)
+            
+            if success and isinstance(data, dict):
+                if "message" in data:
+                    self.log_test("Contribution Review (Approve)", True, f"Successfully approved contribution {contribution_id}")
+                else:
+                    self.log_test("Contribution Review (Approve)", False, "Missing message field", data)
+            else:
+                self.log_test("Contribution Review (Approve)", False, f"Status: {status}", data)
+        else:
+            self.log_test("Contribution Review (Approve)", False, "Failed to create test contribution for review", create_data)
+        
+        # Test contribution review with non-existent ID
+        success, data, status = await self.make_request("PUT", "/admin/contributions/nonexistent_id?status=rejected", headers=mock_headers)
+        
+        if not success and status == 404:
+            self.log_test("Review Non-existent Contribution", True, "Correctly returned 404 for non-existent contribution")
+        else:
+            self.log_test("Review Non-existent Contribution", False, f"Expected 404, got {status}", data)
+
     async def test_error_handling(self):
         """Test error handling for various scenarios"""
         print("\n=== Testing Error Handling ===")
