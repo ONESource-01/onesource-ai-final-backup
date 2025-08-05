@@ -151,7 +151,7 @@ const LandingPage = () => {
               <span className="block" style={{ color: '#4b6b8b' }}>Compliance Partner</span>
             </h1>
             <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: '#4b6b8b' }}>
-              Interpret design codes, apply regulations, and verify compliance across every stage of construction – from planning to delivery.
+              Interpret design codes, apply regulations, and verify compliance with clause aware logic across every stage of construction – from planning to delivery.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
