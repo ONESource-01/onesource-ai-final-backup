@@ -42,6 +42,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleGrantDeveloperAccess = async () => {
+    try {
+      setGrantingAccess(true);
+      const response = await apiEndpoints.grantDeveloperAccess();
+      setDeveloperStatus({
+        has_developer_access: true,
+        access_type: 'developer',
+        granted_at: new Date().toISOString()
+      });
+      alert(response.data.message);
+    } catch (error) {
+      console.error('Error granting developer access:', error);
+      alert('Error granting developer access. Please try again.');
+    } finally {
+      setGrantingAccess(false);
+    }
+  };
+
   const handleReviewContribution = async (contributionId, status, reviewNotes = '') => {
     try {
       await apiEndpoints.reviewContribution(contributionId, status, reviewNotes);
