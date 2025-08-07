@@ -113,6 +113,9 @@ const LandingPage = () => {
             <nav className="flex items-center space-x-6">
               <a href="#features" className="hover:opacity-75 transition-opacity" style={{ color: '#4b6b8b' }}>Features</a>
               <a href="/pricing" className="hover:opacity-75 transition-opacity" style={{ color: '#4b6b8b' }}>Pricing</a>
+              {user && (
+                <a href="/knowledge" className="hover:opacity-75 transition-opacity" style={{ color: '#4b6b8b' }}>Knowledge Vault</a>
+              )}
               {user ? (
                 <div className="flex items-center space-x-4">
                   <Badge variant="outline" style={{ borderColor: '#95a6b7', color: '#4b6b8b' }}>{user.email}</Badge>
