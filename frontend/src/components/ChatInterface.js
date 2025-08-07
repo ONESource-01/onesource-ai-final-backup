@@ -175,7 +175,8 @@ const ChatInterface = () => {
       id: Date.now(),
       type: 'user',
       content: inputMessage,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      enhanced: useKnowledgeEnhanced
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -183,10 +184,15 @@ const ChatInterface = () => {
     setLoading(true);
 
     try {
-      const response = await apiEndpoints.askQuestion({
-        question: inputMessage,
-        session_id: sessionId
-      });
+      const response = useKnowledgeEnhanced 
+        ? await apiEndpoints.askEnhancedQuestion({
+            question: inputMessage,
+            session_id: sessionId
+          })
+        : await apiEndpoints.askQuestion({
+            question: inputMessage,
+            session_id: sessionId
+          });
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -194,7 +200,11 @@ const ChatInterface = () => {
         content: response.data.response,
         sessionId: response.data.session_id,
         tokensUsed: response.data.tokens_used,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        enhanced: useKnowledgeEnhanced,
+        knowledgeEnhanced: response.data.knowledge_enhanced || false,
+        supplierContentUsed: response.data.supplier_content_used || false,
+        knowledgeSources: response.data.knowledge_sources || 0
       };
 
       setMessages(prev => [...prev, aiMessage]);
