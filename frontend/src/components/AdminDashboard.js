@@ -263,6 +263,204 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
+          {/* Voucher System Tab */}
+          <TabsContent value="vouchers">
+            <div className="space-y-6">
+              {/* Current User Voucher Status */}
+              <Card style={{ borderColor: '#c9d6e4' }}>
+                <CardHeader>
+                  <CardTitle style={{ color: '#0f2f57' }}>
+                    Your Voucher Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {voucherStatus?.has_active_voucher ? (
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#f0fdf4', border: '2px solid #16a34a' }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <CheckCircle className="h-6 w-6 text-green-600" />
+                        <div>
+                          <h3 className="font-semibold text-green-800">Active Voucher</h3>
+                          <p className="text-sm text-green-600">
+                            Code: {voucherStatus.voucher_code} | Plan: {voucherStatus.plan_type}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-sm text-green-700">
+                        <p><strong>Expires:</strong> {new Date(voucherStatus.expires_at).toLocaleDateString()}</p>
+                        <p><strong>Days Remaining:</strong> {voucherStatus.days_remaining}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#f8fafc', border: '2px solid #c9d6e4' }}>
+                      <p style={{ color: '#4b6b8b' }}>No active voucher</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Create New Voucher */}
+              <Card style={{ borderColor: '#c9d6e4' }}>
+                <CardHeader>
+                  <CardTitle style={{ color: '#0f2f57' }}>
+                    Create New Voucher
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
+                        Voucher Code
+                      </label>
+                      <input
+                        type="text"
+                        value={newVoucher.voucher_code}
+                        onChange={(e) => setNewVoucher({...newVoucher, voucher_code: e.target.value})}
+                        placeholder="SUMMER2024"
+                        className="w-full p-2 border rounded-md"
+                        style={{ borderColor: '#c9d6e4' }}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
+                        Plan Type
+                      </label>
+                      <select
+                        value={newVoucher.plan_type}
+                        onChange={(e) => setNewVoucher({...newVoucher, plan_type: e.target.value})}
+                        className="w-full p-2 border rounded-md"
+                        style={{ borderColor: '#c9d6e4' }}
+                      >
+                        <option value="pro">Pro Plan</option>
+                        <option value="consultant">Consultant Plan</option>
+                        <option value="day_pass">Day Pass</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
+                        Duration (Days)
+                      </label>
+                      <input
+                        type="number"
+                        value={newVoucher.duration_days}
+                        onChange={(e) => setNewVoucher({...newVoucher, duration_days: parseInt(e.target.value)})}
+                        min="1"
+                        max="365"
+                        className="w-full p-2 border rounded-md"
+                        style={{ borderColor: '#c9d6e4' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
+                        Max Uses
+                      </label>
+                      <input
+                        type="number"
+                        value={newVoucher.max_uses}
+                        onChange={(e) => setNewVoucher({...newVoucher, max_uses: parseInt(e.target.value)})}
+                        min="1"
+                        max="1000"
+                        className="w-full p-2 border rounded-md"
+                        style={{ borderColor: '#c9d6e4' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
+                      Description (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newVoucher.description}
+                      onChange={(e) => setNewVoucher({...newVoucher, description: e.target.value})}
+                      placeholder="Summer promotion voucher"
+                      className="w-full p-2 border rounded-md"
+                      style={{ borderColor: '#c9d6e4' }}
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleCreateVoucher}
+                    disabled={creatingVoucher || !newVoucher.voucher_code}
+                    style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
+                  >
+                    {creatingVoucher ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        Creating...
+                      </>
+                    ) : (
+                      'Create Voucher'
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Existing Vouchers List */}
+              <Card style={{ borderColor: '#c9d6e4' }}>
+                <CardHeader>
+                  <CardTitle style={{ color: '#0f2f57' }}>
+                    Existing Vouchers ({vouchers.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {vouchers.length > 0 ? (
+                    <div className="space-y-4">
+                      {vouchers.map((voucher) => (
+                        <div key={voucher.voucher_id} className="p-4 rounded-lg border" style={{ borderColor: '#c9d6e4' }}>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" style={{ color: '#0f2f57' }}>
+                                {voucher.voucher_code}
+                              </Badge>
+                              <Badge variant="secondary">
+                                {voucher.plan_type}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm" style={{ color: '#4b6b8b' }}>
+                              <span>{voucher.current_uses}/{voucher.max_uses} used</span>
+                              <Badge variant={voucher.status === 'active' ? 'default' : 'secondary'}>
+                                {voucher.status}
+                              </Badge>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm" style={{ color: '#4b6b8b' }}>
+                            <div>
+                              <strong>Duration:</strong> {voucher.duration_days} days
+                            </div>
+                            <div>
+                              <strong>Redemptions:</strong> {voucher.redemption_count}
+                            </div>
+                            <div>
+                              <strong>Created:</strong> {new Date(voucher.created_at).toLocaleDateString()}
+                            </div>
+                            <div>
+                              <strong>Max Uses:</strong> {voucher.max_uses}
+                            </div>
+                          </div>
+                          
+                          {voucher.description && (
+                            <p className="mt-2 text-sm" style={{ color: '#4b6b8b' }}>
+                              <strong>Description:</strong> {voucher.description}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p style={{ color: '#4b6b8b' }}>No vouchers created yet</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Feedback Tab */}
           <TabsContent value="feedback">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
