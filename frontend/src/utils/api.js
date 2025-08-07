@@ -55,6 +55,17 @@ export const apiEndpoints = {
   redeemVoucher: (data) => api.post('/voucher/redeem', data),
   listVouchers: () => api.get('/admin/vouchers'),
   getUserVoucherStatus: () => api.get('/user/voucher-status'),
+
+  // Knowledge Vault System
+  uploadDocument: (formData) => api.post('/knowledge/upload-document', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
+  createMentorNote: (data) => api.post('/knowledge/mentor-note', data),
+  searchKnowledgeBase: (query, limit = 10, includeMentorNotes = true) => 
+    api.get('/knowledge/search', { params: { query, limit, include_mentor_notes: includeMentorNotes } }),
+  askEnhancedQuestion: (data) => api.post('/chat/ask-enhanced', data),
 };
 
 export default api;
