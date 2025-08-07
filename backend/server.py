@@ -428,10 +428,7 @@ async def extract_text_from_file(file_content: bytes, content_type: str, filenam
             try:
                 base64_content = base64.b64encode(file_content).decode('utf-8')
                 
-                # Set OpenAI API key
-                openai.api_key = os.environ.get('OPENAI_API_KEY')
-                
-                response = await openai.ChatCompletion.acreate(
+                response = await openai_client.chat.completions.create(
                     model="gpt-4-vision-preview",
                     messages=[
                         {
