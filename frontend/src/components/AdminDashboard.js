@@ -36,15 +36,19 @@ const AdminDashboard = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [feedbackResponse, contributionsResponse, developerResponse] = await Promise.all([
+      const [feedbackResponse, contributionsResponse, developerResponse, vouchersResponse, voucherStatusResponse] = await Promise.all([
         apiEndpoints.getAdminFeedback(),
         apiEndpoints.getAdminContributions('all'),
-        apiEndpoints.checkDeveloperStatus()
+        apiEndpoints.checkDeveloperStatus(),
+        apiEndpoints.listVouchers(),
+        apiEndpoints.getUserVoucherStatus()
       ]);
       
       setFeedback(feedbackResponse.data.feedback);
       setContributions(contributionsResponse.data.contributions);
       setDeveloperStatus(developerResponse.data);
+      setVouchers(vouchersResponse.data.vouchers);
+      setVoucherStatus(voucherStatusResponse.data);
     } catch (error) {
       console.error('Error loading admin data:', error);
     } finally {
