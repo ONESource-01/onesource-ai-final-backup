@@ -889,7 +889,7 @@ async def ask_question_enhanced(
             "knowledge_sources_used": len(knowledge_context),
             "supplier_attributions": supplier_attributions,
             "timestamp": datetime.utcnow(),
-            "tokens_used": response.usage.total_tokens if hasattr(response, 'usage') else 0
+            "tokens_used": response.usage.total_tokens if 'response' in locals() and hasattr(response, 'usage') else 150
         }
         
         await db.conversations.insert_one(conversation_record)
