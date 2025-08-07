@@ -70,6 +70,7 @@ const AppContent = () => {
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/knowledge" element={<KnowledgeVault />} />
       
       {/* Protected Routes */}
       <Route 
