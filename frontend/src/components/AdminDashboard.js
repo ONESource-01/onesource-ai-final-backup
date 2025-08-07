@@ -15,6 +15,16 @@ const AdminDashboard = () => {
   const [reviewingContribution, setReviewingContribution] = useState(null);
   const [developerStatus, setDeveloperStatus] = useState(null);
   const [grantingAccess, setGrantingAccess] = useState(false);
+  const [vouchers, setVouchers] = useState([]);
+  const [voucherStatus, setVoucherStatus] = useState(null);
+  const [creatingVoucher, setCreatingVoucher] = useState(false);
+  const [newVoucher, setNewVoucher] = useState({
+    voucher_code: '',
+    plan_type: 'pro',
+    duration_days: 30,
+    max_uses: 1,
+    description: ''
+  });
 
   useEffect(() => {
     if (idToken) {
