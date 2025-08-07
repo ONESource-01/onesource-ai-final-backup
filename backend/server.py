@@ -792,9 +792,7 @@ async def ask_question_enhanced(
         """
         
         # Get AI response with enhanced context
-        openai.api_key = os.environ.get('OPENAI_API_KEY')
-        
-        response = await openai.ChatCompletion.acreate(
+        response = await openai_client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": system_prompt},
