@@ -852,6 +852,8 @@ async def main():
         await tester.test_knowledge_contribution_system()
         await tester.test_chat_history_system()
         await tester.test_admin_endpoints()
+        await tester.test_developer_access_system()
+        await tester.test_voucher_system()
         await tester.test_payment_system()
         await tester.test_webhook_endpoint()
         await tester.test_error_handling()
