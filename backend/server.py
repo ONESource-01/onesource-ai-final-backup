@@ -476,9 +476,6 @@ async def generate_embeddings(text: str) -> List[float]:
 async def parse_document_metadata(text_content: str, filename: str, is_supplier: bool = False) -> Dict[str, Any]:
     """AI-powered extraction of document metadata and tags"""
     try:
-        # Set OpenAI API key
-        openai.api_key = os.environ.get('OPENAI_API_KEY')
-        
         system_prompt = f"""
         Analyze this construction document and extract key metadata:
         
@@ -494,7 +491,7 @@ async def parse_document_metadata(text_content: str, filename: str, is_supplier:
         Return JSON format with: tags, document_type, topics, supplier_mentions, categories, summary
         """
         
-        response = await openai.ChatCompletion.acreate(
+        response = await openai_client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": system_prompt},
