@@ -56,6 +56,33 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleCreateVoucher = async () => {
+    try {
+      setCreatingVoucher(true);
+      await apiEndpoints.createVoucher(newVoucher);
+      
+      // Reset form
+      setNewVoucher({
+        voucher_code: '',
+        plan_type: 'pro',
+        duration_days: 30,
+        max_uses: 1,
+        description: ''
+      });
+      
+      // Reload vouchers
+      const vouchersResponse = await apiEndpoints.listVouchers();
+      setVouchers(vouchersResponse.data.vouchers);
+      
+      alert('Voucher created successfully!');
+    } catch (error) {
+      console.error('Error creating voucher:', error);
+      alert('Error creating voucher. Please try again.');
+    } finally {
+      setCreatingVoucher(false);
+    }
+  };
+
   const handleGrantDeveloperAccess = async () => {
     try {
       setGrantingAccess(true);
