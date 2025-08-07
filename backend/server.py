@@ -595,8 +595,13 @@ async def intelligent_knowledge_search(query: str, limit: int = 10) -> List[Dict
                 boost = 1.2 if doc.get('is_supplier_content', False) else 1.0
                 final_score = similarity * boost
                 
+                # Clean up MongoDB ObjectId for JSON serialization
+                doc_clean = dict(doc)
+                if '_id' in doc_clean:
+                    doc_clean['_id'] = str(doc_clean['_id'])
+                
                 scored_docs.append({
-                    'document': doc,
+                    'document': doc_clean,
                     'similarity_score': final_score,
                     'is_supplier': doc.get('is_supplier_content', False)
                 })
