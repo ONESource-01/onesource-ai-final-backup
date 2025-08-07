@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, Request
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
 from fastapi.security import HTTPBearer
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -10,6 +10,13 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
+import openai
+import io
+import base64
+import mimetypes
+import hashlib
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 # Import our services
 from firebase_service import firebase_service
