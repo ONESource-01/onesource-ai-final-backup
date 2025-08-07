@@ -504,6 +504,51 @@ const ChatInterface = () => {
           </div>
         </div>
         
+        {/* Knowledge Vault Section */}
+        <div className="p-4 border-t" style={{ borderColor: '#c9d6e4' }}>
+          <h3 className="font-semibold text-sm mb-3" style={{ color: '#4b6b8b' }}>Knowledge Vault</h3>
+          
+          {/* Knowledge Enhanced Toggle */}
+          <div className="flex items-center justify-between mb-3 p-2 rounded-lg" style={{ backgroundColor: useKnowledgeEnhanced ? '#f0fdf4' : '#f8fafc', border: '1px solid #c9d6e4' }}>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="knowledge-enhanced"
+                checked={useKnowledgeEnhanced}
+                onChange={(e) => setUseKnowledgeEnhanced(e.target.checked)}
+                className="rounded"
+              />
+              <label htmlFor="knowledge-enhanced" className="text-sm font-medium cursor-pointer" style={{ color: '#0f2f57' }}>
+                Knowledge Enhanced
+              </label>
+            </div>
+            {useKnowledgeEnhanced && (
+              <Badge variant="default" className="text-xs bg-green-600">
+                ON
+              </Badge>
+            )}
+          </div>
+          
+          <p className="text-xs mb-3" style={{ color: '#95a6b7' }}>
+            {useKnowledgeEnhanced 
+              ? "Using your uploaded documents and mentor notes for enhanced responses" 
+              : "Standard AI responses only"
+            }
+          </p>
+          
+          {/* Knowledge Vault Link */}
+          <Button
+            onClick={() => window.open('/knowledge', '_blank')}
+            variant="outline"
+            size="sm"
+            className="w-full justify-start"
+            style={{ borderColor: '#c9d6e4' }}
+          >
+            <Search className="h-4 w-4 mr-2" />
+            Manage Knowledge Vault
+          </Button>
+        </div>
+        
         {/* User Info */}
         <div className="p-4 border-t" style={{ borderColor: '#c9d6e4' }}>
           {user && (
