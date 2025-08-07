@@ -463,6 +463,9 @@ async def extract_text_from_file(file_content: bytes, content_type: str, filenam
 async def generate_embeddings(text: str) -> List[float]:
     """Generate vector embeddings for text using OpenAI"""
     try:
+        # Set OpenAI API key
+        openai.api_key = os.environ.get('OPENAI_API_KEY')
+        
         response = await openai.Embedding.acreate(
             model="text-embedding-ada-002",
             input=text[:8000]  # Limit to token constraints
@@ -475,6 +478,9 @@ async def generate_embeddings(text: str) -> List[float]:
 async def parse_document_metadata(text_content: str, filename: str, is_supplier: bool = False) -> Dict[str, Any]:
     """AI-powered extraction of document metadata and tags"""
     try:
+        # Set OpenAI API key
+        openai.api_key = os.environ.get('OPENAI_API_KEY')
+        
         system_prompt = f"""
         Analyze this construction document and extract key metadata:
         
