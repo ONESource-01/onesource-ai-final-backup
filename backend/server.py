@@ -1033,8 +1033,194 @@ async def check_developer_status(
             "granted_at": developer_record.get("granted_at") if developer_record else None
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error checking developer status: {str(e)}")
+
+# Voucher System Routes
+@api_router.post("/admin/create-voucher")
+async def create_voucher(
+    voucher_data: VoucherCreate,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Create a new voucher code (admin/developer only)"""
+    try:
+        uid = current_user["uid"]
+        
+        # Check if voucher already exists
+        existing_voucher = await db.vouchers.find_one({"voucher_code": voucher_data.voucher_code})
+        if existing_voucher:
+            raise HTTPException(status_code=400, detail="Voucher code already exists")
+        
+        # Create voucher record
+        voucher_record = {
+            "voucher_id": str(uuid.uuid4()),
+            "voucher_code": voucher_data.voucher_code.upper(),
+            "plan_type": voucher_data.plan_type,
+            "duration_days": voucher_data.duration_days,
+            "max_uses": voucher_data.max_uses,
+            "current_uses": 0,
+            "description": voucher_data.description,
+            "created_by": uid,
+            "created_at": datetime.utcnow(),
+            "status": "active",
+            "expires_at": None  # Vouchers don't expire, only their usage does
+        }
+        
+        await db.vouchers.insert_one(voucher_record)
+        
+        return {
+            "message": "Voucher created successfully",
+            "voucher_code": voucher_record["voucher_code"],
+            "plan_type": voucher_data.plan_type,
+            "duration_days": voucher_data.duration_days,
+            "max_uses": voucher_data.max_uses
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating voucher: {str(e)}")
+
+@api_router.post("/voucher/redeem")
+async def redeem_voucher(
+    voucher_request: VoucherRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Redeem a voucher code"""
+    try:
+        uid = current_user["uid"]
+        voucher_code = voucher_request.voucher_code.upper()
+        
+        # Find voucher
+        voucher = await db.vouchers.find_one({
+            "voucher_code": voucher_code,
+            "status": "active"
+        })
+        
+        if not voucher:
+            raise HTTPException(status_code=404, detail="Invalid or expired voucher code")
+        
+        # Check if voucher has remaining uses
+        if voucher["current_uses"] >= voucher["max_uses"]:
+            raise HTTPException(status_code=400, detail="Voucher has no remaining uses")
+        
+        # Check if user already redeemed this voucher
+        existing_redemption = await db.voucher_redemptions.find_one({
+            "voucher_code": voucher_code,
+            "user_id": uid
+        })
+        
+        if existing_redemption:
+            raise HTTPException(status_code=400, detail="You have already redeemed this voucher")
+        
+        # Calculate expiration date
+        from datetime import timedelta
+        expires_at = datetime.utcnow() + timedelta(days=voucher["duration_days"])
+        
+        # Create subscription data
+        subscription_data = {
+            "subscription_tier": voucher["plan_type"],
+            "subscription_active": True,
+            "subscription_type": "voucher",
+            "subscription_started_at": datetime.utcnow(),
+            "subscription_expires": expires_at,
+            "voucher_code": voucher_code,
+            "voucher_duration": voucher["duration_days"]
+        }
+        
+        # Update user subscription
+        await firebase_service.update_subscription_status(uid, subscription_data)
+        
+        # Record voucher redemption
+        redemption_record = {
+            "redemption_id": str(uuid.uuid4()),
+            "voucher_code": voucher_code,
+            "voucher_id": voucher["voucher_id"],
+            "user_id": uid,
+            "user_email": current_user.get("email"),
+            "redeemed_at": datetime.utcnow(),
+            "expires_at": expires_at,
+            "plan_type": voucher["plan_type"],
+            "duration_days": voucher["duration_days"]
+        }
+        
+        await db.voucher_redemptions.insert_one(redemption_record)
+        
+        # Increment voucher usage count
+        await db.vouchers.update_one(
+            {"voucher_id": voucher["voucher_id"]},
+            {"$inc": {"current_uses": 1}}
+        )
+        
+        return {
+            "message": f"Voucher redeemed successfully! You now have {voucher['plan_type']} access for {voucher['duration_days']} days.",
+            "plan_type": voucher["plan_type"],
+            "expires_at": expires_at.isoformat(),
+            "duration_days": voucher["duration_days"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error redeeming voucher: {str(e)}")
+
+@api_router.get("/admin/vouchers")
+async def list_vouchers(
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """List all vouchers (admin/developer only)"""
+    try:
+        cursor = db.vouchers.find({}, sort=[("created_at", -1)])
+        vouchers = await cursor.to_list(length=100)
+        
+        # Clean up MongoDB ObjectId and add redemption info
+        for voucher in vouchers:
+            voucher["_id"] = str(voucher["_id"])
+            
+            # Get redemption count
+            redemption_count = await db.voucher_redemptions.count_documents({
+                "voucher_code": voucher["voucher_code"]
+            })
+            voucher["redemption_count"] = redemption_count
+        
+        return {"vouchers": vouchers}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing vouchers: {str(e)}")
+
+@api_router.get("/user/voucher-status")  
+async def get_voucher_status(
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Get user's current voucher status"""
+    try:
+        uid = current_user["uid"]
+        
+        # Get active voucher redemption
+        active_redemption = await db.voucher_redemptions.find_one({
+            "user_id": uid,
+            "expires_at": {"$gte": datetime.utcnow()}
+        }, sort=[("redeemed_at", -1)])
+        
+        if not active_redemption:
+            return {
+                "has_active_voucher": False,
+                "voucher_status": "none"
+            }
+        
+        return {
+            "has_active_voucher": True,
+            "voucher_code": active_redemption["voucher_code"],
+            "plan_type": active_redemption["plan_type"],
+            "expires_at": active_redemption["expires_at"].isoformat(),
+            "days_remaining": (active_redemption["expires_at"] - datetime.utcnow()).days,
+            "redeemed_at": active_redemption["redeemed_at"].isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error checking voucher status: {str(e)}")
 
 @api_router.get("/admin/contributions")
 async def get_contributions_for_review(
