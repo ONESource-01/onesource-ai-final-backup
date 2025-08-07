@@ -775,9 +775,14 @@ async def search_knowledge_base(
                         similarity = cosine_similarity(query_emb, note_embedding)[0][0]
                         
                         if similarity > 0.5:  # Threshold for relevance
+                            # Clean up MongoDB ObjectId for JSON serialization
+                            note_clean = dict(note)
+                            if '_id' in note_clean:
+                                note_clean['_id'] = str(note_clean['_id'])
+                            
                             mentor_results.append({
                                 'type': 'mentor_note',
-                                'note': note,
+                                'note': note_clean,
                                 'similarity_score': similarity
                             })
         
