@@ -673,7 +673,7 @@ async def search_knowledge_base(
 # Enhanced Chat with Knowledge Integration
 @api_router.post("/chat/ask-enhanced")
 async def ask_question_enhanced(
-    question_data: QuestionRequest,
+    question_data: ChatQuestion,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     """Enhanced chat that searches knowledge base first, then uses AI"""
