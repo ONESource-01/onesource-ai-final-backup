@@ -602,6 +602,186 @@ class BackendTester:
         else:
             self.log_test("Review Non-existent Contribution", False, f"Expected 404, got {status}", data)
 
+    async def test_developer_access_system(self):
+        """Test developer access system endpoints"""
+        print("\n=== Testing Developer Access System ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test developer access grant without auth (should fail)
+        success, data, status = await self.make_request("POST", "/admin/developer-access")
+        
+        if not success and status == 401:
+            self.log_test("Developer access grant without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Developer access grant without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test developer access grant with auth
+        success, data, status = await self.make_request("POST", "/admin/developer-access", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "message" in data and "access_type" in data and "features_unlocked" in data:
+                self.log_test("Developer Access Grant", True, f"Access type: {data['access_type']}, Features: {len(data['features_unlocked'])}")
+            else:
+                self.log_test("Developer Access Grant", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Developer Access Grant", False, f"Status: {status}", data)
+        
+        # Test developer status check without auth (should fail)
+        success, data, status = await self.make_request("GET", "/admin/check-developer-status")
+        
+        if not success and status == 401:
+            self.log_test("Developer status check without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Developer status check without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test developer status check with auth
+        success, data, status = await self.make_request("GET", "/admin/check-developer-status", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "has_developer_access" in data:
+                has_access = data["has_developer_access"]
+                self.log_test("Developer Status Check", True, f"Has developer access: {has_access}")
+                
+                if has_access and "access_type" in data:
+                    self.log_test("Developer Access Details", True, f"Access type: {data.get('access_type', 'N/A')}")
+            else:
+                self.log_test("Developer Status Check", False, "Missing has_developer_access field", data)
+        else:
+            self.log_test("Developer Status Check", False, f"Status: {status}", data)
+
+    async def test_voucher_system(self):
+        """Test voucher system endpoints"""
+        print("\n=== Testing Voucher System ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test voucher creation without auth (should fail)
+        voucher_data = {
+            "voucher_code": "TEST2024",
+            "plan_type": "pro",
+            "duration_days": 30,
+            "max_uses": 5,
+            "description": "Test voucher for pro plan"
+        }
+        
+        success, data, status = await self.make_request("POST", "/admin/create-voucher", voucher_data)
+        
+        if not success and status == 401:
+            self.log_test("Voucher creation without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Voucher creation without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test voucher creation with auth
+        success, data, status = await self.make_request("POST", "/admin/create-voucher", voucher_data, mock_headers)
+        
+        created_voucher_code = None
+        if success and isinstance(data, dict):
+            if "message" in data and "voucher_code" in data and "plan_type" in data:
+                created_voucher_code = data["voucher_code"]
+                self.log_test("Voucher Creation", True, f"Created voucher: {created_voucher_code} for {data['plan_type']} plan")
+            else:
+                self.log_test("Voucher Creation", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Voucher Creation", False, f"Status: {status}", data)
+        
+        # Test duplicate voucher creation (should fail)
+        if created_voucher_code:
+            success, data, status = await self.make_request("POST", "/admin/create-voucher", voucher_data, mock_headers)
+            
+            if not success and status == 400:
+                self.log_test("Duplicate Voucher Creation (should fail)", True, "Correctly rejected duplicate voucher code")
+            else:
+                self.log_test("Duplicate Voucher Creation (should fail)", False, f"Expected 400, got {status}", data)
+        
+        # Test voucher listing without auth (should fail)
+        success, data, status = await self.make_request("GET", "/admin/vouchers")
+        
+        if not success and status == 401:
+            self.log_test("Voucher listing without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Voucher listing without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test voucher listing with auth
+        success, data, status = await self.make_request("GET", "/admin/vouchers", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "vouchers" in data and isinstance(data["vouchers"], list):
+                voucher_count = len(data["vouchers"])
+                self.log_test("Voucher Listing", True, f"Retrieved {voucher_count} vouchers")
+                
+                # Check if our created voucher is in the list
+                if created_voucher_code and voucher_count > 0:
+                    found_voucher = any(v.get("voucher_code") == created_voucher_code for v in data["vouchers"])
+                    if found_voucher:
+                        self.log_test("Created Voucher in List", True, f"Found created voucher {created_voucher_code} in list")
+            else:
+                self.log_test("Voucher Listing", False, "Invalid vouchers format", data)
+        else:
+            self.log_test("Voucher Listing", False, f"Status: {status}", data)
+        
+        # Test voucher redemption without auth (should fail)
+        redeem_data = {"voucher_code": "TEST2024"}
+        success, data, status = await self.make_request("POST", "/voucher/redeem", redeem_data)
+        
+        if not success and status == 401:
+            self.log_test("Voucher redemption without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Voucher redemption without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test voucher redemption with auth (valid voucher)
+        if created_voucher_code:
+            redeem_data = {"voucher_code": created_voucher_code}
+            success, data, status = await self.make_request("POST", "/voucher/redeem", redeem_data, mock_headers)
+            
+            if success and isinstance(data, dict):
+                if "message" in data and "plan_type" in data and "expires_at" in data:
+                    self.log_test("Voucher Redemption (Valid)", True, f"Redeemed {data['plan_type']} plan, expires: {data['expires_at'][:10]}")
+                else:
+                    self.log_test("Voucher Redemption (Valid)", False, "Missing required fields in response", data)
+            else:
+                self.log_test("Voucher Redemption (Valid)", False, f"Status: {status}", data)
+            
+            # Test duplicate redemption (should fail)
+            success, data, status = await self.make_request("POST", "/voucher/redeem", redeem_data, mock_headers)
+            
+            if not success and status == 400:
+                self.log_test("Duplicate Voucher Redemption (should fail)", True, "Correctly rejected duplicate redemption")
+            else:
+                self.log_test("Duplicate Voucher Redemption (should fail)", False, f"Expected 400, got {status}", data)
+        
+        # Test invalid voucher redemption
+        invalid_redeem_data = {"voucher_code": "INVALID_CODE"}
+        success, data, status = await self.make_request("POST", "/voucher/redeem", invalid_redeem_data, mock_headers)
+        
+        if not success and status == 404:
+            self.log_test("Invalid Voucher Redemption (should fail)", True, "Correctly rejected invalid voucher code")
+        else:
+            self.log_test("Invalid Voucher Redemption (should fail)", False, f"Expected 404, got {status}", data)
+        
+        # Test user voucher status without auth (should fail)
+        success, data, status = await self.make_request("GET", "/user/voucher-status")
+        
+        if not success and status == 401:
+            self.log_test("User voucher status without auth (should fail)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("User voucher status without auth (should fail)", False, f"Expected 401, got {status}", data)
+        
+        # Test user voucher status with auth
+        success, data, status = await self.make_request("GET", "/user/voucher-status", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "has_active_voucher" in data:
+                has_voucher = data["has_active_voucher"]
+                self.log_test("User Voucher Status Check", True, f"Has active voucher: {has_voucher}")
+                
+                if has_voucher and "voucher_code" in data and "plan_type" in data:
+                    self.log_test("Active Voucher Details", True, f"Code: {data['voucher_code']}, Plan: {data['plan_type']}")
+            else:
+                self.log_test("User Voucher Status Check", False, "Missing has_active_voucher field", data)
+        else:
+            self.log_test("User Voucher Status Check", False, f"Status: {status}", data)
+
     async def test_error_handling(self):
         """Test error handling for various scenarios"""
         print("\n=== Testing Error Handling ===")
