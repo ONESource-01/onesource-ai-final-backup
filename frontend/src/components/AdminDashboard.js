@@ -158,9 +158,12 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="developer" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3" style={{ backgroundColor: '#c9d6e4' }}>
+          <TabsList className="grid w-full grid-cols-4" style={{ backgroundColor: '#c9d6e4' }}>
             <TabsTrigger value="developer" style={{ color: '#4b6b8b' }}>
               Developer Access
+            </TabsTrigger>
+            <TabsTrigger value="vouchers" style={{ color: '#4b6b8b' }}>
+              Voucher System
             </TabsTrigger>
             <TabsTrigger value="feedback" style={{ color: '#4b6b8b' }}>
               User Feedback ({feedback.length})
