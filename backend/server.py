@@ -109,9 +109,15 @@ class PaymentRequest(BaseModel):
     package_id: str
     origin_url: str
 
-class QuestionRequest(BaseModel):
-    question: str
-    session_id: Optional[str] = None
+class VoucherRequest(BaseModel):
+    voucher_code: str
+
+class VoucherCreate(BaseModel):
+    voucher_code: str
+    plan_type: str  # 'pro', 'consultant', 'day_pass'
+    duration_days: int = 30
+    max_uses: int = 1
+    description: Optional[str] = None
 
 # Authentication dependency
 async def get_current_user(request: Request, credentials = Depends(security)) -> Dict[str, Any]:
