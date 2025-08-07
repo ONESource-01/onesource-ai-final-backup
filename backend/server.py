@@ -356,43 +356,109 @@ async def ask_question(
 
 # Document Processing and AI Functions
 async def extract_text_from_file(file_content: bytes, content_type: str, filename: str) -> str:
-    """Extract text content from uploaded files using AI"""
+    """Extract text content from uploaded files using AI and specialized libraries"""
     try:
-        # Convert file to base64 for AI processing
-        if content_type.startswith('image/'):
-            # For images, use OpenAI Vision API
-            base64_content = base64.b64encode(file_content).decode('utf-8')
-            
-            response = await openai.ChatCompletion.acreate(
-                model="gpt-4-vision-preview",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": "Extract all text content from this construction document. Include technical specifications, dimensions, standards references, and any supplier information."},
-                            {"type": "image_url", "image_url": {"url": f"data:{content_type};base64,{base64_content}"}}
-                        ]
-                    }
-                ],
-                max_tokens=2000
-            )
-            return response.choices[0].message.content
-            
-        elif content_type == 'application/pdf':
-            # For PDFs, we'll implement PDF text extraction
-            # For now, return placeholder - would integrate PyPDF2 or similar
-            return f"PDF content extraction for {filename} - Implementation pending"
-            
+        # For PDFs, use PyPDF2 for better text extraction
+        if content_type == 'application/pdf':
+            try:
+                import PyPDF2
+                import io
+                
+                pdf_file = io.BytesIO(file_content)
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                
+                text_content = []
+                for page_num, page in enumerate(pdf_reader.pages):
+                    page_text = page.extract_text()
+                    if page_text.strip():
+                        text_content.append(f"Page {page_num + 1}:\n{page_text}")
+                
+                extracted_text = "\n\n".join(text_content)
+                
+                # If no text was extracted or very little, use AI vision as fallback
+                if len(extracted_text.strip()) < 50:
+                    return f"PDF text extraction yielded minimal content from {filename}. Consider using OCR for scanned documents."
+                
+                return extracted_text
+                
+            except Exception as pdf_error:
+                return f"Error extracting PDF content from {filename}: {str(pdf_error)}"
+        
+        # For Word documents, use python-docx
         elif content_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
-            # Word document processing
-            return f"Word document content from {filename} - Implementation pending"
-            
+            try:
+                from docx import Document
+                import io
+                
+                doc_file = io.BytesIO(file_content)
+                doc = Document(doc_file)
+                
+                # Extract text from paragraphs
+                text_content = []
+                for paragraph in doc.paragraphs:
+                    if paragraph.text.strip():
+                        text_content.append(paragraph.text)
+                
+                # Extract text from tables
+                for table in doc.tables:
+                    for row in table.rows:
+                        row_text = []
+                        for cell in row.cells:
+                            if cell.text.strip():
+                                row_text.append(cell.text.strip())
+                        if row_text:
+                            text_content.append(" | ".join(row_text))
+                
+                extracted_text = "\n".join(text_content)
+                
+                if len(extracted_text.strip()) < 10:
+                    return f"Word document content extraction yielded no readable text from {filename}"
+                
+                return extracted_text
+                
+            except Exception as word_error:
+                return f"Error extracting Word document content from {filename}: {str(word_error)}"
+        
+        # For images, use OpenAI Vision API
+        elif content_type.startswith('image/'):
+            try:
+                base64_content = base64.b64encode(file_content).decode('utf-8')
+                
+                # Set OpenAI API key
+                openai.api_key = os.environ.get('OPENAI_API_KEY')
+                
+                response = await openai.ChatCompletion.acreate(
+                    model="gpt-4-vision-preview",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": "Extract all text content from this construction document image. Include technical specifications, dimensions, standards references, supplier information, and any visible text. If this appears to be a construction drawing or blueprint, describe the key elements and any text/labels visible."},
+                                {"type": "image_url", "image_url": {"url": f"data:{content_type};base64,{base64_content}"}}
+                            ]
+                        }
+                    ],
+                    max_tokens=2000
+                )
+                return response.choices[0].message.content
+                
+            except Exception as vision_error:
+                return f"Error extracting content from image {filename}: {str(vision_error)}"
+        
+        # For plain text files and other formats
         else:
-            # For plain text files
-            return file_content.decode('utf-8')
+            try:
+                # Try UTF-8 first
+                return file_content.decode('utf-8')
+            except UnicodeDecodeError:
+                try:
+                    # Fallback to latin-1
+                    return file_content.decode('latin-1')
+                except UnicodeDecodeError:
+                    return f"Unable to decode text content from {filename}. File may be in an unsupported encoding."
             
     except Exception as e:
-        return f"Error extracting content from {filename}: {str(e)}"
+        return f"Error processing file {filename}: {str(e)}"
 
 async def generate_embeddings(text: str) -> List[float]:
     """Generate vector embeddings for text using OpenAI"""
