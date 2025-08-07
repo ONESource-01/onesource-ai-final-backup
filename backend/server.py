@@ -11,6 +11,7 @@ from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
 import openai
+from openai import AsyncOpenAI
 import io
 import base64
 import mimetypes
