@@ -714,9 +714,35 @@ const ChatInterface = () => {
                       
                       <div className="flex-1 min-w-0">
                         {message.type === 'user' ? (
-                          <p style={{ color: '#0f2f57' }}>{message.content}</p>
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p style={{ color: '#0f2f57' }}>{message.content}</p>
+                              {message.enhanced && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Knowledge Enhanced
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
                         ) : (
                           <div>
+                            {message.knowledgeEnhanced && (
+                              <div className="mb-2 flex items-center gap-2">
+                                <Badge variant="default" className="text-xs bg-green-600">
+                                  Knowledge Enhanced
+                                </Badge>
+                                {message.knowledgeSources > 0 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {message.knowledgeSources} sources
+                                  </Badge>
+                                )}
+                                {message.supplierContentUsed && (
+                                  <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">
+                                    Supplier Content
+                                  </Badge>
+                                )}
+                              </div>
+                            )}
                             {renderAiResponse(message.content)}
                             <MessageActions messageId={message.id} content={message.content} />
                             {showContributionBox[message.id] && (
