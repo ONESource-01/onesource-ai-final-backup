@@ -13,6 +13,8 @@ const AdminDashboard = () => {
   const [contributions, setContributions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewingContribution, setReviewingContribution] = useState(null);
+  const [developerStatus, setDeveloperStatus] = useState(null);
+  const [grantingAccess, setGrantingAccess] = useState(false);
 
   useEffect(() => {
     if (idToken) {
