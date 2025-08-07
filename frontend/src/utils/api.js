@@ -49,6 +49,12 @@ export const apiEndpoints = {
   // Developer Access
   grantDeveloperAccess: () => api.post('/admin/developer-access'),
   checkDeveloperStatus: () => api.get('/admin/check-developer-status'),
+  
+  // Voucher System
+  createVoucher: (data) => api.post('/admin/create-voucher', data),
+  redeemVoucher: (data) => api.post('/voucher/redeem', data),
+  listVouchers: () => api.get('/admin/vouchers'),
+  getUserVoucherStatus: () => api.get('/user/voucher-status'),
 };
 
 export default api;
