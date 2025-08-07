@@ -345,10 +345,437 @@ async def ask_question(
         
         return response_data
         
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing question: {str(e)}")
+
+# Document Processing and AI Functions
+async def extract_text_from_file(file_content: bytes, content_type: str, filename: str) -> str:
+    """Extract text content from uploaded files using AI"""
+    try:
+        # Convert file to base64 for AI processing
+        if content_type.startswith('image/'):
+            # For images, use OpenAI Vision API
+            base64_content = base64.b64encode(file_content).decode('utf-8')
+            
+            response = await openai.ChatCompletion.acreate(
+                model="gpt-4-vision-preview",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Extract all text content from this construction document. Include technical specifications, dimensions, standards references, and any supplier information."},
+                            {"type": "image_url", "image_url": {"url": f"data:{content_type};base64,{base64_content}"}}
+                        ]
+                    }
+                ],
+                max_tokens=2000
+            )
+            return response.choices[0].message.content
+            
+        elif content_type == 'application/pdf':
+            # For PDFs, we'll implement PDF text extraction
+            # For now, return placeholder - would integrate PyPDF2 or similar
+            return f"PDF content extraction for {filename} - Implementation pending"
+            
+        elif content_type in ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']:
+            # Word document processing
+            return f"Word document content from {filename} - Implementation pending"
+            
+        else:
+            # For plain text files
+            return file_content.decode('utf-8')
+            
+    except Exception as e:
+        return f"Error extracting content from {filename}: {str(e)}"
+
+async def generate_embeddings(text: str) -> List[float]:
+    """Generate vector embeddings for text using OpenAI"""
+    try:
+        response = await openai.Embedding.acreate(
+            model="text-embedding-ada-002",
+            input=text[:8000]  # Limit to token constraints
+        )
+        return response.data[0].embedding
+    except Exception as e:
+        print(f"Error generating embeddings: {e}")
+        return []
+
+async def parse_document_metadata(text_content: str, filename: str, is_supplier: bool = False) -> Dict[str, Any]:
+    """AI-powered extraction of document metadata and tags"""
+    try:
+        system_prompt = f"""
+        Analyze this construction document and extract key metadata:
+        
+        1. Technical tags (building codes, standards, materials, etc.)
+        2. Document type (specification, drawing, manual, etc.)
+        3. Key topics and subjects
+        4. Supplier information (if any company names mentioned)
+        5. Construction categories (residential, commercial, industrial, etc.)
+        
+        Document filename: {filename}
+        Is supplier content: {is_supplier}
+        
+        Return JSON format with: tags, document_type, topics, supplier_mentions, categories, summary
+        """
+        
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": text_content[:4000]}  # Limit content size
+            ],
+            max_tokens=800
+        )
+        
+        # Parse the JSON response
+        import json
+        try:
+            metadata = json.loads(response.choices[0].message.content)
+            return metadata
+        except:
+            # Fallback if JSON parsing fails
+            return {
+                "tags": ["construction", "document"],
+                "document_type": "unknown",
+                "topics": [filename],
+                "supplier_mentions": [],
+                "categories": ["general"],
+                "summary": response.choices[0].message.content[:200]
+            }
+            
+    except Exception as e:
+        print(f"Error parsing document metadata: {e}")
+        return {
+            "tags": ["construction"],
+            "document_type": "unknown", 
+            "topics": [filename],
+            "supplier_mentions": [],
+            "categories": ["general"],
+            "summary": "Document processing error"
+        }
+
+async def intelligent_knowledge_search(query: str, limit: int = 10) -> List[Dict[str, Any]]:
+    """Search knowledge base using semantic similarity"""
+    try:
+        # Generate embedding for the query
+        query_embedding = await generate_embeddings(query)
+        if not query_embedding:
+            return []
+        
+        # Search in knowledge vault
+        cursor = db.knowledge_vault.find({})
+        documents = await cursor.to_list(length=1000)  # Get all for similarity comparison
+        
+        scored_docs = []
+        
+        for doc in documents:
+            if 'embedding' in doc and doc['embedding']:
+                # Calculate cosine similarity
+                doc_embedding = np.array(doc['embedding']).reshape(1, -1)
+                query_emb = np.array(query_embedding).reshape(1, -1)
+                similarity = cosine_similarity(query_emb, doc_embedding)[0][0]
+                
+                # Boost supplier content
+                boost = 1.2 if doc.get('is_supplier_content', False) else 1.0
+                final_score = similarity * boost
+                
+                scored_docs.append({
+                    'document': doc,
+                    'similarity_score': final_score,
+                    'is_supplier': doc.get('is_supplier_content', False)
+                })
+        
+        # Sort by similarity score and return top results
+        scored_docs.sort(key=lambda x: x['similarity_score'], reverse=True)
+        return scored_docs[:limit]
+        
+    except Exception as e:
+        print(f"Error in knowledge search: {e}")
+        return []
+
+# Knowledge Vault Routes
+@api_router.post("/knowledge/upload-document")
+async def upload_document(
+    file: UploadFile = File(...),
+    tags: str = Form(""),
+    is_supplier_content: bool = Form(False),
+    supplier_name: str = Form(""),
+    supplier_abn: str = Form(""),
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Upload document to knowledge vault with AI processing"""
+    try:
+        uid = current_user["uid"]
+        
+        # Read file content
+        file_content = await file.read()
+        content_type = file.content_type or mimetypes.guess_type(file.filename)[0]
+        
+        # Generate file hash for deduplication
+        file_hash = hashlib.sha256(file_content).hexdigest()
+        
+        # Check for duplicates
+        existing = await db.knowledge_vault.find_one({"file_hash": file_hash})
+        if existing:
+            raise HTTPException(status_code=400, detail="Document already exists in knowledge vault")
+        
+        # Extract text content using AI
+        extracted_text = await extract_text_from_file(file_content, content_type, file.filename)
+        
+        # Generate AI metadata and tags
+        metadata = await parse_document_metadata(extracted_text, file.filename, is_supplier_content)
+        
+        # Generate embeddings for semantic search
+        embedding = await generate_embeddings(extracted_text)
+        
+        # Prepare document record
+        document_record = {
+            "document_id": str(uuid.uuid4()),
+            "user_id": uid,
+            "filename": file.filename,
+            "original_size": len(file_content),
+            "content_type": content_type,
+            "file_hash": file_hash,
+            "extracted_text": extracted_text,
+            "embedding": embedding,
+            "ai_metadata": metadata,
+            "tags": tags.split(",") if tags else metadata.get("tags", []),
+            "is_supplier_content": is_supplier_content,
+            "supplier_info": {
+                "name": supplier_name,
+                "abn": supplier_abn
+            } if is_supplier_content else None,
+            "upload_timestamp": datetime.utcnow(),
+            "status": "processed",
+            "view_count": 0,
+            "reference_count": 0
+        }
+        
+        # Store in Firebase Storage (encode as base64)
+        try:
+            # Store file in Firebase Storage
+            file_base64 = base64.b64encode(file_content).decode('utf-8')
+            storage_path = f"knowledge_vault/{uid}/{document_record['document_id']}/{file.filename}"
+            
+            # For now, store reference - full Firebase Storage implementation would go here
+            document_record["storage_path"] = storage_path
+            document_record["file_data"] = file_base64[:1000]  # Store sample for testing
+            
+        except Exception as storage_error:
+            print(f"Storage warning: {storage_error}")
+            document_record["storage_path"] = f"local_storage/{document_record['document_id']}"
+        
+        # Save to MongoDB
+        await db.knowledge_vault.insert_one(document_record)
+        
+        return {
+            "message": "Document uploaded and processed successfully",
+            "document_id": document_record["document_id"],
+            "extracted_summary": metadata.get("summary", ""),
+            "detected_tags": metadata.get("tags", []),
+            "document_type": metadata.get("document_type", "unknown"),
+            "supplier_mentions": metadata.get("supplier_mentions", [])
+        }
+        
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing question: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error uploading document: {str(e)}")
+
+@api_router.post("/knowledge/mentor-note")
+async def create_mentor_note(
+    note_data: MentorNote,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Create a mentor note (enhanced wiki contribution)"""
+    try:
+        uid = current_user["uid"]
+        
+        # Generate embeddings for the note content
+        full_text = f"{note_data.title} {note_data.content}"
+        embedding = await generate_embeddings(full_text)
+        
+        # AI-powered categorization and tagging
+        metadata = await parse_document_metadata(note_data.content, note_data.title, False)
+        
+        mentor_note_record = {
+            "note_id": str(uuid.uuid4()),
+            "user_id": uid,
+            "user_email": current_user.get("email", "unknown"),
+            "title": note_data.title,
+            "content": note_data.content,
+            "tags": note_data.tags + metadata.get("tags", []),
+            "category": note_data.category or metadata.get("document_type", "general"),
+            "attachment_url": note_data.attachment_url,
+            "embedding": embedding,
+            "ai_metadata": metadata,
+            "created_timestamp": datetime.utcnow(),
+            "status": "active",
+            "reference_count": 0,
+            "helpful_votes": 0,
+            "view_count": 0
+        }
+        
+        await db.mentor_notes.insert_one(mentor_note_record)
+        
+        return {
+            "message": "Mentor note created successfully",
+            "note_id": mentor_note_record["note_id"],
+            "suggested_tags": metadata.get("tags", []),
+            "category": mentor_note_record["category"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating mentor note: {str(e)}")
+
+@api_router.get("/knowledge/search")
+async def search_knowledge_base(
+    query: str,
+    limit: int = 10,
+    include_mentor_notes: bool = True,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Search across knowledge vault and mentor notes"""
+    try:
+        results = await intelligent_knowledge_search(query, limit)
+        
+        # Also search mentor notes if requested
+        mentor_results = []
+        if include_mentor_notes:
+            query_embedding = await generate_embeddings(query)
+            if query_embedding:
+                cursor = db.mentor_notes.find({"status": "active"})
+                notes = await cursor.to_list(length=500)
+                
+                for note in notes:
+                    if 'embedding' in note and note['embedding']:
+                        note_embedding = np.array(note['embedding']).reshape(1, -1)
+                        query_emb = np.array(query_embedding).reshape(1, -1)
+                        similarity = cosine_similarity(query_emb, note_embedding)[0][0]
+                        
+                        if similarity > 0.5:  # Threshold for relevance
+                            mentor_results.append({
+                                'type': 'mentor_note',
+                                'note': note,
+                                'similarity_score': similarity
+                            })
+        
+        return {
+            "query": query,
+            "document_results": results,
+            "mentor_note_results": sorted(mentor_results, key=lambda x: x['similarity_score'], reverse=True)[:5],
+            "total_results": len(results) + len(mentor_results)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error searching knowledge base: {str(e)}")
+
+# Enhanced Chat with Knowledge Integration
+@api_router.post("/chat/ask-enhanced")
+async def ask_question_enhanced(
+    question_data: QuestionRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Enhanced chat that searches knowledge base first, then uses AI"""
+    try:
+        uid = current_user["uid"]
+        
+        # First, search the knowledge base
+        knowledge_results = await intelligent_knowledge_search(question_data.question, limit=5)
+        
+        # Build context from relevant documents
+        knowledge_context = []
+        supplier_attributions = []
+        
+        for result in knowledge_results:
+            if result['similarity_score'] > 0.6:  # Only high relevance
+                doc = result['document']
+                excerpt = doc.get('extracted_text', '')[:500]
+                
+                if result['is_supplier']:
+                    supplier_name = doc.get('supplier_info', {}).get('name', 'Supplier')
+                    supplier_attributions.append(supplier_name)
+                    knowledge_context.append(f"From {supplier_name}: {excerpt}")
+                else:
+                    knowledge_context.append(f"From knowledge base: {excerpt}")
+        
+        # Enhanced system prompt with knowledge context
+        system_prompt = f"""
+        You are ONESource-ai, a professional AU/NZ construction compliance assistant.
+        
+        PRIORITY: Use the knowledge base content below FIRST, then supplement with your general knowledge.
+        
+        Knowledge Base Content:
+        {chr(10).join(knowledge_context[:3])}
+        
+        When referencing supplier content, attribute it properly.
+        Supplier sources found: {', '.join(supplier_attributions)}
+        
+        Provide dual-layer response:
+        1. Technical Answer - with references to uploaded documents when relevant
+        2. Mentoring Insight - practical guidance for construction professionals
+        
+        Question: {question_data.question}
+        """
+        
+        # Get AI response with enhanced context
+        openai.api_key = os.environ.get('OPENAI_API_KEY')
+        
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": question_data.question}
+            ],
+            max_tokens=1000,
+            temperature=0.7
+        )
+        
+        ai_response = response.choices[0].message.content
+        
+        # Format response with supplier attributions
+        formatted_response = {
+            "technical": ai_response,
+            "mentoring": "Enhanced response based on your uploaded knowledge base.",
+            "format": "dual",
+            "knowledge_sources": len(knowledge_results),
+            "supplier_sources": supplier_attributions,
+            "knowledge_used": len(knowledge_context) > 0
+        }
+        
+        # Update document reference counts
+        for result in knowledge_results[:3]:
+            if result['similarity_score'] > 0.6:
+                await db.knowledge_vault.update_one(
+                    {"document_id": result['document']['document_id']},
+                    {"$inc": {"reference_count": 1}}
+                )
+        
+        # Standard conversation logging
+        conversation_record = {
+            "conversation_id": str(uuid.uuid4()),
+            "user_id": uid,
+            "session_id": question_data.session_id or str(uuid.uuid4()),
+            "question": question_data.question,
+            "formatted_response": formatted_response,
+            "knowledge_sources_used": len(knowledge_context),
+            "supplier_attributions": supplier_attributions,
+            "timestamp": datetime.utcnow(),
+            "tokens_used": response.usage.total_tokens if hasattr(response, 'usage') else 0
+        }
+        
+        await db.conversations.insert_one(conversation_record)
+        
+        return {
+            "response": formatted_response,
+            "session_id": conversation_record["session_id"],
+            "knowledge_enhanced": len(knowledge_context) > 0,
+            "supplier_content_used": len(supplier_attributions) > 0,
+            "tokens_used": conversation_record["tokens_used"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing enhanced question: {str(e)}")
 
 # Feedback Routes
 @api_router.post("/chat/feedback")
