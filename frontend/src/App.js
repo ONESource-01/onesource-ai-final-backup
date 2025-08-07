@@ -11,6 +11,7 @@ import AuthPage from "./components/AuthPage";
 import PricingPage from "./components/PricingPage";
 import PaymentSuccess from "./components/PaymentSuccess";
 import AdminDashboard from "./components/AdminDashboard";
+import KnowledgeVault from "./components/KnowledgeVault";
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
