@@ -45,6 +45,10 @@ export const apiEndpoints = {
   getAdminFeedback: () => api.get('/admin/feedback'),
   getAdminContributions: (status = 'pending_review') => api.get('/admin/contributions', { params: { status } }),
   reviewContribution: (contributionId, status, reviewNotes) => api.put(`/admin/contributions/${contributionId}`, { status, review_notes: reviewNotes }),
+  
+  // Developer Access
+  grantDeveloperAccess: () => api.post('/admin/developer-access'),
+  checkDeveloperStatus: () => api.get('/admin/check-developer-status'),
 };
 
 export default api;
