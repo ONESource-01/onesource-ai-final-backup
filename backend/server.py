@@ -76,6 +76,35 @@ class KnowledgeContribution(BaseModel):
 class ChatHistoryRequest(BaseModel):
     limit: int = 50
 
+# Knowledge Management Models
+class DocumentUpload(BaseModel):
+    file_name: str
+    file_type: str
+    content_type: str
+    tags: List[str] = []
+    is_supplier_content: bool = False
+    supplier_info: Optional[Dict[str, Any]] = None
+
+class SupplierInfo(BaseModel):
+    company_name: str
+    abn: Optional[str] = None
+    contact_email: str
+    logo_url: Optional[str] = None
+    product_tags: List[str] = []
+    terms_agreed: bool = False
+
+class MentorNote(BaseModel):
+    title: str
+    content: str
+    tags: List[str] = []
+    category: Optional[str] = None
+    attachment_url: Optional[str] = None
+
+class KnowledgeSearch(BaseModel):
+    query: str
+    limit: int = 10
+    include_supplier_only: bool = False
+
 class PaymentRequest(BaseModel):
     package_id: str
     origin_url: str
