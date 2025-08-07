@@ -29,6 +29,7 @@ const ChatInterface = () => {
   const [feedbackModal, setFeedbackModal] = useState({ show: false, messageId: null, type: null });
   const [feedbackText, setFeedbackText] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [useKnowledgeEnhanced, setUseKnowledgeEnhanced] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Set page title for this component
