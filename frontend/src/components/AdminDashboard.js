@@ -116,8 +116,11 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="feedback" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2" style={{ backgroundColor: '#c9d6e4' }}>
+        <Tabs defaultValue="developer" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3" style={{ backgroundColor: '#c9d6e4' }}>
+            <TabsTrigger value="developer" style={{ color: '#4b6b8b' }}>
+              Developer Access
+            </TabsTrigger>
             <TabsTrigger value="feedback" style={{ color: '#4b6b8b' }}>
               User Feedback ({feedback.length})
             </TabsTrigger>
@@ -125,6 +128,96 @@ const AdminDashboard = () => {
               Knowledge Contributions ({contributions.length})
             </TabsTrigger>
           </TabsList>
+
+          {/* Developer Access Tab */}
+          <TabsContent value="developer">
+            <Card style={{ borderColor: '#c9d6e4' }}>
+              <CardHeader>
+                <CardTitle style={{ color: '#0f2f57' }}>
+                  Developer Access Management
+                </CardTitle>
+                <p style={{ color: '#4b6b8b' }}>
+                  Grant yourself unlimited consultant-level access for development and testing
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {developerStatus?.has_developer_access ? (
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#f0fdf4', border: '2px solid #16a34a' }}>
+                      <div className="flex items-center gap-3 mb-3">
+                        <CheckCircle className="h-6 w-6 text-green-600" />
+                        <div>
+                          <h3 className="font-semibold text-green-800">Developer Access Active</h3>
+                          <p className="text-sm text-green-600">
+                            You have unlimited consultant-level access
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-sm text-green-700">
+                        <p><strong>Access Type:</strong> Developer Consultant</p>
+                        <p><strong>Granted:</strong> {new Date(developerStatus.granted_at).toLocaleString()}</p>
+                      </div>
+                      <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                        <h4 className="font-medium text-green-800 mb-2">Features Unlocked:</h4>
+                        <ul className="text-sm text-green-700 space-y-1">
+                          <li>• Unlimited AI queries</li>
+                          <li>• Priority response speed</li>
+                          <li>• Admin dashboard access</li>
+                          <li>• Knowledge vault management</li>
+                          <li>• All advanced features</li>
+                        </ul>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#f8fafc', border: '2px solid #c9d6e4' }}>
+                      <h3 className="font-semibold mb-3" style={{ color: '#0f2f57' }}>
+                        Grant Developer Access
+                      </h3>
+                      <p className="text-sm mb-4" style={{ color: '#4b6b8b' }}>
+                        This will grant you unlimited consultant-level access for development and testing purposes. 
+                        This bypasses all subscription limits and provides full access to all features.
+                      </p>
+                      
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-center gap-2 text-sm" style={{ color: '#4b6b8b' }}>
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>Unlimited AI questions</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm" style={{ color: '#4b6b8b' }}>
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>All consultant features</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm" style={{ color: '#4b6b8b' }}>
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>Admin dashboard access</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm" style={{ color: '#4b6b8b' }}>
+                          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                          <span>Knowledge vault management</span>
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={handleGrantDeveloperAccess}
+                        disabled={grantingAccess}
+                        className="w-full"
+                        style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
+                      >
+                        {grantingAccess ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                            Granting Access...
+                          </>
+                        ) : (
+                          'Grant Developer Access'
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Feedback Tab */}
           <TabsContent value="feedback">
