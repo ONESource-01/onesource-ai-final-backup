@@ -1228,6 +1228,13 @@ async def main():
         await tester.test_voucher_system()
         await tester.test_payment_system()
         await tester.test_webhook_endpoint()
+        
+        # Test new Knowledge Vault RAG system
+        await tester.test_knowledge_vault_document_upload()
+        await tester.test_knowledge_vault_mentor_notes()
+        await tester.test_knowledge_vault_search()
+        await tester.test_enhanced_chat_system()
+        
         await tester.test_error_handling()
         
         # Print summary
