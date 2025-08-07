@@ -955,6 +955,81 @@ async def get_feedback_for_review(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving feedback: {str(e)}")
 
+@api_router.post("/admin/developer-access")
+async def grant_developer_access(
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Grant developer access (free consultant plan) to current user"""
+    try:
+        uid = current_user["uid"]
+        
+        # Developer access subscription data
+        developer_subscription_data = {
+            "subscription_tier": "consultant",
+            "subscription_active": True,
+            "subscription_type": "developer_access",
+            "is_developer": True,
+            "subscription_started_at": datetime.utcnow(),
+            "payment_session_id": "developer_access_grant",
+            "special_access": True
+        }
+        
+        # Update user profile with developer access
+        await firebase_service.update_subscription_status(uid, developer_subscription_data)
+        
+        # Log developer access grant
+        access_record = {
+            "access_id": str(uuid.uuid4()),
+            "user_id": uid,
+            "user_email": current_user.get("email"),
+            "access_type": "developer",
+            "granted_at": datetime.utcnow(),
+            "status": "active"
+        }
+        
+        await db.developer_access.insert_one(access_record)
+        
+        return {
+            "message": "Developer access granted successfully! You now have unlimited consultant-level access.",
+            "access_type": "developer_consultant",
+            "features_unlocked": [
+                "Unlimited AI queries",
+                "Priority response speed",
+                "Admin dashboard access",
+                "Knowledge vault management",
+                "Advanced features"
+            ]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error granting developer access: {str(e)}")
+
+@api_router.get("/admin/check-developer-status")
+async def check_developer_status(
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Check if current user has developer access"""
+    try:
+        uid = current_user["uid"]
+        
+        # Check if user has developer access in database
+        developer_record = await db.developer_access.find_one(
+            {"user_id": uid, "status": "active"}
+        )
+        
+        # Also check Firebase profile
+        user_profile = await firebase_service.get_user_profile(uid)
+        is_developer_firebase = user_profile.get("is_developer", False) if user_profile else False
+        
+        return {
+            "has_developer_access": developer_record is not None or is_developer_firebase,
+            "access_type": "developer" if developer_record else None,
+            "granted_at": developer_record.get("granted_at") if developer_record else None
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error checking developer status: {str(e)}")
+
 @api_router.get("/admin/contributions")
 async def get_contributions_for_review(
     status: str = "pending_review",
