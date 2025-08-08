@@ -115,11 +115,9 @@ const LandingPage = () => {
   // Check if user is admin/developer (simplified check)
   useEffect(() => {
     const checkAdminStatus = () => {
-      // Show selector if user email contains "admin" or is a known dev email
+      // Temporarily show selector for all users for testing
       // In production, this would be a proper admin check
-      if (user?.email && (user.email.includes("admin") || user.email.includes("dev"))) {
-        setShowVariantSelector(true);
-      }
+      setShowVariantSelector(true); // Always show for now
     };
     checkAdminStatus();
   }, [user]);
