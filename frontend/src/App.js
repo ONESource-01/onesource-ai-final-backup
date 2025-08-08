@@ -115,9 +115,8 @@ const LandingPage = () => {
   // Check if user is admin/developer (simplified check)
   useEffect(() => {
     const checkAdminStatus = () => {
-      // Temporarily show selector for all users for testing
-      // In production, this would be a proper admin check
-      setShowVariantSelector(true); // Always show for now
+      // Hide selector for production - no longer needed
+      setShowVariantSelector(false);
     };
     checkAdminStatus();
   }, [user]);
