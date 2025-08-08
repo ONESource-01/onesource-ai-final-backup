@@ -95,26 +95,26 @@ const FeedbackPage = () => {
   const impactStats = [
     {
       icon: Users,
-      number: "2,847",
-      label: "Feedback submissions",
+      number: "Beta",
+      label: "Version in development",
       color: "#0f2f57"
     },
     {
       icon: TrendingUp,
-      number: "94%",
-      label: "Features improved", 
+      number: "AI-Powered",
+      label: "Construction intelligence", 
       color: "#16a34a"
     },
     {
       icon: Target,
-      number: "72hrs",
-      label: "Average response time",
+      number: "24/7",
+      label: "Always available",
       color: "#f59e0b"
     },
     {
       icon: Award,
-      number: "500+",
-      label: "Feature requests implemented",
+      number: "AU/NZ",
+      label: "Standards focused",
       color: "#dc2626"
     }
   ];
