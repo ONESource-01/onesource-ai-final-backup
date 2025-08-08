@@ -286,7 +286,7 @@ const TermsOfService = () => {
                     For questions about these Terms of Service, please contact us at:
                   </p>
                   <div className="p-4 rounded-lg" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                    <p><strong>Email:</strong> legal@onesource-ai.com</p>
+                    <p><strong>Email:</strong> support@onesource-ai.com</p>
                     <p><strong>Address:</strong> ONESource-ai Legal Department</p>
                     <p>Suite 123, Construction Hub</p>
                     <p>Sydney NSW 2000, Australia</p>
