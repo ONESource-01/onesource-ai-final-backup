@@ -504,8 +504,8 @@ const PrivacyPolicy = () => {
                     For privacy-related questions, concerns, or requests, please contact us:
                   </p>
                   <div className="p-4 rounded-lg" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                    <p><strong>Privacy Officer:</strong> privacy@onesource-ai.com</p>
-                    <p><strong>Data Protection:</strong> dataprotection@onesource-ai.com</p>
+                    <p><strong>Privacy Officer:</strong> support@onesource-ai.com</p>
+                    <p><strong>Data Protection:</strong> support@onesource-ai.com</p>
                     <p><strong>General Inquiries:</strong> support@onesource-ai.com</p>
                     <p><strong>Postal Address:</strong></p>
                     <p>ONESource-ai Privacy Team</p>
