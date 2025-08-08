@@ -183,98 +183,92 @@ const LandingPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
+            {/* Feature 1 - 3-Phase AI Intelligence */}
             <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
                 <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
                   <Bot className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
-                  Dual-Layer Responses
+                  3-Phase AI Intelligence
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p style={{ color: '#4b6b8b' }}>
-                  Get both technical answers with clause references and mentoring insights 
-                  from experienced industry professionals.
+                  Advanced construction AI with 3-phase intelligence system featuring enhanced prompting, workflow intelligence, and specialized training.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Feature 2 */}
+            {/* Feature 2 - Knowledge Vault */}
             <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
                 <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
-                  <Shield className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
-                  AU/NZ Standards
+                  <BookOpen className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
+                  Knowledge Vault
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p style={{ color: '#4b6b8b' }}>
-                  Trained on Australian and New Zealand building codes, NCC, BCA, 
-                  and industry-specific standards (AS/NZS).
+                  Intelligent document management and search capabilities for your construction documents and technical materials.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Feature 3 */}
+            {/* Feature 3 - Chat Experience */}
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
+              <CardHeader>
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <MessageSquare className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
+                  Chat Experience
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p style={{ color: '#4b6b8b' }}>
+                  ChatGPT-style interface for construction professionals with enhanced industry knowledge and conversation history.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Feature 4 - Workflow Guidance */}
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
+              <CardHeader>
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Settings className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
+                  Workflow Guidance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p style={{ color: '#4b6b8b' }}>
+                  Smart project stage recognition and recommendations with tailored workflow guidance for your construction projects.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Feature 5 - Partner Integration */}
             <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
                 <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
                   <Users className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
-                  Multi-Discipline Support
+                  Partner Integration
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p style={{ color: '#4b6b8b' }}>
-                  Supports architects, engineers (structural, civil, mechanical, electrical), 
-                  building surveyors, and construction managers.
+                  Verified supplier and partner content access with proper attribution and trusted industry partnerships.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Feature 4 */}
+            {/* Feature 6 - Multi-Discipline */}
             <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
                 <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
-                  <Zap className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
-                  Instant Expertise
+                  <Wrench className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
+                  Multi-Discipline
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p style={{ color: '#4b6b8b' }}>
-                  Get immediate access to construction knowledge without waiting 
-                  for consultations or searching through lengthy documents.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Feature 5 */}
-            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
-              <CardHeader>
-                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
-                  <Bot className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
-                  Context-Aware
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p style={{ color: '#4b6b8b' }}>
-                  Adapts responses based on your profession, sector (residential, commercial, 
-                  healthcare) and specific project requirements.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Feature 6 */}
-            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
-              <CardHeader>
-                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
-                  <Shield className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
-                  Compliance Focus
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p style={{ color: '#4b6b8b' }}>
-                  Emphasis on regulatory compliance, safety standards, and best practices 
-                  to keep your projects on track.
+                  Structural, fire safety, mechanical & hydraulic expertise across all major construction disciplines.
                 </p>
               </CardContent>
             </Card>
