@@ -1,12 +1,11 @@
+import os
+from contextlib import asynccontextmanager
+from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
 from fastapi.security import HTTPBearer
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
-import logging
-from pathlib import Path
-from pydantic import BaseModel, Field
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, EmailStr, Field
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
@@ -18,6 +17,326 @@ import mimetypes
 import hashlib
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import logging
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Import AI Intelligence System
+from typing import Dict, Any
+
+# Advanced AI Intelligence System
+class AIIntelligencePhases:
+    """3-Phase AI Intelligence System for Construction Industry"""
+    
+    @staticmethod
+    def get_enhanced_prompts() -> Dict[str, str]:
+        """Phase 1: Enhanced Prompting - Construction-specific prompt templates"""
+        return {
+            "structural_engineering": """
+            You are a senior structural engineer specializing in AU/NZ construction standards.
+            
+            MANDATORY COMPLIANCE REFERENCES:
+            - Always reference relevant AS/NZS standards (e.g., AS 1170 for structural design loads)
+            - Cite Building Code of Australia (BCA) sections where applicable
+            - Include National Construction Code (NCC) volume references
+            - Mention state-specific variations where relevant
+            
+            RESPONSE STRUCTURE:
+            1. **Immediate Safety Considerations** (if applicable)
+            2. **Technical Requirements** - Specific standards and calculations
+            3. **Compliance Path** - Step-by-step regulatory approach
+            4. **Professional Recommendations** - Best practices and risk mitigation
+            5. **Further Actions** - Next steps and professional consultations needed
+            
+            IMPORTANT: Always emphasize that complex structural work requires certified structural engineer approval.
+            STANDARDS AUSTRALIA COMPLIANCE: Reference standards by number and title only. Do not reproduce copyrighted content.
+            """,
+            
+            "building_codes": """
+            You are a building certifier and code compliance expert for AU/NZ construction.
+            
+            PRIMARY REFERENCES:
+            - National Construction Code (NCC) 2022 Edition
+            - Building Code of Australia (BCA) 
+            - Australian Standards (AS/NZS series)
+            - State and territory building regulations
+            
+            RESPONSE APPROACH:
+            1. **Code Requirements** - Specific NCC/BCA sections and clauses
+            2. **Compliance Verification** - How to demonstrate compliance
+            3. **Alternative Solutions** - Performance-based options if applicable
+            4. **Authority Requirements** - Council/certifier approval processes
+            5. **Documentation Needed** - Plans, certificates, reports required
+            
+            STANDARDS AUSTRALIA COMPLIANCE: Reference Australian Standards by number and title. Never reproduce copyrighted tables, figures, or detailed content.
+            """,
+            
+            "fire_safety": """
+            You are a fire safety engineer specializing in AU/NZ building fire protection systems.
+            
+            KEY STANDARDS AND CODES:
+            - AS 1851: Maintenance of fire protection systems
+            - AS 3786: Smoke alarms using scattered light
+            - AS 4072: Components for fire detection
+            - NCC Volume One: Commercial building fire safety
+            - NCC Volume Two: Residential fire safety requirements
+            
+            ANALYSIS FRAMEWORK:
+            1. **Risk Assessment** - Building classification and fire safety objectives  
+            2. **System Requirements** - Detection, suppression, egress systems
+            3. **Performance Solutions** - Engineering analysis if required
+            4. **Maintenance Obligations** - AS 1851 compliance requirements
+            5. **Authority Liaison** - Fire authority consultation needs
+            
+            CRITICAL: Fire safety systems must be designed by qualified fire safety engineers.
+            STANDARDS AUSTRALIA COMPLIANCE: Reference standards by number and scope only. Do not reproduce copyrighted technical specifications.
+            """,
+            
+            "sustainability": """
+            You are a sustainability consultant specializing in green building practices for AU/NZ construction.
+            
+            SUSTAINABILITY FRAMEWORKS:
+            - Green Star Australia rating system
+            - NABERS (National Australian Built Environment Rating System)
+            - Energy efficiency standards under NCC Section J
+            - Water efficiency requirements (WELS scheme)
+            - Embodied energy and lifecycle assessment principles
+            
+            EVALUATION CRITERIA:
+            1. **Energy Performance** - Thermal performance, HVAC efficiency, renewable integration
+            2. **Water Management** - Conservation, reuse, stormwater management  
+            3. **Materials Selection** - Embodied carbon, recyclability, local sourcing
+            4. **Indoor Environment** - Air quality, natural light, acoustic performance
+            5. **Certification Pathways** - Green Star, NABERS, or other rating achievements
+            
+            STANDARDS AUSTRALIA COMPLIANCE: Reference relevant standards without reproducing copyrighted rating criteria or detailed methodologies.
+            """
+        }
+    
+    @staticmethod 
+    def detect_workflow_stage(question: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Phase 2: Workflow Intelligence - Detect project stage and suggest next steps"""
+        
+        question_lower = question.lower()
+        
+        # Project stage detection
+        if any(word in question_lower for word in ["planning", "concept", "feasibility", "initial"]):
+            stage = "concept_planning"
+        elif any(word in question_lower for word in ["design", "drawings", "architect", "plans"]):
+            stage = "design_development"
+        elif any(word in question_lower for word in ["approval", "consent", "permit", "certifier"]):
+            stage = "regulatory_approval"  
+        elif any(word in question_lower for word in ["tender", "contractor", "quote", "pricing"]):
+            stage = "procurement"
+        elif any(word in question_lower for word in ["construction", "building", "site", "concrete"]):
+            stage = "construction"
+        elif any(word in question_lower for word in ["inspection", "completion", "handover", "defects"]):
+            stage = "completion"
+        else:
+            stage = "general_inquiry"
+        
+        # Workflow recommendations based on stage
+        workflows = {
+            "concept_planning": {
+                "current_stage": "Concept & Planning",
+                "typical_next_steps": [
+                    "Engage architect/designer for preliminary concepts",
+                    "Conduct site analysis and surveys",
+                    "Preliminary budget estimation",
+                    "Council pre-application advice",
+                    "Geotechnical investigation if required"
+                ],
+                "key_consultants": ["Architect", "Town Planner", "Surveyor"],
+                "critical_considerations": ["Zoning compliance", "Site constraints", "Budget parameters"]
+            },
+            "design_development": {
+                "current_stage": "Design Development", 
+                "typical_next_steps": [
+                    "Detailed architectural drawings",
+                    "Structural engineering design",
+                    "Services engineering (mechanical, electrical, hydraulic)",
+                    "Energy efficiency modeling",
+                    "Accessibility compliance review"
+                ],
+                "key_consultants": ["Structural Engineer", "Services Engineer", "Energy Assessor"],
+                "critical_considerations": ["NCC compliance", "Structural adequacy", "Energy efficiency"]
+            },
+            "regulatory_approval": {
+                "current_stage": "Regulatory Approval",
+                "typical_next_steps": [
+                    "Building consent application preparation",
+                    "Engineering calculations and certificates", 
+                    "Fire safety report if required",
+                    "Accessibility compliance statement",
+                    "Council/certifier submission"
+                ],
+                "key_consultants": ["Building Certifier", "Fire Engineer", "Access Consultant"],
+                "critical_considerations": ["Complete documentation", "Professional certifications", "Authority requirements"]
+            },
+            "procurement": {
+                "current_stage": "Procurement & Tendering",
+                "typical_next_steps": [
+                    "Tender documentation preparation",
+                    "Contractor selection and vetting",
+                    "Contract negotiation and execution",
+                    "Insurance and bonding arrangements",
+                    "Construction program development"
+                ],
+                "key_consultants": ["Quantity Surveyor", "Contract Administrator", "Project Manager"],  
+                "critical_considerations": ["Contract terms", "Insurance adequacy", "Quality assurance"]
+            },
+            "construction": {
+                "current_stage": "Construction Phase",
+                "typical_next_steps": [
+                    "Regular site inspections and quality control",
+                    "Progress payments and variation management", 
+                    "Mandatory inspections scheduling",
+                    "Material testing and compliance verification",
+                    "Coordination of trades and services"
+                ],
+                "key_consultants": ["Site Supervisor", "Quality Assurance", "Testing Services"],
+                "critical_considerations": ["Safety compliance", "Quality control", "Program adherence"]
+            },
+            "completion": {
+                "current_stage": "Completion & Handover",
+                "typical_next_steps": [
+                    "Final inspections and compliance verification",
+                    "Defects identification and rectification",
+                    "Completion certificates and warranties",
+                    "Operation and maintenance manual handover",
+                    "Final account settlement"
+                ],
+                "key_consultants": ["Building Inspector", "Maintenance Contractor", "Warranty Provider"],
+                "critical_considerations": ["Defects liability", "Warranty coverage", "Maintenance requirements"]
+            },
+            "general_inquiry": {
+                "current_stage": "Information Gathering",
+                "typical_next_steps": [
+                    "Define project scope and objectives",
+                    "Identify key stakeholders and consultants",
+                    "Establish preliminary timeline and budget",
+                    "Research applicable standards and regulations"
+                ],
+                "key_consultants": ["Project Advisor", "Relevant Specialist"],
+                "critical_considerations": ["Scope definition", "Resource planning", "Regulatory research"]
+            }
+        }
+        
+        return workflows.get(stage, workflows["general_inquiry"])
+    
+    @staticmethod
+    def get_specialized_context(discipline: str, question: str) -> Dict[str, Any]:
+        """Phase 3: Specialized Training - Discipline-specific knowledge enhancement"""
+        
+        specialized_knowledge = {
+            "structural": {
+                "key_standards": [
+                    "AS 1170.0 - Structural design actions - General principles",
+                    "AS 1170.1 - Permanent, imposed and other actions", 
+                    "AS 1170.2 - Wind actions",
+                    "AS 1170.4 - Earthquake actions",
+                    "AS 3600 - Concrete structures",
+                    "AS 4100 - Steel structures"
+                ],
+                "common_calculations": [
+                    "Wind load calculations per AS 1170.2",
+                    "Seismic design per AS 1170.4", 
+                    "Concrete design per AS 3600",
+                    "Steel connection design per AS 4100"
+                ],
+                "professional_requirements": [
+                    "Structural engineer certification required",
+                    "Professional indemnity insurance essential", 
+                    "Regular CPD maintenance required",
+                    "Peer review recommended for complex projects"
+                ]
+            },
+            
+            "fire_safety": {
+                "key_standards": [
+                    "AS 1530 - Methods for fire tests on building materials",
+                    "AS 1851 - Maintenance of fire protection systems",
+                    "AS 2118 - Automatic fire sprinkler systems", 
+                    "AS 3786 - Smoke alarms using scattered light",
+                    "AS 4072 - Components for fire detection systems"
+                ],
+                "design_considerations": [
+                    "Building classification and fire safety objectives",
+                    "Egress analysis and travel distances",
+                    "Fire resistance levels (FRL) requirements",
+                    "Smoke hazard management systems"
+                ],
+                "compliance_verification": [
+                    "Fire engineering report required for performance solutions",
+                    "Fire authority consultation for complex buildings",
+                    "Third-party certification for critical systems"
+                ]
+            },
+            
+            "mechanical": {
+                "key_standards": [
+                    "AS 1668 - The use of mechanical ventilation",
+                    "AS 3700 - Masonry structures", 
+                    "AS 5601 - Gas installations",
+                    "AS/NZS 3000 - Electrical installations"
+                ],
+                "system_design": [
+                    "HVAC load calculations and equipment sizing",
+                    "Ventilation rates per AS 1668",
+                    "Energy efficiency per NCC Section J",
+                    "Refrigerant selection and environmental impact"
+                ],
+                "installation_requirements": [
+                    "Licensed tradesperson installation mandatory",
+                    "Pressure testing and commissioning required",
+                    "Operation and maintenance manual provision"
+                ]
+            },
+            
+            "hydraulic": {
+                "key_standards": [
+                    "AS/NZS 3500 - Plumbing and drainage",
+                    "AS 2419 - Fire hydrant installations",
+                    "AS 3500.1 - Water services",
+                    "AS 3500.2 - Sanitary plumbing and drainage"  
+                ],
+                "design_principles": [
+                    "Water supply sizing and pressure requirements",
+                    "Drainage design and pipe sizing",
+                    "Stormwater management and detention",
+                    "Water efficiency and WELS compliance"
+                ],
+                "regulatory_aspects": [
+                    "Licensed plumber installation required",
+                    "Water authority approvals for connections",
+                    "Backflow prevention device mandatory"
+                ]
+            }
+        }
+        
+        # Auto-detect discipline from question content
+        question_lower = question.lower()
+        if any(word in question_lower for word in ["beam", "column", "foundation", "load", "structural"]):
+            detected_discipline = "structural"
+        elif any(word in question_lower for word in ["fire", "smoke", "sprinkler", "detection", "egress"]):
+            detected_discipline = "fire_safety" 
+        elif any(word in question_lower for word in ["hvac", "ventilation", "heating", "cooling", "mechanical"]):
+            detected_discipline = "mechanical"
+        elif any(word in question_lower for word in ["plumbing", "drainage", "water", "sewer", "hydraulic"]):
+            detected_discipline = "hydraulic"
+        else:
+            detected_discipline = discipline
+            
+        return {
+            "detected_discipline": detected_discipline,
+            "specialized_knowledge": specialized_knowledge.get(detected_discipline, {}),
+            "cross_discipline_considerations": [
+                "Coordination with other engineering disciplines required",
+                "Integrated design approach recommended", 
+                "Professional liability and insurance considerations",
+                "Quality assurance and peer review processes"
+            ]
+        }
 
 # Import our services
 from firebase_service import firebase_service
