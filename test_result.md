@@ -472,6 +472,18 @@ frontend:
         agent: "testing"
         comment: "AdminDashboard fully functional and tested comprehensively. ✅ Enhanced Tab Structure: All 4 tabs (Developer Access, Voucher System, User Feedback (6), Knowledge Contributions (6)) are visible and functional with proper counts. ✅ Developer Access System: Shows 'Developer Access Active' status with green success state, displays consultant-level privileges, features unlocked list (unlimited AI queries, priority response, admin dashboard access, knowledge vault management, all advanced features), and proper granted timestamp. ✅ Voucher System: Complete voucher creation form with all fields (Voucher Code, Plan Type dropdown with Pro/Consultant/Day Pass options, Duration Days, Max Uses, Description), existing vouchers display with usage statistics and status badges, active voucher status display. ✅ Tab Navigation: All tabs accessible and content loads correctly. ✅ UI/UX Verification: ONESource-ai branding consistent throughout with proper blue color scheme (#0f2f57), responsive design works on desktop/tablet/mobile. ✅ Quick Stats: 4 statistics cards displaying Positive Feedback (4), Negative Feedback (2), Pending Review (4), and Approved (2) counts. Authentication works properly with demo credentials. All requested AdminDashboard features working as expected."
 
+  - task: "Implement Multiple Hero Block Variations with Dynamic Switching"
+    implemented: true
+    working: false
+    file: "frontend/src/components/HeroBlocks.js, frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Multiple hero block variations created with modern tech-focused, professional dark, and interactive demo designs. Added HeroBlockSelector component for admin switching between variants. Integrated new hero images from vision expert agent. Landing page updated to use dynamic hero blocks with state management. Requires frontend testing to verify visual components and responsive design."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
