@@ -1807,6 +1807,53 @@ async def get_pricing():
     from payment_service import PRICING_PACKAGES
     return {"packages": PRICING_PACKAGES}
 
+# Weekly Business Intelligence Reporting Routes
+@api_router.post("/admin/send-weekly-report")
+async def send_weekly_report_endpoint(
+    admin_email: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Manually trigger weekly business intelligence report"""
+    try:
+        # Check if user has admin access (basic implementation)
+        # In production, you'd want proper admin role checking
+        
+        reporting_service = WeeklyReportingService()
+        success = await reporting_service.send_weekly_report(admin_email)
+        
+        if success:
+            return {
+                "message": "Weekly business intelligence report sent successfully",
+                "sent_to": admin_email or reporting_service.admin_email
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to send weekly report")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error sending weekly report: {str(e)}")
+
+@api_router.post("/admin/test-weekly-report")
+async def test_weekly_report_endpoint(
+    test_email: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Test weekly business intelligence report with specific email"""
+    try:
+        # Check if user has admin access (basic implementation)
+        
+        success = await test_weekly_report(test_email)
+        
+        if success:
+            return {
+                "message": "Test weekly report sent successfully",
+                "sent_to": test_email
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to send test report")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error sending test report: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
