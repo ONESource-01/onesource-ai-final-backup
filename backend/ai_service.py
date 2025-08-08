@@ -59,40 +59,83 @@ Remember: You deliver clause-backed answers with intuitive insight and mentoring
         user_profile: Dict[str, Any] = None,
         conversation_history: List[Dict[str, str]] = None
     ) -> Dict[str, Any]:
-        """Get AI response for construction industry questions"""
+        """Get AI response for construction industry questions with 3-Phase Intelligence Enhancement"""
         try:
+            # Import AI Intelligence System
+            from server import AIIntelligencePhases
+            
             if not self.client:
-                # Mock response for development - include personalization
+                # Enhanced mock response with AI Intelligence System
                 user_name = ""
                 if user_profile and user_profile.get('name'):
                     first_name = user_profile.get('name').split()[0]
                     user_name = f"{first_name}, "
                 
+                # Phase 2: Detect workflow stage and recommendations
+                workflow_info = AIIntelligencePhases.detect_workflow_stage(question)
+                
+                # Phase 3: Get specialized context
+                specialized_context = AIIntelligencePhases.get_specialized_context("general", question)
+                
                 mock_response = f"""🛠️ **Technical Answer:**
 
 {user_name}for your question about "{question[:50]}...", here are the key technical considerations:
 
-• This is a development mock response for testing purposes
-• In production, this would provide specific clause references (e.g., Clause 4.5.3, AS/NZS 3500.1:2021)
-• Technical specifications and calculations would be included here
-• Relevant standards and compliance requirements would be listed
+• This is a development mock response enhanced with AI Intelligence System
+• **Project Stage Detected**: {workflow_info['current_stage']}
+• **Discipline Area**: {specialized_context['detected_discipline'].replace('_', ' ').title()}
+• In production, this would provide specific clause references with Standards Australia compliance
+
+**Key Standards References:**
+{chr(10).join(['• ' + std for std in specialized_context['specialized_knowledge'].get('key_standards', ['AS/NZS standards applicable'])[:3]])}
+
+**Workflow Recommendations:**
+{chr(10).join(['• ' + step for step in workflow_info['typical_next_steps'][:3]])}
 
 🧐 **Mentoring Insight:**
 
 {user_name}as an experienced construction professional, I'd recommend:
-• Always cross-reference multiple standards when in doubt
-• Consider the specific sector requirements for your project
-• Don't forget to check for any recent updates to the building codes
-• {user_name.rstrip(', ')}remember that practical experience often guides the best solutions
+
+**Current Stage Considerations:**
+{chr(10).join(['• ' + consideration for consideration in workflow_info['critical_considerations']])}
+
+**Key Consultants to Engage:**
+{chr(10).join(['• ' + consultant for consultant in workflow_info['key_consultants']])}
+
+**Professional Development Notes:**
+• Always ensure compliance with current Australian Standards - never reproduce copyrighted content
+• Cross-reference multiple standards and get professional engineering advice for complex projects
+• {user_name.rstrip(', ')}remember that Standards Australia materials are copyrighted - reference only by number and title
+
+**STANDARDS AUSTRALIA COMPLIANCE**: This response references standards by number and title only, without reproducing copyrighted technical content.
 
 👀 Was this answer unclear or incorrect? Please provide feedback."""
 
                 return {
                     "response": mock_response,
-                    "tokens_used": 150,
-                    "model": "mock-gpt-4o",
-                    "timestamp": datetime.utcnow().isoformat()
+                    "tokens_used": 200,
+                    "model": "mock-gpt-4o-enhanced",
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "ai_intelligence_phase": "enhanced_mock",
+                    "workflow_stage": workflow_info['current_stage'],
+                    "detected_discipline": specialized_context['detected_discipline']
                 }
+            
+            # Phase 1: Enhanced Prompting - Get appropriate prompt template
+            enhanced_prompts = AIIntelligencePhases.get_enhanced_prompts()
+            
+            # Phase 2: Workflow Intelligence - Detect stage and get recommendations  
+            workflow_info = AIIntelligencePhases.detect_workflow_stage(question, user_profile)
+            
+            # Phase 3: Specialized Training - Get discipline-specific knowledge
+            specialized_context = AIIntelligencePhases.get_specialized_context("general", question)
+            detected_discipline = specialized_context['detected_discipline']
+            
+            # Select appropriate enhanced prompt based on detected discipline
+            if detected_discipline in enhanced_prompts:
+                enhanced_system_prompt = enhanced_prompts[detected_discipline]
+            else:
+                enhanced_system_prompt = enhanced_prompts["building_codes"]  # Default fallback
             
             # Build context from user profile
             context = ""
@@ -120,8 +163,35 @@ Remember: You deliver clause-backed answers with intuitive insight and mentoring
                 context += f"\n- Maintain professional but friendly tone appropriate for their profession"
                 context += f"\n- Reference their sector context when relevant"
             
-            # Build conversation history
-            messages = [{"role": "system", "content": self.system_prompt + context}]
+            # Add AI Intelligence System context
+            ai_context = f"""
+
+ENHANCED AI INTELLIGENCE CONTEXT:
+
+**DETECTED PROJECT STAGE**: {workflow_info['current_stage']}
+Current stage considerations: {', '.join(workflow_info['critical_considerations'])}
+
+**WORKFLOW RECOMMENDATIONS**:
+Next steps: {'; '.join(workflow_info['typical_next_steps'][:3])}
+Key consultants: {', '.join(workflow_info['key_consultants'])}
+
+**SPECIALIZED DISCIPLINE**: {detected_discipline.replace('_', ' ').title()}
+Relevant standards: {', '.join(specialized_context['specialized_knowledge'].get('key_standards', [])[:3])}
+
+**CRITICAL COMPLIANCE REMINDER**: 
+- Reference Australian Standards by number and title ONLY
+- Never reproduce copyrighted Standards Australia content
+- Always emphasize need for professional engineering certification where required
+- Include disclaimer about Standards Australia copyright compliance
+
+**RESPONSE STRUCTURE REQUIRED**:
+1. Technical Answer with specific standard references (by number only)
+2. Mentoring Insight with workflow recommendations
+3. Standards Australia compliance statement
+4. Professional consultation recommendations where applicable"""
+            
+            # Build conversation history with enhanced system prompt
+            messages = [{"role": "system", "content": enhanced_system_prompt + context + ai_context}]
             
             if conversation_history:
                 for msg in conversation_history[-10:]:  # Last 10 messages for context
@@ -135,17 +205,26 @@ Remember: You deliver clause-backed answers with intuitive insight and mentoring
             response = self.client.chat.completions.create(
                 model="gpt-4o",
                 messages=messages,
-                max_tokens=1500,
-                temperature=0.3
+                max_tokens=1800,  # Increased for more comprehensive responses
+                temperature=0.2   # Lower temperature for more focused technical responses
             )
             
             ai_response = response.choices[0].message.content
             
+            # Add Standards Australia compliance footer if not already present
+            if "STANDARDS AUSTRALIA" not in ai_response.upper():
+                ai_response += f"\n\n**STANDARDS AUSTRALIA COMPLIANCE**: This response references Australian Standards by number and title only, without reproducing copyrighted technical specifications. Professional engineering advice should be sought for complex projects."
+            
             return {
                 "response": ai_response,
                 "tokens_used": response.usage.total_tokens,
-                "model": "gpt-4o",
-                "timestamp": datetime.utcnow().isoformat()
+                "model": "gpt-4o-enhanced",
+                "timestamp": datetime.utcnow().isoformat(),
+                "ai_intelligence_phase": "3_phase_enhanced",
+                "workflow_stage": workflow_info['current_stage'],
+                "detected_discipline": detected_discipline,
+                "key_standards": specialized_context['specialized_knowledge'].get('key_standards', [])[:5],
+                "workflow_recommendations": workflow_info['typical_next_steps'][:3]
             }
             
         except Exception as e:
