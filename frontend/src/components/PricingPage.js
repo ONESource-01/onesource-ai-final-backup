@@ -82,91 +82,104 @@ const PricingPage = () => {
       name: 'Starter',
       price: 0,
       currency: 'AUD',
-      period: 'Free Trial',
-      description: 'Perfect for trying out ONESource-ai',
+      period: 'Free Forever',
+      description: 'Get Started & Contribute to the Community',
       icon: <Zap className="h-6 w-6" />,
       features: [
-        '3 free AI queries',
-        'Basic technical responses',
-        'No downloads',
-        'Email support'
+        '3 questions per day',
+        'Basic AI responses',
+        'Document uploads to Knowledge Vault',
+        'Basic knowledge vault search',
+        'Standard construction guidance',
+        'Partner document upload access',
+        'Community knowledge contribution'
       ],
       limitations: [
-        'Limited to 3 questions',
-        'No advanced features',
-        'Must sign up to continue'
+        'No chat history',
+        'No enhanced AI intelligence',
+        'No mentor note creation'
       ],
       highlighted: false,
-      cta: user ? 'Current Plan' : 'Try Free',
-      disabled: true
+      cta: user ? 'Current Plan' : 'Get Started Free',
+      disabled: false,
+      tooltip: 'Partners can upload content freely. Subscription required for full platform usage.'
     },
     {
       id: 'pro',
       name: 'Pro',
-      price: pricing?.pro?.amount || 4.90,
+      price: pricing?.pro?.amount || 9.00,
       currency: 'AUD',
       period: 'per month',
-      description: 'For regular construction professionals',
+      description: 'Professional Construction Intelligence',
       icon: <Check className="h-6 w-6" />,
       features: [
-        'Unlimited AI queries',
-        'Dual-layer responses (Technical + Mentoring)',
-        'AU/NZ standards coverage',
-        'Limited report saving',
-        'Email support',
-        'Mobile access'
+        'Unlimited questions',
+        'Phase 1: Enhanced Prompting (discipline-specific)',
+        'Full chat history & sessions',
+        'Mentor note creation & sharing',
+        'Document upload & knowledge vault access',
+        'Enhanced response format (Technical + Mentoring)',
+        'Community support & forums'
       ],
       limitations: [
-        'Limited project storage',
-        'Standard response priority'
+        'No advanced workflow intelligence',
+        'No knowledge-enhanced chat mode',
+        'No full 3-phase AI system'
       ],
       highlighted: true,
-      cta: 'Upgrade to Pro',
-      disabled: false
+      cta: 'Start Pro Trial',
+      disabled: false,
+      promotion: '3 Months FREE for New Users!',
+      badge: 'Most Popular'
     },
     {
-      id: 'consultant',
-      name: 'Consultant',
-      price: pricing?.consultant?.amount || 19.00,
+      id: 'pro-plus',
+      name: 'Pro-Plus',
+      price: pricing?.consultant?.amount || 29.00,
       currency: 'AUD',
       period: 'per month',
-      description: 'For heavy users and consultants',
+      description: 'Complete Construction Knowledge Platform',
       icon: <Crown className="h-6 w-6" />,
       features: [
-        'Everything in Pro',
-        'Priority AI response speed',
-        'Unlimited report saving & download',
-        'Advanced project management',
-        'Priority email support',
-        'API access (coming soon)',
-        'Team collaboration (coming soon)'
+        'Everything in Pro, PLUS:',
+        'Full 3-Phase AI Intelligence System',
+        'Project workflow guidance & stage recognition',
+        'Knowledge-enhanced chat mode',
+        'Supplier content integration & attribution',
+        'Advanced analytics dashboard',
+        'Multi-discipline specialization',
+        'Priority support',
+        'Admin dashboard access'
       ],
       limitations: [],
       highlighted: false,
-      cta: 'Upgrade to Consultant',
-      disabled: false
+      cta: 'Start Pro-Plus Trial',
+      disabled: false,
+      promotion: '3 Months FREE for New Users!',
+      badge: 'Best Value'
     },
     {
       id: 'day_pass',
       name: 'Day Pass',
-      price: pricing?.day_pass?.amount || 9.90,
+      price: pricing?.day_pass?.amount || 15.00,
       currency: 'AUD',
-      period: 'one-time',
-      description: 'Perfect for urgent project needs',
+      period: 'per day',
+      description: 'Full Platform Access When You Need It',
       icon: <Users className="h-6 w-6" />,
       features: [
-        'Unlimited queries for 24 hours',
-        'Full Pro features access',
-        'No commitment',
-        'Instant activation'
+        'All Pro-Plus features for 24 hours',
+        'Perfect for project deadlines',
+        'No long-term commitment',
+        'Can be purchased multiple times',
+        'Full platform access',
+        'Emergency project support'
       ],
-      limitations: [
-        'Expires after 24 hours',
-        'No report saving'
-      ],
+      limitations: [],
       highlighted: false,
-      cta: 'Get Day Pass',
-      disabled: false
+      cta: 'Buy Day Pass',
+      disabled: false,
+      urgent: true,
+      badge: 'Limited Time'
     }
   ];
 
