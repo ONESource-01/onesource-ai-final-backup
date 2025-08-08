@@ -28,3 +28,4 @@ firebase-admin>=7.1.0
 emergentintegrations>=0.1.0
 PyPDF2>=3.0.1
 python-docx>=1.1.0
+sendgrid>=6.10.0
