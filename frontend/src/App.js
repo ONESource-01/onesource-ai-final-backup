@@ -15,6 +15,9 @@ import KnowledgeVault from "./components/KnowledgeVault";
 import TermsOfService from "./components/TermsOfService";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import PartnerUploadPolicy from "./components/PartnerUploadPolicy";
+import HelpCenter from "./components/HelpCenter";
+import ContactPage from "./components/ContactPage";
+import FeedbackPage from "./components/FeedbackPage";
 import HeroBlocks, { HeroBlockSelector } from "./components/HeroBlocks";
 
 // UI Components
