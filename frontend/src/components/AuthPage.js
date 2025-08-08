@@ -309,7 +309,14 @@ const AuthPage = () => {
         </Card>
 
         <div className="text-center mt-6 text-xs" style={{ color: '#95a6b7' }}>
-          By continuing, you agree to our Terms of Service and Privacy Policy
+          By continuing, you agree to our{' '}
+          <a href="/terms" className="hover:underline" style={{ color: '#0f2f57' }}>
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a href="/privacy" className="hover:underline" style={{ color: '#0f2f57' }}>
+            Privacy Policy
+          </a>
         </div>
       </div>
     </div>
