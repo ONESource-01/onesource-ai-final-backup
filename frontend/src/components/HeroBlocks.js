@@ -9,7 +9,7 @@ const HeroBlocks = ({ variant = "default" }) => {
   const { user } = useAuth();
   
   const HeroVariant1 = () => (
-    // Modern Design with Updated Content
+    // 1. 3-Phase AI Intelligence
     <section className="py-20 relative overflow-hidden">
       {/* Background Image - Full Width */}
       <div 
@@ -30,25 +30,24 @@ const HeroBlocks = ({ variant = "default" }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center">
           <Badge className="w-fit mx-auto mb-6" style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
-            🚀 Powered by Advanced AI
+            🧠 3-Phase AI Intelligence
           </Badge>
           
           <h1 className="text-5xl font-bold mb-6" style={{ color: '#0f2f57' }}>
-            Smart Construction
+            Advanced Construction
             <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Compliance Assistant
+              AI Intelligence
             </span>
           </h1>
-          <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: '#4b6b8b' }}>
-            Revolutionize your workflow with AI that understands AU/NZ building standards. 
-            Get instant expert guidance from planning to project delivery.
+          <p className="text-xl mb-8 max-w-4xl mx-auto" style={{ color: '#4b6b8b' }}>
+            Experience the only AI system designed specifically for AU/NZ construction professionals. Our 3-Phase Intelligence combines enhanced prompting, workflow intelligence, and specialized training to deliver expert-level responses with discipline-specific knowledge and project stage guidance.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             {user ? (
               <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
                 <a href="/chat" className="flex items-center">
-                  Start Building Smarter <ArrowRight className="ml-2 h-5 w-5" />
+                  Experience AI Intelligence <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
             ) : (
@@ -60,7 +59,7 @@ const HeroBlocks = ({ variant = "default" }) => {
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-4 hover:bg-opacity-5 border-2" asChild 
                   style={{ borderColor: '#4b6b8b', color: '#4b6b8b', backgroundColor: 'rgba(248, 250, 252, 0.95)' }}>
-                  <a href="#features">View Demo</a>
+                  <a href="#features">Learn More</a>
                 </Button>
               </>
             )}
@@ -69,38 +68,11 @@ const HeroBlocks = ({ variant = "default" }) => {
           {/* Trust Indicator with Construction Graphics */}
           <div className="rounded-lg p-4 max-w-2xl mx-auto" style={{ backgroundColor: 'rgba(201, 214, 228, 0.95)', border: '1px solid #95a6b7' }}>
             <div className="flex items-center justify-center" style={{ color: '#0f2f57' }}>
-              {/* Construction Safety Tick */}
               <div className="flex items-center justify-center w-6 h-6 rounded-full mr-3" 
                 style={{ backgroundColor: '#16a34a' }}>
                 <CheckCircle className="h-4 w-4 text-white" />
               </div>
               <span className="font-semibold">Trusted by 500+ construction professionals across Australia & New Zealand</span>
-            </div>
-          </div>
-
-          {/* Additional Trust Indicators */}
-          <div className="flex items-center justify-center space-x-8 mt-6">
-            <div className="flex items-center">
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-white font-bold text-sm"
-                    style={{ backgroundColor: '#0f2f57' }}>
-                    👷
-                  </div>
-                ))}
-              </div>
-              <span className="ml-3 font-medium" style={{ color: '#4b6b8b' }}>
-                500+ professionals
-              </span>
-            </div>
-            
-            <div className="flex items-center">
-              <div className="flex text-yellow-400">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} className="w-5 h-5 fill-current" />
-                ))}
-              </div>
-              <span className="ml-2 font-medium" style={{ color: '#4b6b8b' }}>4.9/5</span>
             </div>
           </div>
         </div>
@@ -109,7 +81,7 @@ const HeroBlocks = ({ variant = "default" }) => {
   );
   
   const HeroVariant2 = () => (
-    // Professional Focus Hero with Original Design
+    // 2. Knowledge Vault & Document Intelligence
     <section className="py-20 relative overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center"
@@ -124,27 +96,26 @@ const HeroBlocks = ({ variant = "default" }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center space-y-8">
           <Badge className="mx-auto w-fit" style={{ backgroundColor: 'rgba(248, 250, 252, 0.2)', color: '#f8fafc', border: '1px solid rgba(248, 250, 252, 0.3)' }}>
-            ⚡ Instant Expert Knowledge
+            📚 Knowledge Vault & Document Intelligence
           </Badge>
           
-          <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-white max-w-4xl mx-auto">
-            Your Digital 
+          <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-white max-w-4xl mx-auto">
+            Intelligent Document
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-              Construction Mentor
+              Management & Search
             </span>
           </h1>
           
-          <p className="text-xl lg:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
-            Get expert guidance on AU/NZ building codes, compliance requirements, and industry best practices. 
-            Powered by AI trained specifically for construction professionals.
+          <p className="text-xl lg:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
+            Upload your construction documents, specifications, and technical materials to create your personalized knowledge vault. Our AI processes PDFs, Word docs, and images to provide instant access to your project information with intelligent search and context-aware responses.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             {user ? (
               <Button size="lg" className="text-lg px-10 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105" 
                 asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
-                <a href="/chat" className="flex items-center">
-                  Access Your AI Mentor <Bot className="ml-3 h-6 w-6" />
+                <a href="/knowledge" className="flex items-center">
+                  Access Knowledge Vault <BookOpen className="ml-3 h-6 w-6" />
                 </a>
               </Button>
             ) : (
@@ -152,40 +123,14 @@ const HeroBlocks = ({ variant = "default" }) => {
                 <Button size="lg" className="text-lg px-10 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105" 
                   asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
                   <a href="/auth" className="flex items-center">
-                    Start Free Trial <Bot className="ml-3 h-6 w-6" />
+                    Start Free Trial <BookOpen className="ml-3 h-6 w-6" />
                   </a>
                 </Button>
                 <p className="text-gray-300 font-medium">
-                  No credit card • 3 free questions • Instant access
+                  Upload documents • Intelligent search • Context-aware responses
                 </p>
               </>
             )}
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-4xl mx-auto">
-            <div className="text-center space-y-3">
-              <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm mx-auto flex items-center justify-center">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-white">AU/NZ Standards</h3>
-              <p className="text-gray-300 text-sm">BCA, NCC, AS/NZS compliance</p>
-            </div>
-            
-            <div className="text-center space-y-3">
-              <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm mx-auto flex items-center justify-center">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-white">Instant Answers</h3>
-              <p className="text-gray-300 text-sm">Get expert guidance in seconds</p>
-            </div>
-            
-            <div className="text-center space-y-3">
-              <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm mx-auto flex items-center justify-center">
-                <Bot className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-white">Dual-Layer AI</h3>
-              <p className="text-gray-300 text-sm">Technical + mentoring insights</p>
-            </div>
           </div>
         </div>
       </div>
@@ -193,8 +138,8 @@ const HeroBlocks = ({ variant = "default" }) => {
   );
   
   const HeroVariant3 = () => (
-    // Interactive Layout with Original Background
-    <section className="py-20 relative overflow-hidden min-h-screen flex items-center">
+    // 3. Enhanced Construction Chat Experience
+    <section className="py-20 relative overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ 
@@ -210,38 +155,27 @@ const HeroBlocks = ({ variant = "default" }) => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div className="text-center space-y-8">
+          <Badge className="mx-auto w-fit" style={{ backgroundColor: 'rgba(248, 250, 252, 0.2)', color: '#f8fafc', border: '1px solid rgba(248, 250, 252, 0.3)' }}>
+            🚀 Enhanced Construction Chat Experience
+          </Badge>
+          
           <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-white max-w-4xl mx-auto">
-            Expert Construction
+            ChatGPT-Style Interface
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-300">
-              AI at Your Fingertips
+              for Construction Pros
             </span>
           </h1>
           
-          <p className="text-xl text-gray-200 leading-relaxed max-w-3xl mx-auto">
-            Navigate building codes, ensure compliance, and accelerate your projects with 
-            AI specifically trained on Australian and New Zealand construction standards.
+          <p className="text-xl text-gray-200 leading-relaxed max-w-4xl mx-auto">
+            Enjoy an intuitive chat experience enhanced with construction industry knowledge. Toggle between standard and knowledge-enhanced modes, access your conversation history, and get responses that combine technical accuracy with practical mentoring insights.
           </p>
-          
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 max-w-2xl mx-auto">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-white font-semibold mb-1">Trusted by Industry Leaders</h3>
-                <p className="text-gray-300 text-sm">
-                  Join 500+ architects, engineers, and construction professionals using ONESource-ai daily
-                </p>
-              </div>
-            </div>
-          </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {user ? (
               <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
                 asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
                 <a href="/chat" className="flex items-center">
-                  Launch AI Assistant <ArrowRight className="ml-3 h-5 w-5" />
+                  Start Chatting Now <MessageSquare className="ml-3 h-5 w-5" />
                 </a>
               </Button>
             ) : (
@@ -249,7 +183,7 @@ const HeroBlocks = ({ variant = "default" }) => {
                 <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
                   asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
                   <a href="/auth" className="flex items-center">
-                    Try 3 Questions Free <ArrowRight className="ml-3 h-5 w-5" />
+                    Try 3 Questions Free <MessageSquare className="ml-3 h-5 w-5" />
                   </a>
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-white/30 text-white hover:bg-white/10" asChild>
@@ -258,20 +192,209 @@ const HeroBlocks = ({ variant = "default" }) => {
               </>
             )}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+
+  const HeroVariant4 = () => (
+    // 4. Smart Workflow & Project Guidance
+    <section className="py-20 relative overflow-hidden">
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ 
+          backgroundImage: 'url(/construction-hero-bg.jpg)',
+          backgroundPosition: 'center center',
+          backgroundSize: 'cover'
+        }}
+      />
+      <div 
+        className="absolute inset-0" 
+        style={{ backgroundColor: 'rgba(248, 250, 252, 0.7)' }}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center">
+          <Badge className="w-fit mx-auto mb-6" style={{ backgroundColor: '#16a34a', color: '#f8fafc' }}>
+            ⚙️ Smart Workflow & Project Guidance
+          </Badge>
           
-          <div className="flex flex-wrap gap-6 items-center justify-center text-sm text-gray-300">
-            <div className="flex items-center">
-              <Shield className="w-4 h-4 mr-2" />
-              No credit card required
+          <h1 className="text-5xl font-bold mb-6" style={{ color: '#0f2f57' }}>
+            Intelligent Project
+            <span className="block bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+              Stage Recognition
+            </span>
+          </h1>
+          <p className="text-xl mb-8 max-w-4xl mx-auto" style={{ color: '#4b6b8b' }}>
+            Our AI automatically detects your project stage—from concept planning to completion—and provides tailored workflow recommendations, key consultant suggestions, and critical considerations specific to your current phase of construction.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            {user ? (
+              <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300" asChild style={{ backgroundColor: '#16a34a', color: '#f8fafc' }}>
+                <a href="/chat" className="flex items-center">
+                  Get Project Guidance <Settings className="ml-2 h-5 w-5" />
+                </a>
+              </Button>
+            ) : (
+              <>
+                <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300" asChild style={{ backgroundColor: '#16a34a', color: '#f8fafc' }}>
+                  <a href="/auth" className="flex items-center">
+                    Try Smart Workflow <Settings className="ml-2 h-5 w-5" />
+                  </a>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-4 hover:bg-opacity-5 border-2" asChild 
+                  style={{ borderColor: '#16a34a', color: '#16a34a', backgroundColor: 'rgba(248, 250, 252, 0.95)' }}>
+                  <a href="#features">Learn More</a>
+                </Button>
+              </>
+            )}
+          </div>
+
+          <div className="rounded-lg p-4 max-w-2xl mx-auto" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid #16a34a' }}>
+            <div className="flex items-center justify-center" style={{ color: '#16a34a' }}>
+              <div className="flex items-center justify-center w-6 h-6 rounded-full mr-3" 
+                style={{ backgroundColor: '#16a34a' }}>
+                <CheckCircle className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-semibold">Automatic project stage detection with tailored recommendations</span>
             </div>
-            <div className="flex items-center">
-              <Zap className="w-4 h-4 mr-2" />
-              Instant setup
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+
+  const HeroVariant5 = () => (
+    // 5. Industry Partner Integration
+    <section className="py-20 relative overflow-hidden">
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ 
+          backgroundImage: 'url(/construction-hero-bg.jpg)',
+          backgroundPosition: 'center center',
+          backgroundSize: 'cover'
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-900/85 to-indigo-900/80" />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center space-y-8">
+          <Badge className="mx-auto w-fit" style={{ backgroundColor: 'rgba(248, 250, 252, 0.2)', color: '#f8fafc', border: '1px solid rgba(248, 250, 252, 0.3)' }}>
+            🤝 Industry Partner Integration
+          </Badge>
+          
+          <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-white max-w-4xl mx-auto">
+            Verified Supplier &
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-300">
+              Partner Content
+            </span>
+          </h1>
+          
+          <p className="text-xl lg:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
+            Access content from verified construction industry suppliers and partners with proper attribution. Get technical specifications, installation guides, and product information directly integrated into AI responses, connecting you with trusted industry partners.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            {user ? (
+              <Button size="lg" className="text-lg px-10 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105" 
+                asChild style={{ backgroundColor: '#f8fafc', color: '#7c3aed' }}>
+                <a href="/knowledge" className="flex items-center">
+                  Explore Partners <Users className="ml-3 h-6 w-6" />
+                </a>
+              </Button>
+            ) : (
+              <>
+                <Button size="lg" className="text-lg px-10 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105" 
+                  asChild style={{ backgroundColor: '#f8fafc', color: '#7c3aed' }}>
+                  <a href="/auth" className="flex items-center">
+                    Access Partner Content <Users className="ml-3 h-6 w-6" />
+                  </a>
+                </Button>
+                <p className="text-gray-300 font-medium">
+                  Verified suppliers • Technical specifications • Trusted partnerships
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+
+  const HeroVariant6 = () => (
+    // 6. Multi-Discipline Construction Expertise
+    <section className="py-20 relative overflow-hidden">
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ 
+          backgroundImage: 'url(/construction-hero-bg.jpg)',
+          backgroundPosition: 'center center',
+          backgroundSize: 'cover'
+        }}
+      />
+      <div 
+        className="absolute inset-0" 
+        style={{ backgroundColor: 'rgba(15, 47, 87, 0.9)' }}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div className="text-center space-y-8">
+          <Badge className="mx-auto w-fit" style={{ backgroundColor: 'rgba(248, 250, 252, 0.2)', color: '#f8fafc', border: '1px solid rgba(248, 250, 252, 0.3)' }}>
+            💡 Multi-Discipline Construction Expertise
+          </Badge>
+          
+          <h1 className="text-4xl lg:text-5xl font-bold leading-tight text-white max-w-5xl mx-auto">
+            Structural, Fire Safety, Mechanical &
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-300">
+              Hydraulic Intelligence
+            </span>
+          </h1>
+          
+          <p className="text-xl text-gray-200 leading-relaxed max-w-4xl mx-auto">
+            Get specialized responses across all major construction disciplines. Our AI recognizes whether you're asking about structural engineering, fire safety, HVAC systems, or hydraulic design and provides discipline-specific expertise with professional-grade recommendations.
+          </p>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-8">
+            <div className="text-center p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+              <Shield className="w-8 h-8 mx-auto mb-2 text-white" />
+              <span className="text-sm text-white">Structural</span>
             </div>
-            <div className="flex items-center">
-              <Bot className="w-4 h-4 mr-2" />
-              Available 24/7
+            <div className="text-center p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+              <Zap className="w-8 h-8 mx-auto mb-2 text-white" />
+              <span className="text-sm text-white">Fire Safety</span>
             </div>
+            <div className="text-center p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+              <Settings className="w-8 h-8 mx-auto mb-2 text-white" />
+              <span className="text-sm text-white">Mechanical</span>
+            </div>
+            <div className="text-center p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+              <Bot className="w-8 h-8 mx-auto mb-2 text-white" />
+              <span className="text-sm text-white">Hydraulic</span>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {user ? (
+              <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
+                asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
+                <a href="/chat" className="flex items-center">
+                  Get Expert Advice <ArrowRight className="ml-3 h-5 w-5" />
+                </a>
+              </Button>
+            ) : (
+              <>
+                <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
+                  asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
+                  <a href="/auth" className="flex items-center">
+                    Try Multi-Discipline AI <ArrowRight className="ml-3 h-5 w-5" />
+                  </a>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-white/30 text-white hover:bg-white/10" asChild>
+                  <a href="/pricing">View All Features</a>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
