@@ -9,104 +9,56 @@ const HeroBlocks = ({ variant = "default" }) => {
   const { user } = useAuth();
   
   const HeroVariant1 = () => (
-    // Modern Tech-focused Hero
-    <section className="py-20 lg:py-28 relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
+    // Original Design with New Background Image
+    <section className="py-20 relative overflow-hidden">
+      {/* Background Image - Full Width */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-10"
+        className="absolute inset-0 bg-cover bg-center"
         style={{ 
-          backgroundImage: 'url(https://images.unsplash.com/photo-1508361727343-ca787442dcd7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjB0ZWNobm9sb2d5fGVufDB8fHx8MTc1NDYyNTIwN3ww&ixlib=rb-4.1.0&q=85)',
+          backgroundImage: 'url(/construction-hero-bg.jpg)',
+          backgroundPosition: 'center center',
+          backgroundSize: 'cover'
         }}
       />
+      {/* Overlay for text readability */}
+      <div 
+        className="absolute inset-0" 
+        style={{ backgroundColor: 'rgba(248, 250, 252, 0.6)' }}
+      />
       
+      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Content */}
-          <div className="space-y-8">
-            <Badge className="w-fit" style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
-              🚀 Powered by Advanced AI
-            </Badge>
-            
-            <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold leading-tight" style={{ color: '#0f2f57' }}>
-                Smart Construction
-                <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                  Compliance Assistant
-                </span>
-              </h1>
-              
-              <p className="text-xl leading-relaxed" style={{ color: '#4b6b8b' }}>
-                Revolutionize your workflow with AI that understands AU/NZ building standards. 
-                Get instant expert guidance from planning to project delivery.
-              </p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              {user ? (
-                <Button size="lg" className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300" 
-                  asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
-                  <a href="/chat" className="flex items-center">
-                    Start Building Smarter <ArrowRight className="ml-2 h-5 w-5" />
-                  </a>
-                </Button>
-              ) : (
-                <>
-                  <Button size="lg" className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300" 
-                    asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
-                    <a href="/auth" className="flex items-center">
-                      Try 3 Questions Free <ArrowRight className="ml-2 h-5 w-5" />
-                    </a>
-                  </Button>
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 hover:bg-gray-50" 
-                    asChild style={{ borderColor: '#4b6b8b', color: '#4b6b8b' }}>
-                    <a href="#features">View Demo</a>
-                  </Button>
-                </>
-              )}
-            </div>
-            
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-gradient-to-r from-blue-400 to-indigo-500" />
-                  ))}
-                </div>
-                <span className="ml-3 font-medium" style={{ color: '#4b6b8b' }}>
-                  Trusted by 500+ professionals
-                </span>
-              </div>
-              
-              <div className="flex items-center">
-                <div className="flex text-yellow-400">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
-                  ))}
-                </div>
-                <span className="ml-2 font-medium" style={{ color: '#4b6b8b' }}>4.9/5</span>
-              </div>
-            </div>
-          </div>
+        <div className="text-center">
+          <h1 className="text-5xl font-bold mb-6" style={{ color: '#0f2f57' }}>
+            Your Digital Design
+            <span className="block" style={{ color: '#4b6b8b' }}>Compliance Partner</span>
+          </h1>
+          <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: '#4b6b8b' }}>
+            Interpret design codes, apply regulations, and verify compliance with clause aware logic across every stage of construction – from planning to delivery.
+          </p>
           
-          {/* Right Column - Visual */}
-          <div className="relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src="https://images.pexels.com/photos/33339851/pexels-photo-33339851.jpeg" 
-                alt="Construction Professional"
-                className="w-full h-96 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="bg-white/95 backdrop-blur-sm rounded-lg p-4">
-                  <div className="flex items-center mb-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-                    <span className="font-semibold text-gray-900">AS/NZS Compliant Response</span>
-                  </div>
-                  <p className="text-sm text-gray-700">
-                    "Your proposed beam design meets AS 1720.1 requirements..."
-                  </p>
-                </div>
-              </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            {user ? (
+              <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
+                <a href="/chat">Start Asking Questions</a>
+              </Button>
+            ) : (
+              <>
+                <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
+                  <a href="/auth">Try 3 Questions Free</a>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-4 hover:bg-opacity-5" asChild 
+                  style={{ borderColor: '#4b6b8b', color: '#4b6b8b', backgroundColor: 'rgba(248, 250, 252, 0.95)', border: '2px solid #4b6b8b' }}>
+                  <a href="#features">Learn More</a>
+                </Button>
+              </>
+            )}
+          </div>
+
+          <div className="rounded-lg p-4 max-w-2xl mx-auto" style={{ backgroundColor: 'rgba(201, 214, 228, 0.95)', border: '1px solid #95a6b7' }}>
+            <div className="flex items-center justify-center" style={{ color: '#0f2f57' }}>
+              <Shield className="h-5 w-5 mr-2" />
+              <span className="font-semibold">Trusted by construction professionals across Australia & New Zealand</span>
             </div>
           </div>
         </div>
@@ -115,15 +67,17 @@ const HeroBlocks = ({ variant = "default" }) => {
   );
   
   const HeroVariant2 = () => (
-    // Professional Focus Hero
-    <section className="py-20 lg:py-28 relative">
+    // Professional Focus Hero with Original Design
+    <section className="py-20 relative overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ 
-          backgroundImage: 'url(https://images.unsplash.com/photo-1738817628102-0b420c17dac3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxjb25zdHJ1Y3Rpb24lMjBwcm9mZXNzaW9uYWx8ZW58MHx8fHwxNzU0NjI1MjAxfDA&ixlib=rb-4.1.0&q=85)',
+          backgroundImage: 'url(/construction-hero-bg.jpg)',
+          backgroundPosition: 'center center',
+          backgroundSize: 'cover'
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 to-slate-800/90" />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/85 to-slate-800/80" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center space-y-8">
@@ -197,12 +151,12 @@ const HeroBlocks = ({ variant = "default" }) => {
   );
   
   const HeroVariant3 = () => (
-    // Split Layout Hero (Current + Enhanced)
+    // Interactive Layout with Original Background
     <section className="py-20 relative overflow-hidden min-h-screen flex items-center">
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ 
-          backgroundImage: 'url(/construction_hero_bg.jpeg)',
+          backgroundImage: 'url(/construction-hero-bg.jpg)',
           backgroundPosition: 'center center',
           backgroundSize: 'cover'
         }}
@@ -213,126 +167,68 @@ const HeroBlocks = ({ variant = "default" }) => {
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Column - Content */}
-          <div className="space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-white">
-                Expert Construction
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-300">
-                  AI at Your Fingertips
-                </span>
-              </h1>
-              
-              <p className="text-xl text-gray-200 leading-relaxed">
-                Navigate building codes, ensure compliance, and accelerate your projects with 
-                AI specifically trained on Australian and New Zealand construction standards.
-              </p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-semibold mb-1">Trusted by Industry Leaders</h3>
-                  <p className="text-gray-300 text-sm">
-                    Join 500+ architects, engineers, and construction professionals using ONESource-ai daily
-                  </p>
-                </div>
+        <div className="text-center space-y-8">
+          <h1 className="text-5xl lg:text-6xl font-bold leading-tight text-white max-w-4xl mx-auto">
+            Expert Construction
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-300">
+              AI at Your Fingertips
+            </span>
+          </h1>
+          
+          <p className="text-xl text-gray-200 leading-relaxed max-w-3xl mx-auto">
+            Navigate building codes, ensure compliance, and accelerate your projects with 
+            AI specifically trained on Australian and New Zealand construction standards.
+          </p>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 max-w-2xl mx-auto">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              {user ? (
-                <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
-                  asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
-                  <a href="/chat" className="flex items-center">
-                    Launch AI Assistant <ArrowRight className="ml-3 h-5 w-5" />
-                  </a>
-                </Button>
-              ) : (
-                <>
-                  <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
-                    asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
-                    <a href="/auth" className="flex items-center">
-                      Try 3 Questions Free <ArrowRight className="ml-3 h-5 w-5" />
-                    </a>
-                  </Button>
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-white/30 text-white hover:bg-white/10" asChild>
-                    <a href="/pricing">View Pricing</a>
-                  </Button>
-                </>
-              )}
-            </div>
-            
-            <div className="flex flex-wrap gap-6 items-center text-sm text-gray-300">
-              <div className="flex items-center">
-                <Shield className="w-4 h-4 mr-2" />
-                No credit card required
-              </div>
-              <div className="flex items-center">
-                <Zap className="w-4 h-4 mr-2" />
-                Instant setup
-              </div>
-              <div className="flex items-center">
-                <Bot className="w-4 h-4 mr-2" />
-                Available 24/7
+              <div>
+                <h3 className="text-white font-semibold mb-1">Trusted by Industry Leaders</h3>
+                <p className="text-gray-300 text-sm">
+                  Join 500+ architects, engineers, and construction professionals using ONESource-ai daily
+                </p>
               </div>
             </div>
           </div>
           
-          {/* Right Column - Interactive Demo Preview */}
-          <div className="relative">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md mx-auto">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="text-sm text-gray-500 ml-auto">ONESource-ai</span>
-              </div>
-              
-              <div className="space-y-4 h-96 overflow-hidden">
-                <div className="bg-gray-50 rounded-lg p-3 text-sm">
-                  <span className="font-medium text-gray-900">You:</span>
-                  <p className="text-gray-700 mt-1">
-                    "What beam size do I need for a 6m span in residential construction according to AS 1720?"
-                  </p>
-                </div>
-                
-                <div className="bg-blue-50 rounded-lg p-3 text-sm">
-                  <span className="font-medium text-blue-900 flex items-center">
-                    <Bot className="w-4 h-4 mr-1" />
-                    ONESource-ai:
-                  </span>
-                  <div className="text-blue-800 mt-1">
-                    <p className="font-semibold">Technical Answer:</p>
-                    <p className="text-xs mb-2">For a 6m span, AS 1720.1 requires minimum 240x45mm F8 pine beam for residential loads...</p>
-                    
-                    <p className="font-semibold">Mentoring Insight:</p>
-                    <p className="text-xs">Consider load distribution and consult structural engineer for final verification.</p>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-2 text-xs">
-                  <button className="px-3 py-1 bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200 transition-colors">
-                    👍 Helpful
-                  </button>
-                  <button className="px-3 py-1 bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200 transition-colors">
-                    📋 Copy
-                  </button>
-                  <button className="px-3 py-1 bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200 transition-colors">
-                    📚 Add to Knowledge
-                  </button>
-                </div>
-              </div>
-              
-              <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                <p className="text-xs text-blue-800 text-center font-medium">
-                  ✨ Live example of dual-layer AI responses
-                </p>
-              </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {user ? (
+              <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
+                asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
+                <a href="/chat" className="flex items-center">
+                  Launch AI Assistant <ArrowRight className="ml-3 h-5 w-5" />
+                </a>
+              </Button>
+            ) : (
+              <>
+                <Button size="lg" className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300" 
+                  asChild style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}>
+                  <a href="/auth" className="flex items-center">
+                    Try 3 Questions Free <ArrowRight className="ml-3 h-5 w-5" />
+                  </a>
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-white/30 text-white hover:bg-white/10" asChild>
+                  <a href="/pricing">View Pricing</a>
+                </Button>
+              </>
+            )}
+          </div>
+          
+          <div className="flex flex-wrap gap-6 items-center justify-center text-sm text-gray-300">
+            <div className="flex items-center">
+              <Shield className="w-4 h-4 mr-2" />
+              No credit card required
+            </div>
+            <div className="flex items-center">
+              <Zap className="w-4 h-4 mr-2" />
+              Instant setup
+            </div>
+            <div className="flex items-center">
+              <Bot className="w-4 h-4 mr-2" />
+              Available 24/7
             </div>
           </div>
         </div>
