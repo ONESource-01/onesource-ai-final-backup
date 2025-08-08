@@ -81,6 +81,9 @@ const AppContent = () => {
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/partner-upload-policy" element={<PartnerUploadPolicy />} />
+      <Route path="/help" element={<HelpCenter />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/feedback" element={<FeedbackPage />} />
       
       {/* Protected Routes */}
       <Route 
