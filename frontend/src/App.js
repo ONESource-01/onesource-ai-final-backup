@@ -25,7 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Button } from "./components/ui/button";
 import { Badge } from "./components/ui/badge";
 import { Alert, AlertDescription } from "./components/ui/alert";
-import { Loader2, Bot, Users, Zap, Shield } from "lucide-react";
+import { Loader2, Bot, Users, Zap, Shield, MessageSquare, BookOpen, Settings, Wrench } from "lucide-react";
 
 const AppContent = () => {
   const { user, loading: authLoading, idToken } = useAuth();
