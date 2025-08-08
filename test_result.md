@@ -492,17 +492,16 @@ metadata:
 
 test_plan:
   current_focus:
-    - "3-Phase AI Intelligence System testing completed successfully - all core features working"
-    - "Enhanced prompting with discipline-specific templates tested and functional"
-    - "Workflow intelligence with project stage detection working correctly"
-    - "Specialized training with AU/NZ standards integration verified"
-    - "Cross-discipline coordination guidance tested successfully"
-    - "All Knowledge Vault features tested and working correctly"
+    - "Weekly Business Intelligence Reporting System testing - verify data collection and email functionality"
+    - "Multiple Hero Block Variations testing - verify visual components and dynamic switching"
+    - "Backend API endpoints testing for weekly reports"
+    - "Frontend hero block rendering and responsiveness"
   stuck_tasks: 
     - "Firebase authentication configuration - API key issues preventing full auth flow"
     - "OpenAI API integration - using mock implementation for testing due to invalid API key"
-  test_all: true
-  test_priority: "3_phase_ai_completed"
+    - "SendGrid API key configuration - needs valid API key for email functionality"
+  test_all: false
+  test_priority: "new_features_first"
 
 agent_communication:
   - agent: "main"
