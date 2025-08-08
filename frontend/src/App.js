@@ -369,8 +369,9 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Legal</h3>
               <ul className="space-y-2" style={{ color: '#95a6b7' }}>
-                <li><a href="#" className="hover:opacity-75">Privacy Policy</a></li>
-                <li><a href="#" className="hover:opacity-75">Terms of Service</a></li>
+                <li><a href="/privacy" className="hover:opacity-75">Privacy Policy</a></li>
+                <li><a href="/terms" className="hover:opacity-75">Terms of Service</a></li>
+                <li><a href="/partner-upload-policy" className="hover:opacity-75">Partner Upload Policy</a></li>
               </ul>
             </div>
           </div>
