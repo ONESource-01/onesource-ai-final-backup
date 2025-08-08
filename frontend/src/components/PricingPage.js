@@ -234,15 +234,30 @@ const PricingPage = () => {
                 key={plan.id} 
                 className={`relative ${plan.highlighted ? 'ring-2 ring-blue-500 shadow-xl' : ''}`}
               >
-                {plan.highlighted && (
+                {/* Promotional Badge */}
+                {(plan.badge || plan.highlighted) && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-500 text-white px-4 py-1">
-                      Most Popular
+                    <Badge className={`px-4 py-1 ${
+                      plan.badge === 'Most Popular' || plan.highlighted ? 'bg-blue-500 text-white' :
+                      plan.badge === 'Best Value' ? 'bg-green-500 text-white' :
+                      plan.badge === 'Limited Time' ? 'bg-orange-500 text-white' :
+                      'bg-blue-500 text-white'
+                    }`}>
+                      {plan.badge || 'Most Popular'}
                     </Badge>
                   </div>
                 )}
 
                 <CardHeader className="text-center pb-4">
+                  {/* Promotion Banner */}
+                  {plan.promotion && (
+                    <div className="mb-4 p-2 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg">
+                      <p className="text-sm font-semibold text-green-700">
+                        🎉 {plan.promotion}
+                      </p>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-center mb-4">
                     <div className={`p-3 rounded-full ${plan.highlighted ? 'bg-blue-100' : 'bg-gray-100'}`}>
                       <div className={plan.highlighted ? 'text-blue-600' : 'text-gray-600'}>
@@ -253,6 +268,13 @@ const PricingPage = () => {
                   
                   <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
                   <p className="text-gray-600 text-sm">{plan.description}</p>
+                  
+                  {/* Partner Tooltip */}
+                  {plan.tooltip && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded-lg text-xs text-blue-700">
+                      💡 {plan.tooltip}
+                    </div>
+                  )}
                   
                   <div className="mt-4">
                     <div className="flex items-baseline justify-center">
