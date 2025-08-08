@@ -144,18 +144,10 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      {/* Header */}
-      <header style={{ backgroundColor: '#0f2f57' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Contact Our Construction Experts
-          </h1>
-          <p className="text-xl text-gray-200 max-w-2xl mx-auto">
-            Get personalized support for your construction projects, technical questions, 
-            or help maximizing ONESource-ai for your team.
-          </p>
-        </div>
-      </header>
+      <PageHeader 
+        title="Contact Our Construction Experts"
+        subtitle="Get personalized support for your construction projects, technical questions, or help maximizing ONESource-ai for your team."
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Contact Methods */}
