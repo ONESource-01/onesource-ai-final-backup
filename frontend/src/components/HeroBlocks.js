@@ -403,23 +403,32 @@ const HeroBlocks = ({ variant = "default" }) => {
 
   // Render based on variant
   switch (variant) {
-    case "modern":
+    case "ai-intelligence":
       return <HeroVariant1 />;
-    case "professional":
+    case "knowledge-vault":
       return <HeroVariant2 />;
-    case "interactive":
+    case "chat-experience":
       return <HeroVariant3 />;
+    case "workflow-guidance":
+      return <HeroVariant4 />;
+    case "partner-integration":
+      return <HeroVariant5 />;
+    case "multi-discipline":
+      return <HeroVariant6 />;
     default:
       return <HeroVariant1 />;
   }
 };
 
 // Hero Block Selector Component for Admin/Demo purposes
-export const HeroBlockSelector = ({ onVariantChange, currentVariant = "modern" }) => {
+export const HeroBlockSelector = ({ onVariantChange, currentVariant = "ai-intelligence" }) => {
   const variants = [
-    { key: "modern", name: "Modern Tech", description: "Clean, modern design with tech focus" },
-    { key: "professional", name: "Professional Dark", description: "Dark, professional construction theme" },
-    { key: "interactive", name: "Interactive Demo", description: "Split layout with live demo preview" }
+    { key: "ai-intelligence", name: "3-Phase AI Intelligence", description: "Advanced construction AI with 3-phase intelligence system" },
+    { key: "knowledge-vault", name: "Knowledge Vault", description: "Intelligent document management and search capabilities" },
+    { key: "chat-experience", name: "Chat Experience", description: "ChatGPT-style interface for construction professionals" },
+    { key: "workflow-guidance", name: "Workflow Guidance", description: "Smart project stage recognition and recommendations" },
+    { key: "partner-integration", name: "Partner Integration", description: "Verified supplier and partner content access" },
+    { key: "multi-discipline", name: "Multi-Discipline", description: "Structural, fire safety, mechanical & hydraulic expertise" }
   ];
 
   return (
