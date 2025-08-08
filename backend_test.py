@@ -1425,6 +1425,9 @@ async def main():
         await tester.test_knowledge_vault_search()
         await tester.test_enhanced_chat_system()
         
+        # Test 3-Phase AI Intelligence System
+        await tester.test_3_phase_ai_intelligence_system()
+        
         await tester.test_error_handling()
         
         # Print summary
