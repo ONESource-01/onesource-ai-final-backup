@@ -9,7 +9,7 @@ const HeroBlocks = ({ variant = "default" }) => {
   const { user } = useAuth();
   
   const HeroVariant1 = () => (
-    // Original Design with New Background Image
+    // Modern Design with Updated Content
     <section className="py-20 relative overflow-hidden">
       {/* Background Image - Full Width */}
       <div 
@@ -29,36 +29,78 @@ const HeroBlocks = ({ variant = "default" }) => {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center">
+          <Badge className="w-fit mx-auto mb-6" style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
+            🚀 Powered by Advanced AI
+          </Badge>
+          
           <h1 className="text-5xl font-bold mb-6" style={{ color: '#0f2f57' }}>
-            Your Digital Design
-            <span className="block" style={{ color: '#4b6b8b' }}>Compliance Partner</span>
+            Smart Construction
+            <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Compliance Assistant
+            </span>
           </h1>
           <p className="text-xl mb-8 max-w-3xl mx-auto" style={{ color: '#4b6b8b' }}>
-            Interpret design codes, apply regulations, and verify compliance with clause aware logic across every stage of construction – from planning to delivery.
+            Revolutionize your workflow with AI that understands AU/NZ building standards. 
+            Get instant expert guidance from planning to project delivery.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             {user ? (
-              <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
-                <a href="/chat">Start Asking Questions</a>
+              <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
+                <a href="/chat" className="flex items-center">
+                  Start Building Smarter <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
               </Button>
             ) : (
               <>
-                <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
-                  <a href="/auth">Try 3 Questions Free</a>
+                <Button size="lg" className="text-lg px-8 py-4 hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300" asChild style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
+                  <a href="/auth" className="flex items-center">
+                    Try 3 Questions Free <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-4 hover:bg-opacity-5" asChild 
-                  style={{ borderColor: '#4b6b8b', color: '#4b6b8b', backgroundColor: 'rgba(248, 250, 252, 0.95)', border: '2px solid #4b6b8b' }}>
-                  <a href="#features">Learn More</a>
+                <Button size="lg" variant="outline" className="text-lg px-8 py-4 hover:bg-opacity-5 border-2" asChild 
+                  style={{ borderColor: '#4b6b8b', color: '#4b6b8b', backgroundColor: 'rgba(248, 250, 252, 0.95)' }}>
+                  <a href="#features">View Demo</a>
                 </Button>
               </>
             )}
           </div>
 
+          {/* Trust Indicator with Construction Graphics */}
           <div className="rounded-lg p-4 max-w-2xl mx-auto" style={{ backgroundColor: 'rgba(201, 214, 228, 0.95)', border: '1px solid #95a6b7' }}>
             <div className="flex items-center justify-center" style={{ color: '#0f2f57' }}>
-              <Shield className="h-5 w-5 mr-2" />
-              <span className="font-semibold">Trusted by construction professionals across Australia & New Zealand</span>
+              {/* Construction Safety Tick */}
+              <div className="flex items-center justify-center w-6 h-6 rounded-full mr-3" 
+                style={{ backgroundColor: '#16a34a' }}>
+                <CheckCircle className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-semibold">Trusted by 500+ construction professionals across Australia & New Zealand</span>
+            </div>
+          </div>
+
+          {/* Additional Trust Indicators */}
+          <div className="flex items-center justify-center space-x-8 mt-6">
+            <div className="flex items-center">
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-white font-bold text-sm"
+                    style={{ backgroundColor: '#0f2f57' }}>
+                    👷
+                  </div>
+                ))}
+              </div>
+              <span className="ml-3 font-medium" style={{ color: '#4b6b8b' }}>
+                500+ professionals
+              </span>
+            </div>
+            
+            <div className="flex items-center">
+              <div className="flex text-yellow-400">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Star key={i} className="w-5 h-5 fill-current" />
+                ))}
+              </div>
+              <span className="ml-2 font-medium" style={{ color: '#4b6b8b' }}>4.9/5</span>
             </div>
           </div>
         </div>
