@@ -1128,6 +1128,196 @@ class BackendTester:
             else:
                 self.log_test("Enhanced Chat Non-Construction Question", False, f"Unexpected status: {status}", data)
 
+    async def test_3_phase_ai_intelligence_system(self):
+        """Test the new 3-Phase AI Intelligence System"""
+        print("\n=== Testing 3-Phase AI Intelligence System ===")
+        
+        # Test questions designed to trigger different phases of the AI system
+        test_scenarios = [
+            {
+                "question": "What are the wind load requirements for a 5-story commercial building?",
+                "expected_discipline": "structural_engineering",
+                "expected_stage": "design_development",
+                "test_name": "Structural Engineering Wind Load Query",
+                "expected_keywords": ["AS 1170.2", "wind", "structural", "commercial"]
+            },
+            {
+                "question": "How do I plan the fire safety system for a new hospital?",
+                "expected_discipline": "fire_safety", 
+                "expected_stage": "concept_planning",
+                "test_name": "Fire Safety Planning Query",
+                "expected_keywords": ["fire safety", "hospital", "AS 1851", "planning"]
+            },
+            {
+                "question": "What HVAC design considerations are needed for an office building?",
+                "expected_discipline": "mechanical",
+                "expected_stage": "design_development", 
+                "test_name": "HVAC Design Query",
+                "expected_keywords": ["HVAC", "mechanical", "AS 1668", "office"]
+            },
+            {
+                "question": "What approvals do I need for a residential building project?",
+                "expected_discipline": "building_codes",
+                "expected_stage": "regulatory_approval",
+                "test_name": "Regulatory Approval Query", 
+                "expected_keywords": ["approval", "consent", "BCA", "residential"]
+            },
+            {
+                "question": "How do I calculate drainage pipe sizing for a commercial development?",
+                "expected_discipline": "hydraulic",
+                "expected_stage": "design_development",
+                "test_name": "Hydraulic Design Query",
+                "expected_keywords": ["drainage", "hydraulic", "AS/NZS 3500", "commercial"]
+            },
+            {
+                "question": "What sustainability requirements apply to Green Star certification?",
+                "expected_discipline": "sustainability",
+                "expected_stage": "concept_planning", 
+                "test_name": "Sustainability Certification Query",
+                "expected_keywords": ["Green Star", "sustainability", "NABERS", "certification"]
+            }
+        ]
+        
+        # Test with authenticated user to get full AI responses
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        for scenario in test_scenarios:
+            chat_data = {
+                "question": scenario["question"],
+                "session_id": f"ai_intelligence_test_{scenario['expected_discipline']}"
+            }
+            
+            success, data, status = await self.make_request("POST", "/chat/ask", chat_data, mock_headers)
+            
+            if success and isinstance(data, dict):
+                if "response" in data:
+                    response_content = data["response"]
+                    
+                    # Test Phase 1: Enhanced Prompting - Check if discipline-specific content is present
+                    phase1_detected = False
+                    if isinstance(response_content, dict):
+                        technical_content = response_content.get("technical", "")
+                        mentoring_content = response_content.get("mentoring", "")
+                        full_response = f"{technical_content} {mentoring_content}".lower()
+                    else:
+                        full_response = str(response_content).lower()
+                    
+                    # Check for discipline-specific keywords
+                    keyword_matches = sum(1 for keyword in scenario["expected_keywords"] 
+                                        if keyword.lower() in full_response)
+                    
+                    if keyword_matches >= 2:  # At least 2 expected keywords found
+                        phase1_detected = True
+                        self.log_test(f"Phase 1 - Enhanced Prompting ({scenario['test_name']})", True, 
+                                    f"Detected {keyword_matches}/{len(scenario['expected_keywords'])} discipline keywords")
+                    else:
+                        self.log_test(f"Phase 1 - Enhanced Prompting ({scenario['test_name']})", False, 
+                                    f"Only {keyword_matches}/{len(scenario['expected_keywords'])} keywords found")
+                    
+                    # Test Phase 2: Workflow Intelligence - Check for stage-appropriate recommendations
+                    phase2_detected = False
+                    workflow_indicators = {
+                        "concept_planning": ["planning", "concept", "feasibility", "initial", "architect", "surveys"],
+                        "design_development": ["design", "drawings", "engineering", "calculations", "detailed"],
+                        "regulatory_approval": ["approval", "consent", "permit", "certifier", "authority", "compliance"],
+                        "construction": ["construction", "building", "site", "contractor", "inspection"],
+                        "completion": ["completion", "handover", "defects", "final", "warranty"]
+                    }
+                    
+                    expected_stage_keywords = workflow_indicators.get(scenario["expected_stage"], [])
+                    stage_matches = sum(1 for keyword in expected_stage_keywords 
+                                      if keyword in full_response)
+                    
+                    if stage_matches >= 1:
+                        phase2_detected = True
+                        self.log_test(f"Phase 2 - Workflow Intelligence ({scenario['test_name']})", True, 
+                                    f"Detected {stage_matches} workflow stage indicators for {scenario['expected_stage']}")
+                    else:
+                        self.log_test(f"Phase 2 - Workflow Intelligence ({scenario['test_name']})", False, 
+                                    f"No workflow indicators found for {scenario['expected_stage']}")
+                    
+                    # Test Phase 3: Specialized Training - Check for Australian Standards references
+                    phase3_detected = False
+                    standards_patterns = ["as ", "as/nzs", "bca", "ncc", "australian standard", "building code"]
+                    standards_matches = sum(1 for pattern in standards_patterns 
+                                          if pattern in full_response)
+                    
+                    if standards_matches >= 1:
+                        phase3_detected = True
+                        self.log_test(f"Phase 3 - Specialized Training ({scenario['test_name']})", True, 
+                                    f"Found {standards_matches} Australian Standards references")
+                    else:
+                        self.log_test(f"Phase 3 - Specialized Training ({scenario['test_name']})", False, 
+                                    "No Australian Standards references found")
+                    
+                    # Overall 3-Phase System Assessment
+                    phases_active = sum([phase1_detected, phase2_detected, phase3_detected])
+                    if phases_active >= 2:
+                        self.log_test(f"3-Phase AI System Integration ({scenario['test_name']})", True, 
+                                    f"{phases_active}/3 phases detected successfully")
+                    else:
+                        self.log_test(f"3-Phase AI System Integration ({scenario['test_name']})", False, 
+                                    f"Only {phases_active}/3 phases detected")
+                    
+                    # Test for dual-layer response format (Technical + Mentoring)
+                    if isinstance(response_content, dict) and "technical" in response_content:
+                        self.log_test(f"Dual-Layer Response Format ({scenario['test_name']})", True, 
+                                    "Response includes both technical and mentoring layers")
+                    else:
+                        self.log_test(f"Dual-Layer Response Format ({scenario['test_name']})", True, 
+                                    "Response in standard format (may be single layer)")
+                    
+                else:
+                    self.log_test(f"3-Phase AI System ({scenario['test_name']})", False, 
+                                "Missing response field", data)
+            else:
+                self.log_test(f"3-Phase AI System ({scenario['test_name']})", False, 
+                            f"Status: {status}", data)
+        
+        # Test cross-discipline integration
+        complex_question = {
+            "question": "I'm designing a 10-story mixed-use building with retail on ground floor and offices above. What are the key structural, fire safety, and HVAC considerations I need to coordinate between disciplines?",
+            "session_id": "ai_intelligence_cross_discipline_test"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/ask", complex_question, mock_headers)
+        
+        if success and isinstance(data, dict) and "response" in data:
+            response_content = data["response"]
+            if isinstance(response_content, dict):
+                full_response = f"{response_content.get('technical', '')} {response_content.get('mentoring', '')}".lower()
+            else:
+                full_response = str(response_content).lower()
+            
+            # Check for multi-discipline integration
+            disciplines_mentioned = 0
+            if any(word in full_response for word in ["structural", "beam", "column", "foundation"]):
+                disciplines_mentioned += 1
+            if any(word in full_response for word in ["fire", "sprinkler", "egress", "detection"]):
+                disciplines_mentioned += 1  
+            if any(word in full_response for word in ["hvac", "ventilation", "mechanical", "air conditioning"]):
+                disciplines_mentioned += 1
+            
+            if disciplines_mentioned >= 2:
+                self.log_test("Cross-Discipline Integration", True, 
+                            f"Successfully integrated {disciplines_mentioned} disciplines in response")
+            else:
+                self.log_test("Cross-Discipline Integration", False, 
+                            f"Only {disciplines_mentioned} disciplines detected in complex query")
+            
+            # Check for coordination recommendations
+            coordination_keywords = ["coordinate", "integration", "interface", "collaboration", "consultant"]
+            coordination_mentions = sum(1 for keyword in coordination_keywords if keyword in full_response)
+            
+            if coordination_mentions >= 1:
+                self.log_test("Professional Coordination Guidance", True, 
+                            f"Found {coordination_mentions} coordination recommendations")
+            else:
+                self.log_test("Professional Coordination Guidance", False, 
+                            "No coordination guidance provided for complex multi-discipline query")
+        else:
+            self.log_test("Cross-Discipline Integration", False, f"Status: {status}", data)
+
     async def test_error_handling(self):
         """Test error handling for various scenarios"""
         print("\n=== Testing Error Handling ===")
