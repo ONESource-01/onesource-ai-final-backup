@@ -24,6 +24,9 @@ from dotenv import load_dotenv
 # Import AI Intelligence System
 from typing import Dict, Any
 
+# Import Weekly Reporting Service
+from weekly_reporting_service import WeeklyReportingService, test_weekly_report
+
 # Advanced AI Intelligence System
 class AIIntelligencePhases:
     """3-Phase AI Intelligence System for Construction Industry"""
