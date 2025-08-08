@@ -176,18 +176,10 @@ const FeedbackPage = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      {/* Header */}
-      <header style={{ backgroundColor: '#0f2f57' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Help Shape the Future of Construction AI
-          </h1>
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-            Your feedback drives our product development. Share your experiences, suggest improvements, 
-            or report issues to help us build better AI tools for construction professionals.
-          </p>
-        </div>
-      </header>
+      <PageHeader 
+        title="Help Shape the Future of Construction AI"
+        subtitle="Your feedback drives our product development. Share your experiences, suggest improvements, or report issues to help us build better AI tools for construction professionals."
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Impact Stats */}
