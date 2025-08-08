@@ -122,30 +122,25 @@ const HelpCenter = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
-      {/* Header */}
-      <header style={{ backgroundColor: '#0f2f57' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            ONESource-ai Help Center
-          </h1>
-          <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-            Get the most out of your construction AI assistant with guides, tutorials, and expert tips.
-          </p>
-          
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Search for help articles, guides, or tutorials..."
-              className="w-full pl-12 pr-4 py-4 rounded-lg border-0 text-lg"
-              style={{ backgroundColor: '#f8fafc', color: '#0f2f57' }}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+      <PageHeader 
+        title="ONESource-ai Help Center"
+        subtitle="Get the most out of your construction AI assistant with guides, tutorials, and expert tips."
+      />
+
+      {/* Search Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="max-w-2xl mx-auto relative mb-12">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <input
+            type="text"
+            placeholder="Search for help articles, guides, or tutorials..."
+            className="w-full pl-12 pr-4 py-4 rounded-lg border-0 text-lg shadow-lg"
+            style={{ backgroundColor: '#ffffff', color: '#0f2f57', border: '1px solid #c9d6e4' }}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-      </header>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Quick Actions */}
