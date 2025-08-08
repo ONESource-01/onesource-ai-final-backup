@@ -72,7 +72,7 @@ const HeroBlocks = ({ variant = "default" }) => {
                 style={{ backgroundColor: '#16a34a' }}>
                 <CheckCircle className="h-4 w-4 text-white" />
               </div>
-              <span className="font-semibold">Trusted by 500+ construction professionals across Australia & New Zealand</span>
+              <span className="font-semibold">Built for construction professionals across Australia & New Zealand</span>
             </div>
           </div>
         </div>
