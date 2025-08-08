@@ -338,9 +338,9 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2" style={{ color: '#95a6b7' }}>
-                <li><a href="#" className="hover:opacity-75">Help Center</a></li>
-                <li><a href="#" className="hover:opacity-75">Contact</a></li>
-                <li><a href="#" className="hover:opacity-75">Feedback</a></li>
+                <li><a href="/help" className="hover:opacity-75">Help Center</a></li>
+                <li><a href="/contact" className="hover:opacity-75">Contact</a></li>
+                <li><a href="/feedback" className="hover:opacity-75">Feedback</a></li>
               </ul>
             </div>
             
