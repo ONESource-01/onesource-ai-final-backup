@@ -1544,6 +1544,9 @@ async def main():
         # Test 3-Phase AI Intelligence System
         await tester.test_3_phase_ai_intelligence_system()
         
+        # Test Weekly Business Intelligence Reporting System
+        await tester.test_weekly_reporting_system()
+        
         await tester.test_error_handling()
         
         # Print summary
