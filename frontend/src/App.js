@@ -103,7 +103,7 @@ const AppContent = () => {
 
 const LandingPage = () => {
   const { user } = useAuth();
-  const [heroVariant, setHeroVariant] = useState("modern");
+  const [heroVariant, setHeroVariant] = useState("modern"); // This will show the original design with new background
   const [showVariantSelector, setShowVariantSelector] = useState(false);
 
   // Check if user is admin/developer (simplified check)
