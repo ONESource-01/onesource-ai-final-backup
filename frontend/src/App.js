@@ -12,6 +12,9 @@ import PricingPage from "./components/PricingPage";
 import PaymentSuccess from "./components/PaymentSuccess";
 import AdminDashboard from "./components/AdminDashboard";
 import KnowledgeVault from "./components/KnowledgeVault";
+import TermsOfService from "./components/TermsOfService";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import PartnerUploadPolicy from "./components/PartnerUploadPolicy";
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
