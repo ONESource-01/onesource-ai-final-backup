@@ -64,15 +64,20 @@ const PartnerUploadPolicy = () => {
                     <h3 className="font-semibold mb-2" style={{ color: '#0f2f57' }}>
                       2.1 Qualifying Organizations
                     </h3>
-                    <p>Eligible partners include:</p>
+                    <p>Eligible partners include (but are not limited to):</p>
                     <ul className="list-disc ml-6 space-y-1 mt-2">
-                      <li><strong>Building Material Suppliers:</strong> Concrete, steel, timber, insulation, cladding suppliers</li>
-                      <li><strong>Equipment Manufacturers:</strong> HVAC, plumbing, electrical, fire safety equipment</li>
-                      <li><strong>Service Providers:</strong> Testing services, consultancies, specialized contractors</li>
-                      <li><strong>Technology Companies:</strong> Construction software, IoT devices, monitoring systems</li>
-                      <li><strong>Industry Organizations:</strong> Peak bodies, associations, research institutions</li>
-                      <li><strong>Professional Services:</strong> Engineering firms, architectural practices, certifying bodies</li>
+                      <li><strong>Building Material Suppliers:</strong> Including but not limited to concrete, steel, timber, insulation, cladding, adhesives, sealants, membranes, and all other construction materials</li>
+                      <li><strong>Equipment Manufacturers:</strong> Including but not limited to HVAC systems, pumps, valves, plumbing fixtures, electrical equipment, fire safety equipment, lighting, security systems, access control, and all other construction-related equipment</li>
+                      <li><strong>Service Providers:</strong> Including but not limited to testing services, consultancies, specialized contractors, inspection services, certification bodies, and technical advisory services</li>
+                      <li><strong>Technology Companies:</strong> Including but not limited to construction software, IoT devices, monitoring systems, BIM solutions, project management tools, and digital construction technologies</li>
+                      <li><strong>Industry Organizations:</strong> Including but not limited to peak bodies, trade associations, research institutions, training organizations, and professional societies</li>
+                      <li><strong>Professional Services:</strong> Including but not limited to engineering firms, architectural practices, certifying bodies, quantity surveyors, project managers, and specialist consultants</li>
                     </ul>
+                    <div className="mt-3 p-3 rounded-lg" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                      <p className="text-sm font-medium" style={{ color: '#16a34a' }}>
+                        📝 Note: These categories are illustrative examples only. All legitimate construction industry participants are welcome to apply for partnership, regardless of whether their specific products or services are explicitly listed above.
+                      </p>
+                    </div>
                   </div>
 
                   <div>
