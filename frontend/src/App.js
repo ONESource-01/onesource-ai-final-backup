@@ -15,6 +15,7 @@ import KnowledgeVault from "./components/KnowledgeVault";
 import TermsOfService from "./components/TermsOfService";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import PartnerUploadPolicy from "./components/PartnerUploadPolicy";
+import HeroBlocks, { HeroBlockSelector } from "./components/HeroBlocks";
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
