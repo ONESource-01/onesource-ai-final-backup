@@ -494,10 +494,10 @@ const PartnerUploadPolicy = () => {
                     For partnership inquiries, content support, or policy questions:
                   </p>
                   <div className="p-4 rounded-lg" style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                    <p><strong>Partnership Team:</strong> partnerships@onesource-ai.com</p>
-                    <p><strong>Content Support:</strong> content@onesource-ai.com</p>
-                    <p><strong>Technical Support:</strong> partners-tech@onesource-ai.com</p>
-                    <p><strong>Legal & Compliance:</strong> legal@onesource-ai.com</p>
+                    <p><strong>Partnership Team:</strong> support@onesource-ai.com</p>
+                    <p><strong>Content Support:</strong> support@onesource-ai.com</p>
+                    <p><strong>Technical Support:</strong> support@onesource-ai.com</p>
+                    <p><strong>Legal & Compliance:</strong> support@onesource-ai.com</p>
                     <p><strong>Phone:</strong> +61 2 1234 5678</p>
                     <p><strong>Address:</strong></p>
                     <p>ONESource-ai Partnership Team</p>
