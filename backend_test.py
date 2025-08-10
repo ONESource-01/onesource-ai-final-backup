@@ -2671,6 +2671,9 @@ async def main():
         # Test Weekly Business Intelligence Reporting System
         await tester.test_weekly_reporting_system()
         
+        # NEW: Test Booster Response System
+        await tester.test_booster_response_system()
+        
         await tester.test_error_handling()
         
         # Print summary
