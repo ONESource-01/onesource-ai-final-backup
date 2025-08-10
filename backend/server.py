@@ -450,6 +450,14 @@ class VoucherCreate(BaseModel):
     max_uses: int = 1
     description: Optional[str] = None
 
+class UserPreferences(BaseModel):
+    industries: List[str] = []
+    role: str = ""
+    experience_level: str = ""
+    response_style: str = "balanced"
+    ai_focus_areas: List[str] = []
+    custom_instructions: str = ""
+
 class PartnerRegistration(BaseModel):
     company_name: str
     abn: str
