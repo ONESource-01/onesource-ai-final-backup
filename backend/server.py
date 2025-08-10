@@ -1555,6 +1555,175 @@ async def submit_contribution(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error submitting contribution: {str(e)}")
 
+@api_router.post("/chat/boost-response")
+async def boost_response(
+    boost_request: dict,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Generate a boosted response showing the next tier preview"""
+    try:
+        uid = current_user["uid"]
+        question = boost_request.get("question")
+        current_tier = boost_request.get("current_tier", "starter")
+        target_tier = boost_request.get("target_tier")
+        
+        if not question or not target_tier:
+            raise HTTPException(status_code=400, detail="Missing question or target_tier")
+        
+        # Check daily booster limit (1 per day)
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = today_start + timedelta(days=1)
+        
+        booster_usage = await db.booster_usage.find_one({
+            "user_id": uid,
+            "date": {"$gte": today_start, "$lt": today_end}
+        })
+        
+        if booster_usage and booster_usage.get("usage_count", 0) >= 1:
+            raise HTTPException(status_code=429, detail="Daily booster limit reached. Try again tomorrow!")
+        
+        # Generate enhanced response based on target tier
+        enhanced_system_prompt = f"""
+        You are ONESource-ai, demonstrating {target_tier.upper().replace('_', '-')} tier capabilities.
+        
+        {target_tier.upper().replace('_', '-')} FEATURES:
+        - More detailed technical analysis
+        - Advanced compliance checking
+        - Cross-referenced standards
+        - Professional formatting with bullet points
+        - Industry best practices
+        - Risk assessment considerations
+        {"- Specialized workflow recommendations" if target_tier == "pro_plus" else ""}
+        {"- Multi-discipline coordination guidance" if target_tier == "pro_plus" else ""}
+        
+        Format your response with:
+        - **Bold headings** for sections
+        - • Bullet points for key items
+        - ✅ Checkmarks for compliant items
+        - ⚠️ Warnings for important considerations
+        - 🏗️ Icons for construction-specific content
+        
+        Provide a comprehensive, professional response that clearly demonstrates the value of upgrading.
+        
+        Question: {question}
+        """
+        
+        # Get AI response with enhanced prompting
+        api_key = os.environ.get('OPENAI_API_KEY', '')
+        if not api_key or len(api_key) < 10:
+            # Enhanced mock response for booster
+            boosted_response = f"""
+            **🚀 Enhanced {target_tier.upper().replace('_', '-')} Analysis**
+
+            **Technical Assessment:**
+            • Comprehensive code compliance analysis
+            • Multi-standard cross-referencing (AS/NZS series)
+            • Advanced risk assessment protocols
+            • Professional implementation guidelines
+
+            **Key Compliance Requirements:**
+            ✅ Primary structural requirements verified
+            ✅ Fire safety protocols aligned with BCA
+            ✅ Accessibility standards (DDA) compliance
+            ⚠️ Site-specific considerations required
+
+            **Professional Recommendations:**
+            🏗️ **Best Practice Implementation:**
+            • Staged construction approach recommended
+            • Quality control checkpoints established
+            • Professional certification pathways outlined
+
+            🔧 **Technical Specifications:**
+            • Detailed material specifications provided
+            • Installation methodology guidelines
+            • Testing and verification protocols
+
+            **Risk Management:**
+            ⚠️ **Critical Considerations:**
+            • Environmental impact assessment
+            • Regulatory approval timeline
+            • Professional liability considerations
+
+            **💡 Implementation Roadmap:**
+            1. **Phase 1:** Initial compliance verification
+            2. **Phase 2:** Detailed design development  
+            3. **Phase 3:** Professional review and approval
+
+            ---
+            *This enhanced analysis demonstrates the comprehensive expertise available with {target_tier.upper().replace('_', '-')} membership.*
+            """
+        else:
+            try:
+                from openai import OpenAI
+                client = OpenAI(api_key=api_key)
+                
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": enhanced_system_prompt},
+                        {"role": "user", "content": question}
+                    ],
+                    max_tokens=800,
+                    temperature=0.7
+                )
+                
+                boosted_response = response.choices[0].message.content
+                
+            except Exception as e:
+                print(f"OpenAI API error in booster: {e}")
+                # Fallback to enhanced mock
+                boosted_response = f"""
+                **🚀 Enhanced {target_tier.upper().replace('_', '-')} Analysis**
+
+                **Professional Assessment:**
+                This comprehensive analysis demonstrates the advanced capabilities available with {target_tier.upper().replace('_', '-')} membership, including detailed compliance checking, cross-referenced standards, and professional implementation guidance.
+
+                **Key Features Demonstrated:**
+                ✅ Advanced technical analysis
+                ✅ Multi-standard compliance checking  
+                ✅ Professional formatting and structure
+                ✅ Industry best practices integration
+                ⚠️ Risk assessment and mitigation strategies
+
+                **Value Proposition:**
+                Upgrading to {target_tier.upper().replace('_', '-')} provides you with comprehensive, professional-grade responses that save time and ensure compliance across all construction disciplines.
+
+                *Experience the full capabilities - upgrade today!*
+                """
+        
+        # Record booster usage
+        if not booster_usage:
+            await db.booster_usage.insert_one({
+                "user_id": uid,
+                "date": today_start,
+                "usage_count": 1,
+                "questions_boosted": [question[:100]],
+                "target_tiers": [target_tier]
+            })
+        else:
+            await db.booster_usage.update_one(
+                {"_id": booster_usage["_id"]},
+                {
+                    "$inc": {"usage_count": 1},
+                    "$push": {
+                        "questions_boosted": question[:100],
+                        "target_tiers": target_tier
+                    }
+                }
+            )
+        
+        return {
+            "boosted_response": boosted_response,
+            "target_tier": target_tier,
+            "booster_used": True,
+            "remaining_boosters": 0
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating boosted response: {str(e)}")
+
 @api_router.get("/chat/history")
 async def get_chat_history(
     limit: int = 50,
