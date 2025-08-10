@@ -7,10 +7,11 @@ import { Card, CardContent } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
+import UserProfile from './UserProfile';
 import { 
   AlertTriangle, Send, User, Bot, Clock, Crown, Zap, LogOut, 
   Copy, ThumbsUp, ThumbsDown, Search, Plus, MessageSquare,
-  Edit3, Save, X, Sparkles, TrendingUp, Star
+  Edit3, Save, X, Sparkles, TrendingUp, Star, Settings
 } from 'lucide-react';
 
 const ChatInterface = () => {
