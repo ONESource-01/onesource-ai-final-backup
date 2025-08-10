@@ -1405,7 +1405,7 @@ async def ask_question_enhanced(
         
         # Get AI response with enhanced context
         api_key = os.environ.get('OPENAI_API_KEY', '')
-        if not api_key or api_key.startswith('sk-proj-y4RpPcnJhUFKhJEJHDlKHdoNSr9NsQhDFG8-I5c4V4uq'):
+        if not api_key or len(api_key) < 10:
             # Mock AI response for testing
             ai_response = f"""
             **Technical Answer:**
