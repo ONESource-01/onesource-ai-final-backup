@@ -205,7 +205,7 @@ const ChatInterface = () => {
       }));
 
       // Mark booster as used
-      const today = new Date().toDateString();
+      const today = new Date().toISOString().split('T')[0];
       localStorage.setItem('lastBoosterDate', today);
       setBoosterUsage({ used: true, remaining: 0 });
 
