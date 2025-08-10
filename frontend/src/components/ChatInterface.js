@@ -859,7 +859,7 @@ const ChatInterface = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto">
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 ? (
