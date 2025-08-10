@@ -602,58 +602,76 @@ const ChatInterface = () => {
     )
   );
 
-  const ContributionBox = ({ messageId }) => (
-    <div className="mt-4 p-4 border rounded-lg" style={{ backgroundColor: '#f8fafc', borderColor: '#c9d6e4' }}>
-      <div className="flex justify-between items-center mb-2">
-        <h5 className="font-semibold text-sm" style={{ color: '#0f2f57' }}>Add Knowledge</h5>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: false }))}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-      <p className="text-xs mb-3" style={{ color: '#4b6b8b' }}>
-        Add your mentoring insights, best practices, or lessons learned to help other construction professionals.
-      </p>
-      <textarea
-        className="w-full p-3 rounded border resize-none"
-        style={{ borderColor: '#95a6b7', minHeight: '80px' }}
-        placeholder="Share your insights, best practices, or lessons learned..."
-        value={contributionText[messageId] || ''}
-        onChange={(e) => setContributionText(prev => ({ ...prev, [messageId]: e.target.value }))}
-      />
-      <div className="flex items-center justify-between mt-3">
-        <label className="flex items-center text-xs" style={{ color: '#4b6b8b' }}>
-          <input
-            type="checkbox"
-            checked={optInCredit}
-            onChange={(e) => setOptInCredit(e.target.checked)}
-            className="mr-2"
-          />
-          Credit me if this contribution is added to the knowledge base
-        </label>
-        <div className="flex gap-2">
+  const ContributionBox = ({ messageId }) => {
+    // Use useRef to maintain cursor position
+    const textareaRef = useRef(null);
+    
+    const handleTextChange = (e) => {
+      const cursorPosition = e.target.selectionStart;
+      setContributionText(prev => ({ ...prev, [messageId]: e.target.value }));
+      
+      // Restore cursor position after state update
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.setSelectionRange(cursorPosition, cursorPosition);
+        }
+      }, 0);
+    };
+
+    return (
+      <div className="mt-4 p-4 border rounded-lg" style={{ backgroundColor: '#f8fafc', borderColor: '#c9d6e4' }}>
+        <div className="flex justify-between items-center mb-2">
+          <h5 className="font-semibold text-sm" style={{ color: '#0f2f57' }}>Add Knowledge</h5>
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: false }))}
           >
-            Cancel
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => handleContribution(messageId)}
-            style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
-          >
-            <Save className="h-3 w-3 mr-1" />
-            Submit
+            <X className="h-4 w-4" />
           </Button>
         </div>
+        <p className="text-xs mb-3" style={{ color: '#4b6b8b' }}>
+          Add your mentoring insights, best practices, or lessons learned to help other construction professionals.
+        </p>
+        <textarea
+          ref={textareaRef}
+          className="w-full p-3 rounded border resize-none"
+          style={{ borderColor: '#95a6b7', minHeight: '80px' }}
+          placeholder="Share your insights, best practices, or lessons learned..."
+          value={contributionText[messageId] || ''}
+          onChange={handleTextChange}
+        />
+        <div className="flex items-center justify-between mt-3">
+          <label className="flex items-center text-xs" style={{ color: '#4b6b8b' }}>
+            <input
+              type="checkbox"
+              checked={optInCredit}
+              onChange={(e) => setOptInCredit(e.target.checked)}
+              className="mr-2"
+            />
+            Credit me if this contribution is added to the knowledge base
+          </label>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: false }))}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => handleContribution(messageId)}
+              style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
+            >
+              <Save className="h-3 w-3 mr-1" />
+              Submit
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
