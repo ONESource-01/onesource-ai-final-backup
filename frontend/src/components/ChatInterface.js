@@ -529,7 +529,7 @@ const ChatInterface = () => {
         opt_in_credit: optInCredit
       });
 
-      if (response.status === 'success') {
+      if (response.status === 200) {
         alert('Thank you! Your contribution has been submitted for review.');
         setShowContributionBox(prev => ({ ...prev, [messageId]: false }));
         setContributionText(prev => ({ ...prev, [messageId]: '' }));
@@ -550,7 +550,7 @@ const ChatInterface = () => {
         comment: feedbackText
       });
 
-      if (response.status === 'success') {
+      if (response.status === 200) {
         alert('Thank you for your feedback!');
         setFeedbackModal({ show: false, messageId: null, type: null });
         setFeedbackText('');
