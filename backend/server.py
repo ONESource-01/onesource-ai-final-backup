@@ -834,7 +834,7 @@ async def parse_document_metadata(text_content: str, filename: str, is_supplier:
     try:
         # Check if we have a valid OpenAI API key
         api_key = os.environ.get('OPENAI_API_KEY', '')
-        if not api_key or api_key.startswith('sk-proj-y4RpPcnJhUFKhJEJHDlKHdoNSr9NsQhDFG8-I5c4V4uq'):
+        if not api_key or len(api_key) < 10:
             # Mock metadata extraction for testing
             mock_tags = ["construction"]
             if "steel" in text_content.lower() or "beam" in text_content.lower():
