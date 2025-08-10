@@ -830,6 +830,34 @@ const ChatInterface = () => {
           </div>
         </div>
         
+        {/* AI Personalization Display */}
+        {userPreferences && (
+          <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-4 w-4 text-purple-600" />
+              <span className="text-sm font-semibold" style={{ color: '#0f2f57' }}>AI Personalized For You</span>
+            </div>
+            <div className="space-y-2">
+              {userPreferences.role && (
+                <div className="flex items-center gap-2 text-xs" style={{ color: '#4b6b8b' }}>
+                  <Badge variant="outline" className="text-xs">👤 {userPreferences.role}</Badge>
+                </div>
+              )}
+              {userPreferences.industries && userPreferences.industries.length > 0 && (
+                <div className="text-xs" style={{ color: '#4b6b8b' }}>
+                  🎯 <span className="font-medium">Focus:</span> {userPreferences.industries.slice(0, 2).join(', ')}
+                  {userPreferences.industries.length > 2 && ` +${userPreferences.industries.length - 2} more`}
+                </div>
+              )}
+              {userPreferences.experience_level && (
+                <div className="text-xs" style={{ color: '#4b6b8b' }}>
+                  📈 <span className="font-medium">Level:</span> {userPreferences.experience_level.charAt(0).toUpperCase() + userPreferences.experience_level.slice(1)}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
         {/* Knowledge Enhancement Toggle */}
         <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
           <label className="flex items-center gap-2 cursor-pointer">
