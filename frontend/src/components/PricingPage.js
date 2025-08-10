@@ -1,0 +1,391 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { apiEndpoints } from '../utils/api';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
+import { Alert, AlertDescription } from './ui/alert';
+import { Check, Zap, Crown, Users, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+const PricingPage = () => {
+  const { user, idToken } = useAuth();
+  const [pricing, setPricing] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [purchaseLoading, setPurchaseLoading] = useState('');
+  const [error, setError] = useState('');
+
+  // Set page title
+  useEffect(() => {
+    document.title = 'Pricing | ONESource-ai';
+  }, []);
+
+  useEffect(() => {
+    loadPricing();
+  }, []);
+
+  const loadPricing = async () => {
+    try {
+      const response = await apiEndpoints.getPricing();
+      setPricing(response.data.packages);
+    } catch (err) {
+      console.error('Error loading pricing:', err);
+      setError('Failed to load pricing information');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePurchase = async (packageId) => {
+    if (!user) {
+      window.location.href = '/auth';
+      return;
+    }
+
+    setPurchaseLoading(packageId);
+    setError('');
+
+    try {
+      const originUrl = window.location.origin;
+      const response = await apiEndpoints.createCheckoutSession({
+        package_id: packageId,
+        origin_url: originUrl
+      });
+
+      if (response.data.checkout_url) {
+        window.location.href = response.data.checkout_url;
+      } else {
+        setError('Failed to create checkout session');
+      }
+    } catch (err) {
+      console.error('Purchase error:', err);
+      setError(err.response?.data?.detail || 'Failed to start checkout process');
+    } finally {
+      setPurchaseLoading('');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading pricing...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const pricingPlans = [
+    {
+      id: 'starter',
+      name: 'Starter',
+      price: 0,
+      currency: 'AUD',
+      period: 'Free Forever',
+      description: 'Get Started & Contribute to the Community',
+      icon: <Zap className="h-6 w-6" />,
+      features: [
+        '3 questions per day',
+        'Basic AI responses',
+        'Document uploads to Knowledge Vault',
+        'Basic knowledge vault search',
+        'Standard construction guidance',
+        'Partner document upload access',
+        'Community knowledge contribution'
+      ],
+      limitations: [
+        'No chat history',
+        'No enhanced AI intelligence',
+        'No mentor note creation'
+      ],
+      highlighted: false,
+      cta: user ? 'Current Plan' : 'Get Started Free',
+      disabled: false,
+      tooltip: 'Partners can upload content freely. Subscription required for full platform usage.'
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      price: pricing?.pro?.amount || 9.00,
+      currency: 'AUD',
+      period: 'per month',
+      description: 'Professional Construction Intelligence',
+      icon: <Check className="h-6 w-6" />,
+      features: [
+        'Unlimited questions',
+        'Phase 1: Enhanced Prompting (discipline-specific)',
+        'Full chat history & sessions',
+        'Mentor note creation & sharing',
+        'Document upload & knowledge vault access',
+        'Enhanced response format (Technical + Mentoring)',
+        'Community support & forums'
+      ],
+      limitations: [
+        'No advanced workflow intelligence',
+        'No knowledge-enhanced chat mode',
+        'No full 3-phase AI system'
+      ],
+      highlighted: true,
+      cta: 'Start Pro Trial',
+      disabled: false,
+      promotion: '3 Months FREE for New Users!',
+      badge: 'Most Popular'
+    },
+    {
+      id: 'pro-plus',
+      name: 'Pro-Plus',
+      price: pricing?.consultant?.amount || 29.00,
+      currency: 'AUD',
+      period: 'per month',
+      description: 'Complete Construction Knowledge Platform',
+      icon: <Crown className="h-6 w-6" />,
+      features: [
+        'Everything in Pro, PLUS:',
+        'Full 3-Phase AI Intelligence System',
+        'Project workflow guidance & stage recognition',
+        'Knowledge-enhanced chat mode',
+        'Supplier content integration & attribution',
+        'Advanced analytics dashboard',
+        'Multi-discipline specialization',
+        'Priority support',
+        'Admin dashboard access'
+      ],
+      limitations: [],
+      highlighted: false,
+      cta: 'Start Pro-Plus Trial',
+      disabled: false,
+      promotion: '3 Months FREE for New Users!',
+      badge: 'Best Value'
+    },
+    {
+      id: 'day_pass',
+      name: 'Day Pass',
+      price: pricing?.day_pass?.amount || 15.00,
+      currency: 'AUD',
+      period: 'per day',
+      description: 'Full Platform Access When You Need It',
+      icon: <Users className="h-6 w-6" />,
+      features: [
+        'All Pro-Plus features for 24 hours',
+        'Perfect for project deadlines',
+        'No long-term commitment',
+        'Can be purchased multiple times',
+        'Full platform access',
+        'Emergency project support'
+      ],
+      limitations: [],
+      highlighted: false,
+      cta: 'Buy Day Pass',
+      disabled: false,
+      urgent: true,
+      badge: 'Limited Time'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-blue-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <Link to="/" className="flex items-center text-blue-600 hover:text-blue-800">
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back to Home
+            </Link>
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-blue-900">ONESource-ai Pricing</h1>
+            </div>
+            {user && (
+              <div className="flex items-center space-x-4">
+                <Badge variant="outline">{user.email}</Badge>
+                <Button asChild variant="outline">
+                  <Link to="/chat">Go to Chat</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Pricing Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl font-bold text-blue-900 mb-4">
+              Choose the Right Plan for You
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Get expert construction industry guidance with plans designed for professionals at every level
+            </p>
+          </div>
+
+          {error && (
+            <Alert className="border-red-200 bg-red-50 mb-8 max-w-2xl mx-auto">
+              <AlertDescription className="text-red-700">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {pricingPlans.map((plan) => (
+              <Card 
+                key={plan.id} 
+                className={`relative ${plan.highlighted ? 'ring-2 ring-blue-500 shadow-xl' : ''}`}
+              >
+                {/* Promotional Badge */}
+                {(plan.badge || plan.highlighted) && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <Badge className={`px-4 py-1 ${
+                      plan.badge === 'Most Popular' || plan.highlighted ? 'bg-blue-500 text-white' :
+                      plan.badge === 'Best Value' ? 'bg-green-500 text-white' :
+                      plan.badge === 'Limited Time' ? 'bg-orange-500 text-white' :
+                      'bg-blue-500 text-white'
+                    }`}>
+                      {plan.badge || 'Most Popular'}
+                    </Badge>
+                  </div>
+                )}
+
+                <CardHeader className="text-center pb-4">
+                  {/* Promotion Banner */}
+                  {plan.promotion && (
+                    <div className="mb-4 p-2 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg">
+                      <p className="text-sm font-semibold text-green-700">
+                        🎉 {plan.promotion}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center mb-4">
+                    <div className={`p-3 rounded-full ${plan.highlighted ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                      <div className={plan.highlighted ? 'text-blue-600' : 'text-gray-600'}>
+                        {plan.icon}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                  <p className="text-gray-600 text-sm">{plan.description}</p>
+                  
+                  {/* Partner Tooltip */}
+                  {plan.tooltip && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded-lg text-xs text-blue-700">
+                      💡 {plan.tooltip}
+                    </div>
+                  )}
+                  
+                  <div className="mt-4">
+                    <div className="flex items-baseline justify-center">
+                      <span className="text-4xl font-bold text-gray-900">
+                        ${plan.price}
+                      </span>
+                      <span className="text-gray-500 ml-1">
+                        {plan.currency}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">{plan.period}</p>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-6">
+                  {/* Features */}
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">Features included:</h4>
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start">
+                          <Check className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Limitations */}
+                  {plan.limitations.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Limitations:</h4>
+                      <ul className="space-y-2">
+                        {plan.limitations.map((limitation, index) => (
+                          <li key={index} className="flex items-start">
+                            <span className="text-orange-500 mr-2 mt-0.5">•</span>
+                            <span className="text-sm text-gray-600">{limitation}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={() => handlePurchase(plan.id)}
+                    disabled={plan.disabled || purchaseLoading === plan.id}
+                    className={`w-full ${plan.highlighted ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                    variant={plan.highlighted ? 'default' : 'outline'}
+                  >
+                    {purchaseLoading === plan.id ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                        Processing...
+                      </>
+                    ) : (
+                      plan.cta
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* FAQ Section */}
+          <div className="mt-20">
+            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+              Frequently Asked Questions
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">Can I change plans anytime?</h3>
+                  <p className="text-gray-600 text-sm">
+                    Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the next billing cycle.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">What standards are covered?</h3>
+                  <p className="text-gray-600 text-sm">
+                    We cover NCC, BCA, AS/NZS standards, and industry-specific regulations for Australia and New Zealand.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">Is there a free trial?</h3>
+                  <p className="text-gray-600 text-sm">
+                    Yes! Every new user gets 3 free questions to try our AI mentor before committing to a paid plan.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">How accurate are the responses?</h3>
+                  <p className="text-gray-600 text-sm">
+                    Our AI is trained on current AU/NZ building standards, but always verify critical information with licensed professionals.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default PricingPage;

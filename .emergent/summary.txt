@@ -1,0 +1,115 @@
+<analysis>
+The AI engineer's work on the ONESource AI application has progressed through several critical phases. Initially, the focus was on resolving backend syntax errors related to a new weekly business intelligence reporting system. This involved debugging  and , installing , and integrating the reporting service into the FastAPI backend.
+
+Subsequently, major UI/UX enhancements were implemented for the landing page's hero section. This involved creating  to display multiple hero variants, integrating them into , handling image backgrounds and overlays, and refining content based on user feedback. The engineer also created new , , and  components, ensuring consistent branding and email contact () across all relevant pages using a shared .
+
+A significant phase involved setting up a private staging environment workaround due to platform limitations, which included implementing a  and role-based access control using  and . This phase also addressed crucial API key configurations for OpenAI (quota issues, billing) and Stripe (switching between live and test keys, emphasizing live transaction implications).
+
+Finally, the engineer provided extensive guidance on deployment, ongoing maintenance, and a detailed testing feedback protocol, including the ability to interpret annotated screenshots. The most recent task involved troubleshooting and identifying a legacy Firebase hosting deployment () that was conflicting with the main domain, providing precise steps for its removal.
+</analysis>
+
+<product_requirements>
+The ONESource AI Application is an AI mentor tailored for the AU/NZ construction industry, designed for a production-ready, professional user experience. Key initial functionalities included Firebase authentication, Stripe payments, OpenAI integration, and user management, all presented via a branded landing page, authentication UI, chat, onboarding, and pricing.
+
+The application has been significantly enhanced with:
+1.  **Branding**: Custom color palette, ONESource-ai logo, and a construction hero banner.
+2.  **Chat Interface**: Redesigned to a ChatGPT-style layout with a sidebar, history, and interactive message actions (copy, feedback, Add Knowledge).
+3.  **Authentication & Trials**: Integrated real Firebase authentication with a 3 questions per day trial limit.
+4.  **Backend Services**: New APIs and MongoDB collections for chat feedback, user knowledge contributions, persistent chat history, and an admin dashboard for content review.
+5.  **Knowledge Management (RAG)**: Implemented a Retrieval-Augmented Generation system (knowledgeVault) for intelligent document processing (PDF, Word, DWG, Excel) with supplier attribution.
+6.  **Developer Access**: A system to grant unlimited consultant-level access.
+7.  **Voucher System**: For time-limited access and promotional campaigns.
+8.  **3-Phase AI Intelligence**: Enhanced Prompting, Workflow Intelligence, and Specialized Training for discipline-specific, context-aware construction AI.
+9.  **Legal Framework**: Comprehensive Terms of Service, Privacy Policy, and Partner Upload Policy, including Standards Australia copyright compliance.
+10. **Revised Pricing Structure**: Tiered plans (Starter, Pro, Pro-Plus, Day Pass) with strategic feature distribution and a 3-month free trial.
+
+Recent requirements included a weekly business intelligence reporting system, hero banner improvements, setting up a testing environment, and configuring API keys for deployment.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Full-stack Architecture**: React (frontend), FastAPI (backend), MongoDB (database).
+-   **Service Management**: backend                          RUNNING   pid 46, uptime 0:00:03
+code-server                      RUNNING   pid 48, uptime 0:00:03
+frontend                         STOPPED   Aug 08 11:34 PM
+mongodb                          RUNNING   pid 53, uptime 0:00:03
+supervisor>  for process control.
+-   **Third-party Integrations**: Firebase (Auth), Stripe (Payments), OpenAI (AI), SendGrid (Emails).
+-   **AI/Data Engineering**: Retrieval-Augmented Generation (RAG), 3-Phase AI Intelligence.
+-   **UI/UX Frameworks**: Tailwind CSS, Shadcn/UI.
+-   **Document Processing**: PyPDF2, python-docx.
+</key_technical_concepts>
+
+<code_architecture>
+The application follows a standard full-stack structure:
+
+-   ****: Core FastAPI backend.
+    -   **Summary**: Handles all API endpoints, data models, and integrates various services.
+    -   **Changes**: Added import for  () and included its routes ().
+-   ****: Lists Python dependencies.
+    -   **Summary**: Manages Python packages required for the backend.
+    -   **Changes**:  was added for email reporting.
+-   ****: Stores backend environment variables.
+    -   **Summary**: Critical for configuring database, Firebase, OpenAI, and other service credentials.
+    -   **Changes**: Added ,  (used for beta/production),  (switched between  and ), and updated  and . Also added , .
+-   ****: Newly created.
+    -   **Summary**: Contains the logic for generating and sending weekly business intelligence reports.
+    -   **Changes**: Defined FastAPI router () with endpoints for report generation (e.g., ). Uses  for email delivery.
+-   ****: Main React component and router.
+    -   **Summary**: Defines application routes, global state, and layout.
+    -   **Changes**:
+        -   Fixed pricing link.
+        -   Added routes for , , , , , , , .
+        -   Integrated  component, passing  state and updating  prop.
+        -   Temporarily removed the admin/dev email check for displaying the hero variant selector.
+        -   Updated  variable usage (BETA/PRODUCTION).
+        -   Integrated  and  for the staging workaround.
+        -   Removed  and  for production deployment.
+-   ****: Newly created.
+    -   **Summary**: Renders different hero section layouts and content based on the selected variant.
+    -   **Changes**: Implemented 6 distinct hero block variations with specific titles, descriptions, and icons. Handles background image display () with an overlay and full width.
+-   ****: Manages user authentication UI.
+    -   **Summary**: Handles user sign-up/sign-in flows.
+    -   **Changes**: Updated to link to new legal pages and incorporated custom branding. Ethical claims related to 500+ professionals were removed/modified.
+-   ****, ****, ****: Existing legal components.
+    -   **Summary**: Contain comprehensive legal documentation.
+    -   **Changes**: Updated all email references to . Confirmed the ONESource logo was already present.
+-   ****, ****, ****: Newly created.
+    -   **Summary**: Provide self-service support, direct contact, and user feedback mechanisms.
+    -   **Changes**: Initial scaffold with basic structure and content. Integrated  for consistent branding and logo. Email references updated to .
+-   ****: Newly created.
+    -   **Summary**: A reusable header component ensuring consistent branding and logo display across various pages.
+    -   **Changes**: Basic structure for displaying the ONESource logo and navigation links.
+-   ****: Newly created.
+    -   **Summary**: Displays a BETA TESTING - PRIVATE ACCESS banner for staging environments.
+    -   **Changes**: Basic banner UI. Removed during production switch.
+-   ****: Newly created.
+    -   **Summary**: Manages authentication context and user roles for the beta environment.
+    -   **Changes**: Defines context for  and .
+-   ****: Newly created.
+    -   **Summary**: Restricts access to the application based on user roles and environment.
+    -   **Changes**: Implements the logic to display Beta Access Required screen for unauthorized users. Removed during production switch.
+-   ****: Stores frontend environment variables.
+    -   **Summary**: Crucial for backend API URL and other frontend configurations.
+    -   **Changes**: Updated , added , updated  (switched between live and test keys).
+-   ****: Newly added.
+    -   **Summary**: The user-provided background image for the hero section.
+</code_architecture>
+
+<pending_tasks>
+-   Finalize legal document details (confirm real business address or placeholder, confirm email setup – although  is now set).
+-   Gather required API keys for testing and deployment (OpenAI and Stripe keys are now provided and configured, SendGrid is pending user input for key).
+-   Set up the testing environment and staff access (workaround implemented, user accounts listed).
+-   Complete the automated weekly business intelligence email reporting system (backend logic added, requires SendGrid key from user for full functionality).
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the AI engineer was actively assisting the user in resolving a critical domain conflict. The user reported that their primary domain, , was unexpectedly redirecting to a legacy Firebase hosted page, preventing them from using it for a new marketing website.
+
+The engineer methodically diagnosed the issue by guiding the user to inspect their Firebase Console. Through this collaborative debugging, it was determined that a *separate*, older Firebase hosting deployment was configured for  within the  site of their Firebase project. This legacy configuration was intercepting traffic to the main domain.
+
+The work concluded with the engineer pinpointing the exact location ( site within the Firebase project, specifically under Domains) where the  custom domain was connected. The last action was to provide the user with clear, step-by-step instructions to click on the problematic domain ( in the Firebase console) and then select the option to Remove domain or Delete it, to free up the domain for its intended use.
+</current_work>
+
+<optional_next_step>
+The next step is for the user to confirm the removal of the  custom domain from the specified Firebase project.
+</optional_next_step>

@@ -1,0 +1,78 @@
+<analysis>
+The previous AI engineer successfully navigated an extended information gathering phase, demonstrating robust user interaction and adherence to system prompts. The core task shifted from a generic ChatGPT app to a specialized ONESource-ai for the AU/NZ Construction Industry after reviewing user-provided documents. The engineer systematically obtained critical API keys (Firebase, OpenAI, Stripe) by clearly stating requirements, addressing user concerns about security, cost, and future development, and handling various input formats (initial request, document uploads, partial key provision, image-based key provision followed by text). The approach focused on clarifying the full scope and securing all necessary credentials before initiating any code generation, prioritizing the hard part of external integrations by ensuring all keys are present. The communication pattern involved reiterating remaining needs and confirming received information, leading to a complete set of API keys, positioning the project for immediate development.
+</analysis>
+
+<product_requirements>
+The user initially requested a web application integrating ChatGPT API, Firebase, and Stripe payments. This evolved into a specialized AI assistant named **ONESource-ai**, targeting the AU/NZ Construction Industry, specifically for professionals like architects and engineers.
+
+Key requirements and features include:
+-   **Core Functionality**: A web-based AI assistant providing industry-specific responses, capable of dual-layer (Technical + Mentoring) AI outputs, with clause referencing.
+-   **Authentication**: Firebase Authentication supporting Google, Apple, and Email sign-in methods.
+-   **User Management**: Firestore integration for user data, including professional onboarding with user profiling.
+-   **Monetization**:
+    -   A free trial of 3 chat questions.
+    -   Stripe payment gateway integration for paid access.
+    -   Defined pricing tiers:
+        -   **Starter**: Free (3 queries)
+        -   **Pro**: .90 AUD/month
+        -   **Consultant**: 9 AUD/month
+        -   **Day Pass**: One-time access option.
+-   **User Experience**: Professional, modern UI/UX similar to app.emergent, with styling and text tones matching a professional construction platform. Intuitive navigation and micro-animations for interactivity.
+-   **Technical**: Utilization of OpenAI for the specialized AI, Firebase Functions for Stripe integration, and specific Firebase project ID ().
+</product_requirements>
+
+<key_technical_concepts>
+-   **Full-stack Architecture**: React frontend, FastAPI backend, MongoDB database.
+-   **Cloud Infrastructure**: Kubernetes container environment, supervisor for process management.
+-   **Authentication**: Firebase Authentication (Google, Apple, Email).
+-   **Database**: Firebase Firestore for user data storage.
+-   **Payment Processing**: Stripe for subscriptions and one-time payments.
+-   **AI Integration**: OpenAI API for ChatGPT functionality.
+-   **UI Framework**: Tailwind CSS for styling, Shadcn UI components for building modern UI elements.
+-   **Environment Management**: Use of  files for environment variables (API keys, URLs).
+</key_technical_concepts>
+
+<code_architecture>
+The application follows a standard full-stack architecture with separate directories for frontend and backend, along with dedicated folders for tests and scripts.
+
+
+
+-   ****: Contains the FastAPI backend logic.
+    -   ****: The main FastAPI application file where API routes, database interactions, and business logic (e.g., AI integration, payment processing) will be implemented. This file is critical for handling all server-side operations.
+    -   ****: Lists all Python dependencies required for the backend. Any new Python library installed must be added here.
+    -   ****: Stores environment variables for the backend, specifically  for database connection, and will be used to securely store OpenAI and Stripe secret keys.
+-   ****: Houses the React application.
+    -   ****: The main React component that will define the overall structure and pages of the web application, including the chat interface, authentication forms, and payment flows.
+    -   ****: Application-specific CSS, potentially for custom styles not covered by Tailwind or Shadcn.
+    -   ****: Global CSS file, configured with Tailwind CSS directives () and includes basic styling and Shadcn's theme variables. This file defines the visual foundation of the application.
+    -   ****: The entry point for the React application, responsible for rendering the  component into the DOM.
+    -   ****: A crucial directory containing pre-built, modern Shadcn UI components (e.g., , , , ). The system strictly mandates using these components for UI development to ensure consistency and modern aesthetics.
+    -   ****: Manages Node.js dependencies for the frontend. All new JavaScript libraries must be added here.
+    -   ****: Configuration file for Tailwind CSS, allowing customization of design tokens and utility classes.
+    -   ****: Stores frontend environment variables, crucially  for API calls to the FastAPI backend, and Firebase configuration details.
+-   **URL Configuration**: Frontend uses  (prefixed with  for backend routes). Backend listens on  and uses . No hardcoding of URLs or ports.
+</code_architecture>
+
+<pending_tasks>
+The primary pending task is the actual implementation and development of the ONESource-ai application. This includes:
+-   Setting up Firebase Authentication and Firestore.
+-   Integrating OpenAI for specialized AI responses.
+-   Implementing Stripe payment processing for subscriptions and the trial system.
+-   Developing the frontend UI, including sign-in/sign-up, chat interface, and onboarding flows, adhering to the specified design guidelines.
+-   Creating backend API endpoints to support these functionalities.
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the previous AI engineer successfully completed the critical information gathering phase. All necessary API keys and configuration details for building the ONESource-ai application have been collected and confirmed.
+
+Specifically:
+-   **Firebase Configuration**: The complete  object (including , , , , , , ) has been provided by the user and confirmed by the AI engineer.
+-   **OpenAI API Key**: The OpenAI secret key () has been provided and confirmed. This is essential for integrating the specialized construction AI.
+-   **Stripe API Keys**: Both the Stripe Publishable Key () and the Stripe Secret Key () have been provided and confirmed. These are crucial for implementing the specified pricing structure (Starter, Pro, Consultant, Day Pass) and handling all payment transactions.
+
+The engineer's current state is that all external integration prerequisites are met. The next immediate action articulated by the engineer is to proceed with building the application, starting with obtaining integration playbooks for Firebase and Stripe. The conversation ended with the user confirming to keep going.
+</current_work>
+
+<optional_next_step>
+The next step is to initiate the application build, specifically by acquiring and implementing the Firebase and Stripe integration playbooks.
+</optional_next_step>
