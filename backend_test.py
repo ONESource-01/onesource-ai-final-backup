@@ -2624,6 +2624,198 @@ class BackendTester:
         
         return passed_tests, failed_tests
 
+    async def test_chat_response_debugging(self):
+        """URGENT: Debug chat response issues in production"""
+        print("\n=== 🚨 URGENT: DEBUGGING CHAT RESPONSE ISSUES ===")
+        
+        # The specific question mentioned in the review request
+        fire_safety_question = "What are the fire safety requirements for high-rise buildings in Australia?"
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        print(f"Testing with question: '{fire_safety_question}'")
+        print("=" * 60)
+        
+        # Test 1: POST /api/chat/ask with detailed response analysis
+        print("\n🔍 Testing POST /api/chat/ask")
+        chat_data = {
+            "question": fire_safety_question,
+            "session_id": "debug_session_ask"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/ask", chat_data, mock_headers)
+        
+        print(f"Status Code: {status}")
+        print(f"Success: {success}")
+        print(f"Response Type: {type(data)}")
+        
+        if success:
+            print("✅ API call successful (200 OK)")
+            if isinstance(data, dict):
+                print("✅ Response is JSON object")
+                
+                # Check response structure
+                if "response" in data:
+                    response_content = data["response"]
+                    print(f"✅ 'response' field present, type: {type(response_content)}")
+                    
+                    if isinstance(response_content, dict):
+                        print("✅ Response content is structured object")
+                        if "technical" in response_content:
+                            technical_content = response_content["technical"]
+                            print(f"✅ Technical response present, length: {len(str(technical_content))}")
+                            print(f"Technical content preview: {str(technical_content)[:200]}...")
+                        else:
+                            print("❌ Missing 'technical' field in response")
+                            
+                        if "mentoring" in response_content:
+                            mentoring_content = response_content["mentoring"]
+                            print(f"✅ Mentoring response present, length: {len(str(mentoring_content))}")
+                        else:
+                            print("❌ Missing 'mentoring' field in response")
+                    else:
+                        print(f"⚠️ Response content is string, length: {len(str(response_content))}")
+                        print(f"String content preview: {str(response_content)[:200]}...")
+                else:
+                    print("❌ Missing 'response' field in API response")
+                
+                # Check for other important fields
+                if "session_id" in data:
+                    print(f"✅ Session ID: {data['session_id']}")
+                else:
+                    print("❌ Missing session_id")
+                    
+                if "tokens_used" in data:
+                    print(f"✅ Tokens used: {data['tokens_used']}")
+                else:
+                    print("❌ Missing tokens_used")
+                    
+                if "trial_info" in data:
+                    print(f"✅ Trial info: {data['trial_info']}")
+                else:
+                    print("ℹ️ No trial info (expected for authenticated user)")
+                    
+                # Print full response for debugging
+                print("\n📋 FULL RESPONSE DATA:")
+                print(json.dumps(data, indent=2, default=str))
+                
+            else:
+                print(f"❌ Response is not JSON: {data}")
+                
+            self.log_test("Chat Ask - Fire Safety Question", True, f"API returned 200 OK with response type: {type(data)}")
+        else:
+            print(f"❌ API call failed with status {status}")
+            print(f"Error response: {data}")
+            self.log_test("Chat Ask - Fire Safety Question", False, f"Status: {status}, Response: {data}")
+        
+        # Test 2: POST /api/chat/ask-enhanced with detailed response analysis
+        print("\n🔍 Testing POST /api/chat/ask-enhanced")
+        enhanced_chat_data = {
+            "question": fire_safety_question,
+            "session_id": "debug_session_enhanced"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/ask-enhanced", enhanced_chat_data, mock_headers)
+        
+        print(f"Status Code: {status}")
+        print(f"Success: {success}")
+        print(f"Response Type: {type(data)}")
+        
+        if success:
+            print("✅ Enhanced API call successful (200 OK)")
+            if isinstance(data, dict):
+                print("✅ Response is JSON object")
+                
+                # Check enhanced response structure
+                if "response" in data:
+                    response_content = data["response"]
+                    print(f"✅ 'response' field present, type: {type(response_content)}")
+                    
+                    if isinstance(response_content, dict):
+                        print("✅ Enhanced response content is structured object")
+                        
+                        # Check for enhanced fields
+                        if "technical" in response_content:
+                            technical_content = response_content["technical"]
+                            print(f"✅ Technical response present, length: {len(str(technical_content))}")
+                            print(f"Technical content preview: {str(technical_content)[:200]}...")
+                        
+                        if "knowledge_sources" in response_content:
+                            sources = response_content["knowledge_sources"]
+                            print(f"✅ Knowledge sources: {sources}")
+                        
+                        if "knowledge_used" in response_content:
+                            knowledge_used = response_content["knowledge_used"]
+                            print(f"✅ Knowledge used: {knowledge_used}")
+                        
+                        if "partner_sources" in response_content:
+                            partners = response_content["partner_sources"]
+                            print(f"✅ Partner sources: {partners}")
+                    else:
+                        print(f"⚠️ Enhanced response content is string, length: {len(str(response_content))}")
+                        print(f"String content preview: {str(response_content)[:200]}...")
+                else:
+                    print("❌ Missing 'response' field in enhanced API response")
+                
+                # Print full enhanced response for debugging
+                print("\n📋 FULL ENHANCED RESPONSE DATA:")
+                print(json.dumps(data, indent=2, default=str))
+                
+            else:
+                print(f"❌ Enhanced response is not JSON: {data}")
+                
+            self.log_test("Chat Ask Enhanced - Fire Safety Question", True, f"Enhanced API returned 200 OK with response type: {type(data)}")
+        else:
+            print(f"❌ Enhanced API call failed with status {status}")
+            print(f"Error response: {data}")
+            self.log_test("Chat Ask Enhanced - Fire Safety Question", False, f"Status: {status}, Response: {data}")
+        
+        # Test 3: Check for common response format issues
+        print("\n🔍 Testing Response Format Issues")
+        
+        # Test with anonymous user to see if there are auth-related issues
+        print("\n🔍 Testing Anonymous User Response")
+        anonymous_chat_data = {
+            "question": fire_safety_question,
+            "session_id": "debug_session_anonymous"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/ask", anonymous_chat_data)
+        
+        if success:
+            print("✅ Anonymous user API call successful")
+            if isinstance(data, dict) and "response" in data:
+                print("✅ Anonymous user gets proper response structure")
+                if "trial_info" in data:
+                    print(f"✅ Trial info for anonymous user: {data['trial_info']}")
+            self.log_test("Anonymous Chat Response", True, "Anonymous user receives proper response")
+        else:
+            print(f"❌ Anonymous user API call failed: {status}")
+            self.log_test("Anonymous Chat Response", False, f"Status: {status}")
+        
+        # Test 4: Check for exception handling issues
+        print("\n🔍 Testing Exception Handling")
+        
+        # Test with malformed request
+        malformed_data = {
+            "question": "",  # Empty question
+            "session_id": "debug_session_malformed"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/ask", malformed_data, mock_headers)
+        
+        if not success:
+            print(f"✅ Malformed request properly rejected with status {status}")
+            self.log_test("Malformed Request Handling", True, f"Properly rejected with status {status}")
+        else:
+            print(f"⚠️ Malformed request accepted: {data}")
+            self.log_test("Malformed Request Handling", False, "Empty question was accepted")
+        
+        print("\n" + "=" * 60)
+        print("🚨 CHAT RESPONSE DEBUGGING COMPLETE")
+        print("Check the detailed output above for specific issues")
+        print("=" * 60)
+
 async def main():
     """Run all backend tests"""
     print("Starting ONESource-ai Backend API Tests")
@@ -2631,6 +2823,9 @@ async def main():
     print("="*60)
     
     async with BackendTester() as tester:
+        # URGENT: Run chat response debugging first
+        await tester.test_chat_response_debugging()
+        
         # Run all test suites
         await tester.test_basic_api_health()
         
