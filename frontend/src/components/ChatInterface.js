@@ -174,53 +174,43 @@ const ChatInterface = () => {
       
       if (!userMessage) {
         alert('Could not find the original question for this response.');
+        setBoostingMessage(null);
         return;
       }
 
-      const response = await fetch(`${apiEndpoints.BASE_URL}/chat/boost-response`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({
-          question: userMessage.content,
-          current_tier: currentTier,
-          target_tier: nextTierInfo.next,
-          message_id: messageId
-        })
+      const response = await apiEndpoints.boostResponse({
+        question: userMessage.content,
+        current_tier: currentTier,
+        target_tier: nextTierInfo.next,
+        message_id: messageId
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
-        // Update the message with boosted response
-        setMessages(prev => prev.map(msg => {
-          if (msg.id === messageId) {
-            return {
-              ...msg,
-              content: data.boosted_response,
-              boosted: true,
-              originalContent: message.content,
-              boostTier: nextTierInfo.nextName,
-              isBoostPreview: true
-            };
-          }
-          return msg;
-        }));
+      // Update the message with boosted response
+      setMessages(prev => prev.map(msg => {
+        if (msg.id === messageId) {
+          return {
+            ...msg,
+            content: data.boosted_response,
+            boosted: true,
+            originalContent: message.content,
+            boostTier: nextTierInfo.nextName,
+            isBoostPreview: true
+          };
+        }
+        return msg;
+      }));
 
-        // Mark booster as used
-        const today = new Date().toDateString();
-        localStorage.setItem('lastBoosterDate', today);
-        setBoosterUsage({ used: true, remaining: 0 });
-
-      } else {
-        alert(data.detail || 'Failed to boost response');
-      }
+      // Mark booster as used
+      const today = new Date().toDateString();
+      localStorage.setItem('lastBoosterDate', today);
+      setBoosterUsage({ used: true, remaining: 0 });
 
     } catch (error) {
       console.error('Error boosting message:', error);
-      alert('Failed to boost response. Please try again.');
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to boost response';
+      alert(`Booster Error: ${errorMessage}`);
     } finally {
       setBoostingMessage(null);
     }
