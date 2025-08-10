@@ -786,10 +786,10 @@ const ChatInterface = () => {
                   <MessageSquare className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#4b6b8b' }} />
                   <div>
                     <p className="font-medium text-sm line-clamp-2" style={{ color: '#0f2f57' }}>
-                      {chat.title}
+                      {chat.title || 'Untitled Conversation'}
                     </p>
                     <p className="text-xs mt-1" style={{ color: '#95a6b7' }}>
-                      {new Date(chat.timestamp).toLocaleDateString()}
+                      {chat.timestamp ? new Date(chat.timestamp).toLocaleDateString() : 'No date available'}
                     </p>
                   </div>
                 </div>
