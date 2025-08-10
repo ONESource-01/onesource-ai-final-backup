@@ -2372,6 +2372,231 @@ class BackendTester:
             self.log_test("Weekly Reporting Service Import", False, f"Failed to import service: {str(import_error)}")
         except Exception as service_error:
             self.log_test("Weekly Reporting Service Initialization", False, f"Failed to initialize service: {str(service_error)}")
+
+    async def test_booster_response_system(self):
+        """Test the new Booster Response System"""
+        print("\n=== Testing Booster Response System ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test 1: Booster response without authentication (should fail)
+        boost_data = {
+            "question": "What are the fire rating requirements for steel beams in commercial buildings?",
+            "current_tier": "starter",
+            "target_tier": "pro"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/boost-response", boost_data)
+        
+        if not success and (status == 401 or status == 403):
+            self.log_test("Booster Response (No Auth)", True, "Correctly rejected unauthenticated request")
+        else:
+            self.log_test("Booster Response (No Auth)", False, f"Expected 401/403, got {status}", data)
+        
+        # Test 2: Valid booster request (starter -> pro)
+        success, data, status = await self.make_request("POST", "/chat/boost-response", boost_data, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "boosted_response" in data and "target_tier" in data and "booster_used" in data:
+                boosted_response = data["boosted_response"]
+                target_tier = data["target_tier"]
+                booster_used = data["booster_used"]
+                remaining_boosters = data.get("remaining_boosters", 0)
+                
+                self.log_test("Booster Response (Starter->Pro)", True, 
+                            f"Target tier: {target_tier}, Booster used: {booster_used}, Remaining: {remaining_boosters}")
+                
+                # Check for enhanced formatting in boosted response
+                enhanced_indicators = ["**", "•", "✅", "⚠️", "🏗️", "🚀"]
+                formatting_count = sum(1 for indicator in enhanced_indicators if indicator in boosted_response)
+                
+                if formatting_count >= 3:
+                    self.log_test("Enhanced Response Formatting", True, 
+                                f"Found {formatting_count} formatting elements (bold, bullets, emojis)")
+                else:
+                    self.log_test("Enhanced Response Formatting", False, 
+                                f"Limited formatting found: {formatting_count} elements")
+                
+                # Check for tier-specific content
+                tier_indicators = ["PRO", "enhanced", "comprehensive", "professional", "advanced"]
+                tier_content = sum(1 for indicator in tier_indicators if indicator.lower() in boosted_response.lower())
+                
+                if tier_content >= 2:
+                    self.log_test("Tier-Specific Content", True, 
+                                f"Found {tier_content} tier-specific indicators")
+                else:
+                    self.log_test("Tier-Specific Content", False, 
+                                f"Limited tier content: {tier_content} indicators")
+                
+                # Check response length (should be substantial for boosted response)
+                if len(boosted_response) > 500:
+                    self.log_test("Boosted Response Length", True, 
+                                f"Substantial response: {len(boosted_response)} characters")
+                else:
+                    self.log_test("Boosted Response Length", False, 
+                                f"Response too short: {len(boosted_response)} characters")
+                    
+            else:
+                self.log_test("Booster Response (Starter->Pro)", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Booster Response (Starter->Pro)", False, f"Status: {status}", data)
+        
+        # Test 3: Different tier combination (pro -> pro_plus)
+        pro_to_pro_plus_data = {
+            "question": "How do I design a complex multi-story building with integrated fire safety and structural systems?",
+            "current_tier": "pro", 
+            "target_tier": "pro_plus"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/boost-response", pro_to_pro_plus_data, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "boosted_response" in data and "target_tier" in data:
+                target_tier = data["target_tier"]
+                boosted_response = data["boosted_response"]
+                
+                self.log_test("Booster Response (Pro->Pro Plus)", True, f"Target tier: {target_tier}")
+                
+                # Check for Pro Plus specific features
+                pro_plus_indicators = ["multi-discipline", "coordination", "specialized workflow", "cross-referenced"]
+                pro_plus_content = sum(1 for indicator in pro_plus_indicators 
+                                     if indicator.lower() in boosted_response.lower())
+                
+                if pro_plus_content >= 1:
+                    self.log_test("Pro Plus Specific Features", True, 
+                                f"Found {pro_plus_content} Pro Plus indicators")
+                else:
+                    self.log_test("Pro Plus Specific Features", False, 
+                                "No Pro Plus specific features detected")
+                    
+            else:
+                self.log_test("Booster Response (Pro->Pro Plus)", False, "Missing required fields in response", data)
+        else:
+            self.log_test("Booster Response (Pro->Pro Plus)", False, f"Status: {status}", data)
+        
+        # Test 4: Daily limit enforcement - try to use booster again (should fail with 429)
+        success, data, status = await self.make_request("POST", "/chat/boost-response", boost_data, mock_headers)
+        
+        if not success and status == 429:
+            self.log_test("Daily Booster Limit Enforcement", True, "Correctly rejected second booster attempt with 429 status")
+            
+            # Check for appropriate error message
+            if isinstance(data, dict) and "detail" in data:
+                error_message = data["detail"]
+                if "daily" in error_message.lower() and "limit" in error_message.lower():
+                    self.log_test("Daily Limit Error Message", True, f"Appropriate error message: {error_message}")
+                else:
+                    self.log_test("Daily Limit Error Message", False, f"Unclear error message: {error_message}")
+            elif isinstance(data, str) and "daily" in data.lower():
+                self.log_test("Daily Limit Error Message", True, f"Error message: {data}")
+            else:
+                self.log_test("Daily Limit Error Message", False, f"Unexpected error format: {data}")
+                
+        else:
+            self.log_test("Daily Booster Limit Enforcement", False, 
+                        f"Expected 429 (daily limit), got {status}", data)
+        
+        # Test 5: Missing parameters
+        incomplete_data = {
+            "question": "Test question"
+            # Missing target_tier
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/boost-response", incomplete_data, mock_headers)
+        
+        if not success and status == 400:
+            self.log_test("Missing Parameters Validation", True, "Correctly rejected request with missing target_tier")
+        else:
+            self.log_test("Missing Parameters Validation", False, f"Expected 400, got {status}", data)
+        
+        # Test 6: Invalid tier combination
+        invalid_tier_data = {
+            "question": "Test question",
+            "current_tier": "starter",
+            "target_tier": "invalid_tier"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/boost-response", invalid_tier_data, mock_headers)
+        
+        # This might succeed if the backend doesn't validate tier names, but response should still be generated
+        if success:
+            self.log_test("Invalid Tier Handling", True, "System handled invalid tier gracefully")
+        else:
+            if status == 400:
+                self.log_test("Invalid Tier Validation", True, "Correctly rejected invalid tier combination")
+            else:
+                self.log_test("Invalid Tier Handling", False, f"Unexpected status: {status}", data)
+        
+        # Test 7: Test usage tracking in MongoDB (indirect test through API behavior)
+        # We can't directly access MongoDB, but we can test the behavior that indicates usage tracking
+        
+        # Create a new mock user session to test fresh daily limit
+        fresh_headers = {"Authorization": "Bearer mock_dev_token_fresh_user"}
+        fresh_boost_data = {
+            "question": "What are the structural requirements for a residential building?",
+            "current_tier": "starter",
+            "target_tier": "pro"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/boost-response", fresh_boost_data, fresh_headers)
+        
+        if success and isinstance(data, dict):
+            if "booster_used" in data and data["booster_used"]:
+                self.log_test("Usage Tracking (Fresh User)", True, "Successfully used booster with fresh user session")
+                
+                # Try second booster with same fresh user (should fail)
+                success2, data2, status2 = await self.make_request("POST", "/chat/boost-response", fresh_boost_data, fresh_headers)
+                
+                if not success2 and status2 == 429:
+                    self.log_test("Usage Tracking Persistence", True, "Daily limit correctly tracked across requests")
+                else:
+                    self.log_test("Usage Tracking Persistence", False, 
+                                f"Expected 429 for second attempt, got {status2}")
+            else:
+                self.log_test("Usage Tracking (Fresh User)", False, "Booster usage not properly recorded", data)
+        else:
+            self.log_test("Usage Tracking (Fresh User)", False, f"Status: {status}", data)
+        
+        # Test 8: Construction-specific booster content
+        construction_boost_data = {
+            "question": "What are the AS/NZS standards for concrete strength in high-rise buildings?",
+            "current_tier": "starter",
+            "target_tier": "pro"
+        }
+        
+        # Use a different mock token to avoid daily limit
+        construction_headers = {"Authorization": "Bearer mock_dev_token_construction"}
+        success, data, status = await self.make_request("POST", "/chat/boost-response", construction_boost_data, construction_headers)
+        
+        if success and isinstance(data, dict) and "boosted_response" in data:
+            boosted_response = data["boosted_response"]
+            
+            # Check for construction-specific content
+            construction_terms = ["AS/NZS", "concrete", "standards", "building", "compliance", "structural"]
+            construction_matches = sum(1 for term in construction_terms 
+                                     if term.lower() in boosted_response.lower())
+            
+            if construction_matches >= 3:
+                self.log_test("Construction-Specific Booster Content", True, 
+                            f"Found {construction_matches}/6 construction terms")
+            else:
+                self.log_test("Construction-Specific Booster Content", False, 
+                            f"Limited construction content: {construction_matches}/6 terms")
+            
+            # Check for Australian standards references
+            au_standards = ["AS ", "AS/NZS", "BCA", "NCC", "Australian"]
+            au_matches = sum(1 for standard in au_standards 
+                           if standard in boosted_response)
+            
+            if au_matches >= 1:
+                self.log_test("Australian Standards Integration", True, 
+                            f"Found {au_matches} Australian standards references")
+            else:
+                self.log_test("Australian Standards Integration", False, 
+                            "No Australian standards references found")
+                
+        else:
+            self.log_test("Construction-Specific Booster Content", False, f"Status: {status}", data)
     
     def print_summary(self):
         """Print test summary"""
