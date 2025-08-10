@@ -106,6 +106,26 @@ const ChatInterface = () => {
     }
   };
 
+  const checkOnboardingStatus = async () => {
+    try {
+      const response = await fetch(`${apiEndpoints.BASE_URL}/user/preferences`, {
+        headers: { 'Authorization': `Bearer ${idToken}` }
+      });
+      
+      if (response.ok) {
+        const prefs = await response.json();
+        setUserPreferences(prefs);
+        setOnboardingCompleted(true);
+      } else {
+        // No preferences found, show onboarding
+        setShowOnboarding(true);
+      }
+    } catch (error) {
+      console.log('No preferences found, showing onboarding');
+      setShowOnboarding(true);
+    }
+  };
+
   const loadChatHistory = async () => {
     try {
       const response = await apiEndpoints.getChatHistory(20);
