@@ -31,8 +31,9 @@ export const apiEndpoints = {
 
   // Chat
   askQuestion: (data) => api.post('/chat/ask', data),
-  submitFeedback: (data) => api.post('/chat/feedback', data),
-  submitContribution: (data) => api.post('/chat/contribution', data),
+  askEnhancedQuestion: (data) => api.post('/chat/ask-enhanced', data),
+  submitChatFeedback: (data) => api.post('/chat/feedback', data),
+  submitKnowledgeContribution: (data) => api.post('/chat/contribution', data),
   getChatHistory: (limit = 50) => api.get('/chat/history', { params: { limit } }),
   getChatSession: (sessionId) => api.get(`/chat/session/${sessionId}`),
 
