@@ -266,44 +266,29 @@ const ChatInterface = () => {
     setLoading(true);
 
     try {
-      const endpoint = useKnowledgeEnhanced 
-        ? `${apiEndpoints.BASE_URL}/chat/ask-enhanced`
-        : `${apiEndpoints.BASE_URL}/chat/ask`;
+      const apiCall = useKnowledgeEnhanced 
+        ? apiEndpoints.askEnhancedQuestion({ question: inputMessage, session_id: sessionId })
+        : apiEndpoints.askQuestion({ question: inputMessage, session_id: sessionId });
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({
-          question: inputMessage,
-          session_id: sessionId
-        })
-      });
+      const response = await apiCall;
+      const data = response.data;
 
-      const data = await response.json();
+      const aiMessage = {
+        id: Date.now() + 1,
+        type: 'ai',
+        content: data.response || data.ai_response,
+        timestamp: new Date().toISOString(),
+        tokensUsed: data.tokens_used,
+        knowledgeEnhanced: useKnowledgeEnhanced,
+        knowledgeSources: data.knowledge_sources || 0,
+        supplierContentUsed: data.supplier_content_used || false
+      };
 
-      if (response.ok) {
-        const aiMessage = {
-          id: Date.now() + 1,
-          type: 'ai',
-          content: data.response || data.ai_response,
-          timestamp: new Date().toISOString(),
-          tokensUsed: data.tokens_used,
-          knowledgeEnhanced: useKnowledgeEnhanced,
-          knowledgeSources: data.knowledge_sources || 0,
-          supplierContentUsed: data.supplier_content_used || false
-        };
-
-        setMessages(prev => [...prev, aiMessage]);
-        setSessionId(data.session_id);
-        
-        // Refresh subscription status after question
-        loadSubscriptionStatus();
-      } else {
-        throw new Error(data.detail || 'Failed to get response');
-      }
+      setMessages(prev => [...prev, aiMessage]);
+      setSessionId(data.session_id);
+      
+      // Refresh subscription status after question
+      loadSubscriptionStatus();
     } catch (error) {
       console.error('Error:', error);
       
