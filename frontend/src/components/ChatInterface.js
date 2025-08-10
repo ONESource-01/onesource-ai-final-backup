@@ -141,6 +141,34 @@ const ChatInterface = () => {
     }
   };
 
+  const handleOnboardingComplete = async (formData) => {
+    try {
+      const response = await fetch(`${apiEndpoints.BASE_URL}/user/preferences`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        const prefs = await response.json();
+        setUserPreferences(prefs.preferences);
+        setOnboardingCompleted(true);
+        setShowOnboarding(false);
+      }
+    } catch (error) {
+      console.error('Error saving onboarding data:', error);
+      alert('Failed to save preferences. Please try again.');
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    setShowOnboarding(false);
+    setOnboardingCompleted(true);
+  };
+
   const handleNewChat = () => {
     setMessages([]);
     setSessionId(null);
