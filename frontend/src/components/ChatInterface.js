@@ -35,6 +35,9 @@ const ChatInterface = () => {
   const [boosterUsage, setBoosterUsage] = useState({ used: false, remaining: 1 });
   const [boostingMessage, setBoostingMessage] = useState(null);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
+  const [userPreferences, setUserPreferences] = useState(null);
   const messagesEndRef = useRef(null);
 
   // Set page title for this component
