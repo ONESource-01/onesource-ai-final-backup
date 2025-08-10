@@ -21,6 +21,9 @@ export const setAuthToken = (token) => {
 
 // API endpoints
 export const apiEndpoints = {
+  // Base URL for manual fetch calls
+  BASE_URL: process.env.REACT_APP_BACKEND_URL,
+  
   // Auth and user management
   getUserProfile: () => api.get('/user/profile'),
   completeOnboarding: (data) => api.post('/user/onboarding', data),
