@@ -777,7 +777,12 @@ const ChatInterface = () => {
         <div className="flex-1 overflow-y-auto p-4">
           <h3 className="font-semibold text-sm mb-3" style={{ color: '#4b6b8b' }}>Recent Conversations</h3>
           <div className="space-y-2">
-            {chatHistory.map((chat) => (
+            {chatHistory
+              .filter(chat => 
+                !searchTerm || 
+                (chat.title && chat.title.toLowerCase().includes(searchTerm.toLowerCase()))
+              )
+              .map((chat) => (
               <div
                 key={chat.session_id}
                 className="p-3 rounded-lg cursor-pointer hover:bg-opacity-50 transition-colors"
@@ -797,6 +802,14 @@ const ChatInterface = () => {
                 </div>
               </div>
             ))}
+            {chatHistory.filter(chat => 
+              !searchTerm || 
+              (chat.title && chat.title.toLowerCase().includes(searchTerm.toLowerCase()))
+            ).length === 0 && searchTerm && (
+              <div className="text-center py-4 text-gray-500 text-sm">
+                No conversations found for "{searchTerm}"
+              </div>
+            )}
           </div>
         </div>
         
