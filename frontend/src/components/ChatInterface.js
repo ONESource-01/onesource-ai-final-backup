@@ -730,6 +730,16 @@ const ChatInterface = () => {
     );
   };
 
+  // Show Onboarding if first time user
+  if (showOnboarding && !onboardingCompleted) {
+    return (
+      <OnboardingFlow 
+        onComplete={handleOnboardingComplete}
+        onSkip={handleOnboardingSkip}
+      />
+    );
+  }
+
   // Show UserProfile if requested
   if (showUserProfile) {
     return <UserProfile onBack={() => setShowUserProfile(false)} />;
