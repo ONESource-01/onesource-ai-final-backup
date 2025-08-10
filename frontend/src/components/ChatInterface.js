@@ -33,6 +33,7 @@ const ChatInterface = () => {
   const [useKnowledgeEnhanced, setUseKnowledgeEnhanced] = useState(false);
   const [boosterUsage, setBoosterUsage] = useState({ used: false, remaining: 1 });
   const [boostingMessage, setBoostingMessage] = useState(null);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Set page title for this component
