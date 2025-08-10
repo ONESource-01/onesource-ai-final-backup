@@ -857,6 +857,15 @@ const ChatInterface = () => {
             <Button
               size="sm"
               variant="ghost"
+              onClick={() => setShowUserProfile(true)}
+              className="p-1"
+              title="User Profile & Settings"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
               onClick={logout}
               className="p-1"
               title="Sign out"
