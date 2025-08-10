@@ -369,28 +369,30 @@ const ChatInterface = () => {
             </div>
           )}
           
-          <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">🛠️</span>
-              <h4 className="font-bold text-lg" style={{ color: '#0f2f57' }}>Technical Answer</h4>
+          {/* Technical Answer Card */}
+          <div className="bg-white border-l-4 border-blue-500 rounded-lg p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-xl">🛠️</span>
+              </div>
+              <h4 className="font-bold text-xl text-blue-900">Technical Answer</h4>
             </div>
             <div 
-              className="prose prose-sm max-w-none leading-relaxed"
-              style={{ color: '#0f2f57' }}
+              className="prose prose-base max-w-none leading-relaxed text-gray-800"
               dangerouslySetInnerHTML={{ __html: wrapLists(formatText(content.technical)) }}
             />
           </div>
           
-          <Separator className="my-4" />
-          
-          <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">🧠</span>
-              <h4 className="font-bold text-lg" style={{ color: '#4b6b8b' }}>Mentoring Insight</h4>
+          {/* Mentoring Insight Card */}
+          <div className="bg-white border-l-4 border-green-500 rounded-lg p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-xl">🧠</span>
+              </div>
+              <h4 className="font-bold text-xl text-green-900">Mentoring Insight</h4>
             </div>
             <div 
-              className="prose prose-sm max-w-none leading-relaxed"
-              style={{ color: '#4b6b8b' }}
+              className="prose prose-base max-w-none leading-relaxed text-gray-700"
               dangerouslySetInnerHTML={{ __html: wrapLists(formatText(content.mentoring)) }}
             />
           </div>
