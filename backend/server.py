@@ -802,7 +802,7 @@ async def generate_embeddings(text: str) -> List[float]:
     try:
         # Check if we have a valid OpenAI API key
         api_key = os.environ.get('OPENAI_API_KEY', '')
-        if not api_key or api_key.startswith('sk-proj-y4RpPcnJhUFKhJEJHDlKHdoNSr9NsQhDFG8-I5c4V4uq'):
+        if not api_key or len(api_key) < 10:
             # Mock embeddings for testing - generate a simple hash-based embedding
             import hashlib
             text_hash = hashlib.md5(text.encode()).hexdigest()
