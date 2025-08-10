@@ -83,8 +83,8 @@ const ChatInterface = () => {
 
   const loadBoosterStatus = async () => {
     try {
-      // Check if user has used their daily booster
-      const today = new Date().toDateString();
+      // Use ISO date format for reliable comparison
+      const today = new Date().toISOString().split('T')[0];
       const lastBoosterDate = localStorage.getItem('lastBoosterDate');
       const used = lastBoosterDate === today;
       
@@ -94,6 +94,8 @@ const ChatInterface = () => {
       });
     } catch (error) {
       console.error('Error loading booster status:', error);
+      // Default to allowing booster if there's an error
+      setBoosterUsage({ used: false, remaining: 1 });
     }
   };
 
