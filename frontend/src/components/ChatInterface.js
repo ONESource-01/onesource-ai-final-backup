@@ -54,6 +54,7 @@ const ChatInterface = () => {
       loadSubscriptionStatus();
       loadChatHistory();
       loadBoosterStatus();
+      checkOnboardingStatus();
     }
   }, [idToken]);
 
