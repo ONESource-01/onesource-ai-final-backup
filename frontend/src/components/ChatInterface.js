@@ -677,6 +677,11 @@ const ChatInterface = () => {
     );
   };
 
+  // Show UserProfile if requested
+  if (showUserProfile) {
+    return <UserProfile onBack={() => setShowUserProfile(false)} />;
+  }
+
   return (
     <div className="h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
       {/* CSS for enhanced formatting */}
