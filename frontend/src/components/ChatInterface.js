@@ -466,21 +466,34 @@ const ChatInterface = () => {
             <span className="text-xs">Restore Original</span>
           </Button>
         ) : canBoost && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => handleBoostMessage(messageId)}
-            disabled={isLoading}
-            className="h-8 px-3 hover:bg-yellow-50 text-yellow-700 border border-yellow-300"
-            title={`Preview ${nextTierInfo.nextName} response (${boosterUsage.remaining}/1 daily)`}
-          >
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-600"></div>
-            ) : (
-              <Sparkles className="h-3 w-3 mr-1" />
-            )}
-            <span className="text-xs font-semibold">Booster ({boosterUsage.remaining}/1)</span>
-          </Button>
+          <div className="relative group">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => handleBoostMessage(messageId)}
+              disabled={isLoading}
+              className="h-8 px-3 hover:bg-yellow-50 text-yellow-700 border border-yellow-300 transition-all duration-200"
+              title={`🚀 Preview how this answer would look with ${nextTierInfo.nextName} plan! Get enhanced formatting, detailed analysis, and professional insights. (${boosterUsage.remaining}/1 daily preview remaining)`}
+            >
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-600"></div>
+              ) : (
+                <Sparkles className="h-3 w-3 mr-1" />
+              )}
+              <span className="text-xs font-semibold">Booster ({boosterUsage.remaining}/1)</span>
+            </Button>
+            
+            {/* Enhanced Tooltip */}
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-50">
+              <div className="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
+                🚀 Preview {nextTierInfo.nextName} response quality
+                <div className="text-xs text-gray-300 mt-1">
+                  See enhanced formatting & detailed analysis
+                </div>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+              </div>
+            </div>
+          </div>
         )}
         
         <Button
