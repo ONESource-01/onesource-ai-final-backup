@@ -2373,6 +2373,85 @@ async def test_weekly_report_endpoint(
         else:
             raise HTTPException(status_code=500, detail=f"Error sending test report: {str(e)}")
 
+# User Preferences Routes
+@api_router.post("/user/preferences")
+async def save_user_preferences(
+    preferences: UserPreferences,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Save user preferences for AI personalization"""
+    try:
+        uid = current_user["uid"]
+        
+        preference_record = {
+            "user_id": uid,
+            "industries": preferences.industries,
+            "role": preferences.role,
+            "experience_level": preferences.experience_level,
+            "response_style": preferences.response_style,
+            "ai_focus_areas": preferences.ai_focus_areas,
+            "custom_instructions": preferences.custom_instructions,
+            "updated_at": datetime.utcnow(),
+            "created_at": datetime.utcnow()
+        }
+        
+        # Upsert preferences
+        await db.user_preferences.update_one(
+            {"user_id": uid},
+            {"$set": preference_record},
+            upsert=True
+        )
+        
+        return {"message": "Preferences saved successfully", "preferences": preference_record}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving preferences: {str(e)}")
+
+@api_router.get("/user/preferences")
+async def get_user_preferences(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get user preferences for AI personalization"""
+    try:
+        uid = current_user["uid"]
+        
+        preferences = await db.user_preferences.find_one({"user_id": uid})
+        
+        if not preferences:
+            raise HTTPException(status_code=404, detail="No preferences found")
+        
+        # Clean up MongoDB ObjectId
+        if "_id" in preferences:
+            del preferences["_id"]
+            
+        return preferences
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting preferences: {str(e)}")
+
+@api_router.get("/knowledge/personal-documents")
+async def get_personal_documents(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get user's personal knowledge bank documents"""
+    try:
+        uid = current_user["uid"]
+        
+        cursor = db.personal_knowledge_bank.find(
+            {"user_id": uid, "status": "active"},
+            {"filename": 1, "upload_timestamp": 1, "document_id": 1, "original_size": 1, "tags": 1}
+        ).sort("upload_timestamp", -1)
+        
+        documents = await cursor.to_list(length=100)
+        
+        # Clean up MongoDB ObjectIds
+        for doc in documents:
+            if "_id" in doc:
+                del doc["_id"]
+        
+        return {"documents": documents, "total_count": len(documents)}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting personal documents: {str(e)}")
+
 # Partner Management Routes
 @api_router.post("/partners/register")
 async def register_partner(partner_data: PartnerRegistration):
