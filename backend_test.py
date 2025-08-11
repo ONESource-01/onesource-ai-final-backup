@@ -2926,6 +2926,11 @@ async def main():
         
         await tester.test_user_management_unauthenticated()
         await tester.test_user_management_with_mock_auth()
+        
+        # NEW: Test the specific subscription fixes mentioned in review request
+        await tester.test_subscription_status_endpoint_fix()
+        await tester.test_mock_firebase_service_starter_tier()
+        
         await tester.test_ai_chat_system()
         await tester.test_chat_feedback_system()
         await tester.test_knowledge_contribution_system()
