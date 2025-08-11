@@ -12,7 +12,7 @@ import OnboardingFlow from './OnboardingFlow';
 import { 
   AlertTriangle, Send, User, Bot, Clock, Crown, Zap, LogOut, 
   Copy, ThumbsUp, ThumbsDown, Search, Plus, MessageSquare,
-  Edit3, Save, X, Sparkles, TrendingUp, Star, Settings
+  Edit3, Save, X, Sparkles, TrendingUp, Star, Settings, Database
 } from 'lucide-react';
 
 const ChatInterface = () => {
