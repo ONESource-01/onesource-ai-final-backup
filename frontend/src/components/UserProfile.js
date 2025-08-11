@@ -544,6 +544,21 @@ const UserProfile = ({ onClose, onPreferencesUpdate }) => {
             </p>
           </div>
 
+          {/* Success and Error Messages - Positioned above Save button */}
+          {success && (
+            <Alert className="border-green-200 bg-green-50">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription className="text-green-700">{success}</AlertDescription>
+            </Alert>
+          )}
+          
+          {error && (
+            <Alert className="border-red-200 bg-red-50">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-red-700">{error}</AlertDescription>
+            </Alert>
+          )}
+
           <Button 
             onClick={savePreferences} 
             disabled={loading}
