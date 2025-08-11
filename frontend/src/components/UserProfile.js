@@ -400,20 +400,6 @@ const UserProfile = ({ onClose, onPreferencesUpdate }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-8">
-          {success && (
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription className="text-green-700">{success}</AlertDescription>
-            </Alert>
-          )}
-          
-          {error && (
-            <Alert className="border-red-200 bg-red-50">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription className="text-red-700">{error}</AlertDescription>
-            </Alert>
-          )}
-
           {/* Industry Sectors - V1 Beta Requirement */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
