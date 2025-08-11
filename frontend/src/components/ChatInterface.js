@@ -357,6 +357,9 @@ const ChatInterface = () => {
     formatted = formatted.replace(/\n\n/g, '<br>');  // Double breaks become single
     formatted = formatted.replace(/\n/g, '');        // Remove single breaks for tight spacing
     
+    // STEP 6.5: Final cleanup - catch any remaining markdown headers that slipped through
+    formatted = formatted.replace(/^#+\s*(.*?)$/gm, '<div class="mt-2 mb-1"><h5 class="text-sm font-medium text-gray-700 flex items-center gap-2">▪️ <strong>$1</strong></h5></div>');
+    
     // STEP 7: Wrap in container with tight spacing
     formatted = `<div style="line-height: 1.3; margin: 0; padding: 0;">${formatted}</div>`;
     
