@@ -143,6 +143,12 @@ const ChatInterface = () => {
     const trimmedMessage = inputMessage.trim();
     if (!trimmedMessage || loading) return;
 
+    console.log("🚀 SEND MESSAGE DEBUG:");
+    console.log("Message:", trimmedMessage);
+    console.log("Session ID:", sessionId);
+    console.log("Use Knowledge Enhanced:", useKnowledgeEnhanced);
+    console.log("API Endpoints:", apiEndpoints);
+
     // Check trial limits
     if (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0) {
       alert('You have used all your free questions. Please upgrade to continue.');
@@ -166,9 +172,14 @@ const ChatInterface = () => {
         session_id: sessionId,
       };
 
+      console.log("🚀 REQUEST DATA:", requestData);
+      console.log("🚀 CALLING API ENDPOINT...");
+
       const response = useKnowledgeEnhanced 
         ? await apiEndpoints.askEnhancedQuestion(requestData)
         : await apiEndpoints.askQuestion(requestData);
+
+      console.log("🚀 RESPONSE RECEIVED:", response);
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -180,6 +191,8 @@ const ChatInterface = () => {
         mentoring: response.data.response?.mentoring || null,
         format: response.data.response?.format || 'single'
       };
+
+      console.log("🚀 AI MESSAGE CREATED:", aiMessage);
 
       setMessages(prev => [...prev, aiMessage]);
       
@@ -198,7 +211,8 @@ const ChatInterface = () => {
       loadChatHistory();
 
     } catch (error) {
-      console.error('Chat error:', error);
+      console.error('❌ CHAT ERROR:', error);
+      console.error('❌ ERROR DETAILS:', error.response);
       const errorMessage = {
         id: Date.now() + 1,
         type: 'ai',
