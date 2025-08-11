@@ -74,7 +74,7 @@ class AIIntelligencePhases:
             4. **Authority Requirements** - Council/certifier approval processes
             5. **Documentation Needed** - Plans, certificates, reports required
             
-            STANDARDS AUSTRALIA COMPLIANCE: Reference Australian Standards by number and title. Never reproduce copyrighted tables, figures, or detailed content.
+            CREATE COMPARISON TABLES: Always create detailed comparison tables for different standards, compliance methods, or jurisdictional differences.
             """,
             
             "fire_safety": """
