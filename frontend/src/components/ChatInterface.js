@@ -48,264 +48,123 @@ const ChatInterface = () => {
     };
   }, []);
 
+  // Set auth token when idToken changes
   useEffect(() => {
     if (idToken) {
       setAuthToken(idToken);
-      loadSubscriptionStatus();
-      loadChatHistory();
-      loadBoosterStatus();
-      checkOnboardingStatus();
     }
   }, [idToken]);
 
+  // Initialize session and load data
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (user && idToken) {
+      initializeSession();
+      checkSubscriptionStatus();
+      loadChatHistory();
+      checkOnboardingStatus();
+      loadUserPreferences();
+    }
+  }, [user, idToken]);
 
-  const scrollToBottom = () => {
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  const initializeSession = async () => {
+    try {
+      const response = await apiEndpoints.createSession();
+      setSessionId(response.data.session_id);
+    } catch (error) {
+      console.error('Session creation failed:', error);
+      // Continue without session - system will handle gracefully
+    }
   };
 
-  const loadSubscriptionStatus = async () => {
+  const checkSubscriptionStatus = async () => {
     try {
       const response = await apiEndpoints.getSubscriptionStatus();
       setSubscriptionStatus(response.data);
-      
-      // Set trial info based on subscription status
-      if (response.data.subscription_tier === 'starter' && !response.data.subscription_active) {
-        const remaining = Math.max(0, 3 - (response.data.daily_questions_used || 0));
-        setTrialInfo({
-          remaining_questions: remaining,
-          message: remaining > 0 
-            ? `You have ${remaining} free questions remaining today`
-            : 'Daily limit reached - 3 questions per day for free users. Try again tomorrow or upgrade!',
-          subscription_required: remaining === 0,
-          reset_time: remaining === 0 ? 'tomorrow' : null
-        });
-      }
+      setTrialInfo(response.data.trial_info);
     } catch (error) {
-      console.error('Error loading subscription status:', error);
-    }
-  };
-
-  const loadBoosterStatus = async () => {
-    try {
-      // Use ISO date format for reliable comparison
-      const today = new Date().toISOString().split('T')[0];
-      const lastBoosterDate = localStorage.getItem('lastBoosterDate');
-      const used = lastBoosterDate === today;
-      
-      setBoosterUsage({
-        used: used,
-        remaining: used ? 0 : 1
-      });
-    } catch (error) {
-      console.error('Error loading booster status:', error);
-      // Default to allowing booster if there's an error
-      setBoosterUsage({ used: false, remaining: 1 });
-    }
-  };
-
-  const checkOnboardingStatus = async () => {
-    try {
-      const response = await fetch(`${apiEndpoints.BASE_URL}/user/preferences`, {
-        headers: { 'Authorization': `Bearer ${idToken}` }
-      });
-      
-      if (response.ok) {
-        const prefs = await response.json();
-        setUserPreferences(prefs);
-        setOnboardingCompleted(true);
-      } else {
-        // No preferences found, show onboarding
-        setShowOnboarding(true);
-      }
-    } catch (error) {
-      console.log('No preferences found, showing onboarding');
-      setShowOnboarding(true);
+      console.error('Failed to get subscription status:', error);
+      setSubscriptionStatus({ tier: 'free', is_trial: true });
+      setTrialInfo({ questions_remaining: 3, questions_used: 0 });
     }
   };
 
   const loadChatHistory = async () => {
     try {
-      const response = await apiEndpoints.getChatHistory(20);
-      setChatHistory(response.data.chat_history);
+      const response = await apiEndpoints.getChatHistory();
+      setChatHistory(response.data.conversations || []);
     } catch (error) {
-      console.error('Error loading chat history:', error);
-      // Fallback to mock data
-      setChatHistory([
-        { session_id: 1, title: "Building Height Requirements", timestamp: new Date().toISOString() },
-        { session_id: 2, title: "Fire Safety Compliance", timestamp: new Date().toISOString() },
-        { session_id: 3, title: "Structural Engineering Query", timestamp: new Date().toISOString() }
-      ]);
+      console.error('Failed to load chat history:', error);
+      setChatHistory([]);
     }
   };
 
-  const handleOnboardingComplete = async (formData) => {
+  const checkOnboardingStatus = async () => {
     try {
-      const response = await fetch(`${apiEndpoints.BASE_URL}/user/preferences`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        const prefs = await response.json();
-        setUserPreferences(prefs.preferences);
-        setOnboardingCompleted(true);
-        setShowOnboarding(false);
-      }
+      const response = await apiEndpoints.getUserProfile();
+      setOnboardingCompleted(response.data.onboarding_completed || false);
     } catch (error) {
-      console.error('Error saving onboarding data:', error);
-      alert('Failed to save preferences. Please try again.');
+      console.error('Failed to check onboarding status:', error);
+      setOnboardingCompleted(false);
     }
   };
 
-  const handleOnboardingSkip = () => {
-    setShowOnboarding(false);
-    setOnboardingCompleted(true);
-  };
-
-  const handleNewChat = () => {
-    setMessages([]);
-    setSessionId(null);
-    setShowContributionBox({});
-    setContributionText({});
-  };
-
-  const handleChatLoad = async (sessionId) => {
+  const loadUserPreferences = async () => {
     try {
-      const response = await apiEndpoints.getChatSession(sessionId);
-      setSessionId(sessionId);
+      const response = await apiEndpoints.getUserProfile();
+      setUserPreferences(response.data.preferences || null);
+    } catch (error) {
+      console.error('Failed to load user preferences:', error);
+    }
+  };
+
+  const loadConversation = async (conversationId) => {
+    try {
+      setLoading(true);
+      const response = await apiEndpoints.getConversation(conversationId);
+      const conversationMessages = response.data.messages || [];
       
-      const formattedMessages = response.data.messages.map(msg => ({
-        id: msg.id || Date.now(),
-        type: msg.sender === 'user' ? 'user' : 'ai',
-        content: msg.message,
-        timestamp: msg.timestamp,
-        enhanced: msg.enhanced || false
+      const formattedMessages = conversationMessages.map(msg => ({
+        id: Date.now() + Math.random(),
+        type: msg.role === 'user' ? 'user' : 'ai',
+        content: msg.content,
+        timestamp: new Date()
       }));
       
       setMessages(formattedMessages);
+      setSessionId(conversationId);
     } catch (error) {
-      console.error('Error loading chat session:', error);
-    }
-  };
-
-  const getNextTierInfo = (currentTier) => {
-    const tierHierarchy = {
-      'starter': { next: 'pro', nextName: 'Pro' },
-      'pro': { next: 'pro_plus', nextName: 'Pro-Plus' },
-      'pro_plus': { next: null, nextName: null }
-    };
-    
-    return tierHierarchy[currentTier] || { next: 'pro', nextName: 'Pro' };
-  };
-
-  const handleBoostMessage = async (messageId) => {
-    if (boosterUsage.remaining === 0) {
-      alert('You\'ve used your daily booster! Come back tomorrow for another preview.');
-      return;
-    }
-
-    const message = messages.find(m => m.id === messageId);
-    if (!message || message.type !== 'ai') return;
-
-    const currentTier = subscriptionStatus?.subscription_tier || 'starter';
-    const nextTierInfo = getNextTierInfo(currentTier);
-    
-    if (!nextTierInfo.next) {
-      alert('You\'re already on the highest tier! No upgrades available.');
-      return;
-    }
-
-    setBoostingMessage(messageId);
-
-    try {
-      // Find the corresponding user question for this AI response
-      const messageIndex = messages.findIndex(m => m.id === messageId);
-      const userMessage = messages.slice(0, messageIndex).reverse().find(m => m.type === 'user');
-      
-      if (!userMessage) {
-        alert('Could not find the original question for this response.');
-        setBoostingMessage(null);
-        return;
-      }
-
-      const response = await apiEndpoints.boostResponse({
-        question: userMessage.content,
-        current_tier: currentTier,
-        target_tier: nextTierInfo.next,
-        message_id: messageId
-      });
-
-      const data = response.data;
-
-      // Update the message with boosted response
-      setMessages(prev => prev.map(msg => {
-        if (msg.id === messageId) {
-          return {
-            ...msg,
-            content: data.boosted_response,
-            boosted: true,
-            originalContent: message.content,
-            boostTier: nextTierInfo.nextName,
-            isBoostPreview: true
-          };
-        }
-        return msg;
-      }));
-
-      // Mark booster as used
-      const today = new Date().toISOString().split('T')[0];
-      localStorage.setItem('lastBoosterDate', today);
-      setBoosterUsage({ used: true, remaining: 0 });
-
-    } catch (error) {
-      console.error('Error boosting message:', error);
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to boost response';
-      alert(`Booster Error: ${errorMessage}`);
+      console.error('Failed to load conversation:', error);
     } finally {
-      setBoostingMessage(null);
+      setLoading(false);
     }
   };
 
-  const handleRestoreOriginal = (messageId) => {
-    setMessages(prev => prev.map(msg => {
-      if (msg.id === messageId && msg.boosted && msg.originalContent) {
-        return {
-          ...msg,
-          content: msg.originalContent,
-          boosted: false,
-          originalContent: undefined,
-          boostTier: undefined,
-          isBoostPreview: false
-        };
-      }
-      return msg;
-    }));
+  const startNewConversation = () => {
+    setMessages([]);
+    setSessionId(null);
+    initializeSession();
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!inputMessage.trim() || loading) return;
+  const sendMessage = async () => {
+    const trimmedMessage = inputMessage.trim();
+    if (!trimmedMessage || loading) return;
 
     // Check trial limits
-    if (trialInfo?.subscription_required) {
-      alert(trialInfo.message);
+    if (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0) {
+      alert('You have used all your free questions. Please upgrade to continue.');
       return;
     }
 
     const userMessage = {
       id: Date.now(),
       type: 'user',
-      content: inputMessage,
-      timestamp: new Date().toISOString(),
-      enhanced: useKnowledgeEnhanced
+      content: trimmedMessage,
+      timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -313,653 +172,379 @@ const ChatInterface = () => {
     setLoading(true);
 
     try {
-      const apiCall = useKnowledgeEnhanced 
-        ? apiEndpoints.askEnhancedQuestion({ question: inputMessage, session_id: sessionId })
-        : apiEndpoints.askQuestion({ question: inputMessage, session_id: sessionId });
-
-      const response = await apiCall;
-      const data = response.data;
+      const response = await apiEndpoints.chat({
+        message: trimmedMessage,
+        session_id: sessionId,
+        use_knowledge_enhanced: useKnowledgeEnhanced,
+        user_preferences: userPreferences
+      });
 
       const aiMessage = {
         id: Date.now() + 1,
         type: 'ai',
-        content: data.response || data.ai_response,
-        timestamp: new Date().toISOString(),
-        tokensUsed: data.tokens_used,
-        knowledgeEnhanced: useKnowledgeEnhanced,
-        knowledgeSources: data.knowledge_sources || 0,
-        supplierContentUsed: data.supplier_content_used || false
+        content: response.data.response,
+        timestamp: new Date(),
+        sources: response.data.sources || [],
+        confidence: response.data.confidence || null
       };
 
       setMessages(prev => [...prev, aiMessage]);
-      setSessionId(data.session_id);
       
-      // Refresh subscription status after question
-      loadSubscriptionStatus();
+      // Update subscription status after successful query
+      if (response.data.subscription_status) {
+        setSubscriptionStatus(response.data.subscription_status);
+        setTrialInfo(response.data.subscription_status.trial_info);
+      }
+
+      // Update session ID if provided
+      if (response.data.session_id) {
+        setSessionId(response.data.session_id);
+      }
+
+      // Update chat history
+      loadChatHistory();
+
     } catch (error) {
-      console.error('Error:', error);
-      
-      const errorAiMessage = {
+      console.error('Chat error:', error);
+      const errorMessage = {
         id: Date.now() + 1,
         type: 'ai',
         content: 'I apologize, but I encountered an error while processing your question. Please try again or contact support if the issue persists.',
-        error: true,
-        timestamp: new Date().toISOString()
+        timestamp: new Date()
       };
-
-      setMessages(prev => [...prev, errorAiMessage]);
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Enhanced AI Response Renderer with proper formatting
-  const renderAiResponse = (content, isBoostPreview = false, boostTier = null) => {
-    const formatText = (text) => {
-      if (!text) return text;
-      
-      // Convert markdown-style formatting to HTML
-      return text
-        // Bold text **text**
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        // Italic text *text*
-        .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>')
-        // Headers ### text
-        .replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1</h3>')
-        .replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold text-gray-900 mt-5 mb-3">$1</h2>')
-        .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold text-gray-900 mt-6 mb-4">$1</h1>')
-        // Bullet points with proper indentation
-        .replace(/^[•·-]\s*(.*$)/gm, '<li class="ml-4 mb-1">$1</li>')
-        // Numbered lists
-        .replace(/^\d+\.\s*(.*$)/gm, '<li class="ml-4 mb-1">$1</li>')
-        // Checkmarks and emojis
-        .replace(/✅/g, '<span class="text-green-600">✅</span>')
-        .replace(/❌/g, '<span class="text-red-600">❌</span>')
-        .replace(/⚠️/g, '<span class="text-yellow-600">⚠️</span>')
-        .replace(/🏗️/g, '<span class="text-blue-600">🏗️</span>')
-        .replace(/📋/g, '<span class="text-gray-600">📋</span>')
-        .replace(/🔧/g, '<span class="text-orange-600">🔧</span>')
-        // Line breaks
-        .replace(/\n\n/g, '<br><br>')
-        .replace(/\n/g, '<br>');
-    };
-
-    const wrapLists = (text) => {
-      // Wrap consecutive <li> elements in <ul> tags
-      return text.replace(/(<li[^>]*>.*?<\/li>(?:\s*<li[^>]*>.*?<\/li>)*)/gs, '<ul class="list-disc list-inside space-y-1 my-3">$1</ul>');
-    };
-
-    if (typeof content === 'string') {
-      const formattedContent = wrapLists(formatText(content));
-      return (
-        <div 
-          className={`prose prose-sm max-w-none ${isBoostPreview ? 'border-2 border-yellow-300 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg' : ''}`}
-          style={{ color: '#0f2f57' }}
-        >
-          {isBoostPreview && (
-            <div className="flex items-center gap-2 mb-3 p-2 bg-yellow-100 rounded-lg">
-              <Sparkles className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm font-semibold text-yellow-800">
-                🚀 This is how your response would look with {boostTier} plan!
-              </span>
-            </div>
-          )}
-          <div 
-            dangerouslySetInnerHTML={{ __html: formattedContent }}
-            className="formatted-response"
-          />
-        </div>
-      );
-    }
-
-    if (content.format === 'dual' && content.technical && content.mentoring) {
-      return (
-        <div className={`space-y-4 ${isBoostPreview ? 'border-2 border-yellow-300 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg' : ''}`}>
-          {isBoostPreview && (
-            <div className="flex items-center gap-2 mb-3 p-2 bg-yellow-100 rounded-lg">
-              <Sparkles className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm font-semibold text-yellow-800">
-                🚀 This is how your response would look with {boostTier} plan!
-              </span>
-            </div>
-          )}
-          
-          {/* Technical Answer Card */}
-          <div className="bg-white border-l-4 border-blue-500 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-xl">🛠️</span>
-              </div>
-              <h4 className="font-bold text-xl text-blue-900">Technical Answer</h4>
-            </div>
-            <div 
-              className="prose prose-base max-w-none leading-relaxed text-gray-800"
-              dangerouslySetInnerHTML={{ __html: wrapLists(formatText(content.technical)) }}
-            />
-          </div>
-          
-          {/* Mentoring Insight Card */}
-          <div className="bg-white border-l-4 border-green-500 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-xl">🧠</span>
-              </div>
-              <h4 className="font-bold text-xl text-green-900">Mentoring Insight</h4>
-            </div>
-            <div 
-              className="prose prose-base max-w-none leading-relaxed text-gray-700"
-              dangerouslySetInnerHTML={{ __html: wrapLists(formatText(content.mentoring)) }}
-            />
-          </div>
-        </div>
-      );
-    }
-
-    const formattedContent = wrapLists(formatText(content.technical || content));
-    return (
-      <div 
-        className={`prose prose-sm max-w-none ${isBoostPreview ? 'border-2 border-yellow-300 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg' : ''}`}
-        style={{ color: '#0f2f57' }}
-      >
-        {isBoostPreview && (
-          <div className="flex items-center gap-2 mb-3 p-2 bg-yellow-100 rounded-lg">
-            <Sparkles className="h-4 w-4 text-yellow-600" />
-            <span className="text-sm font-semibold text-yellow-800">
-              🚀 This is how your response would look with {boostTier} plan!
-            </span>
-          </div>
-        )}
-        <div dangerouslySetInnerHTML={{ __html: formattedContent }} />
-      </div>
-    );
-  };
-
-  const MessageActions = ({ messageId, content, message }) => {
-    const currentTier = subscriptionStatus?.subscription_tier || 'starter';
-    const nextTierInfo = getNextTierInfo(currentTier);
-    const canBoost = nextTierInfo.next && boosterUsage.remaining > 0 && !message.boosted;
-    const isBoosted = message.boosted;
-    const isLoading = boostingMessage === messageId;
-
-    return (
-      <div className="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => handleCopyMessage(content)}
-          className="h-8 px-2 hover:bg-gray-100"
-          title="Copy response"
-        >
-          <Copy className="h-3 w-3" />
-        </Button>
-        
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setFeedbackModal({ show: true, messageId, type: 'positive' })}
-          className="h-8 px-2 hover:bg-green-50"
-          title="Good response"
-        >
-          <ThumbsUp className="h-3 w-3" />
-        </Button>
-        
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setFeedbackModal({ show: true, messageId, type: 'negative' })}
-          className="h-8 px-2 hover:bg-red-50"
-          title="Poor response"
-        >
-          <ThumbsDown className="h-3 w-3" />
-        </Button>
-
-        {isBoosted ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => handleRestoreOriginal(messageId)}
-            className="h-8 px-2 hover:bg-blue-50 text-blue-600"
-            title="Restore original response"
-          >
-            <X className="h-3 w-3 mr-1" />
-            <span className="text-xs">Restore Original</span>
-          </Button>
-        ) : canBoost && (
-          <div className="relative group">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => handleBoostMessage(messageId)}
-              disabled={isLoading}
-              className="h-8 px-3 hover:bg-yellow-50 text-yellow-700 border border-yellow-300 transition-all duration-200"
-              title={`🚀 Preview how this answer would look with ${nextTierInfo.nextName} plan! Get enhanced formatting, detailed analysis, and professional insights. (${boosterUsage.remaining}/1 daily preview remaining)`}
-            >
-              {isLoading ? (
-                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-600"></div>
-              ) : (
-                <Sparkles className="h-3 w-3 mr-1" />
-              )}
-              <span className="text-xs font-semibold">Booster ({boosterUsage.remaining}/1)</span>
-            </Button>
-            
-            {/* Enhanced Tooltip */}
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-50">
-              <div className="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap shadow-lg">
-                🚀 Preview {nextTierInfo.nextName} response quality
-                <div className="text-xs text-gray-300 mt-1">
-                  See enhanced formatting & detailed analysis
-                </div>
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: !prev[messageId] }))}
-          className="h-8 px-2 hover:bg-blue-50"
-          title="Add knowledge"
-        >
-          <Plus className="h-3 w-3" />
-        </Button>
-      </div>
-    );
-  };
-
-  const handleCopyMessage = (content) => {
-    const textContent = typeof content === 'string' 
-      ? content 
-      : content.technical && content.mentoring 
-        ? `Technical Answer:\n${content.technical}\n\nMentoring Insight:\n${content.mentoring}`
-        : content.technical || content;
-        
-    navigator.clipboard.writeText(textContent);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
-  };
-
-  const handleContribution = async (messageId) => {
-    const contribution = contributionText[messageId]?.trim();
-    if (!contribution) return;
-
-    try {
-      const response = await apiEndpoints.submitKnowledgeContribution({
-        message_id: messageId,
-        contribution_text: contribution,
-        opt_in_credit: optInCredit
-      });
-
-      if (response.status === 200) {
-        alert('Thank you! Your contribution has been submitted for review.');
-        setShowContributionBox(prev => ({ ...prev, [messageId]: false }));
-        setContributionText(prev => ({ ...prev, [messageId]: '' }));
-      }
-    } catch (error) {
-      console.error('Error submitting contribution:', error);
-      alert('Failed to submit contribution. Please try again.');
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
 
-  const handleFeedbackSubmit = async () => {
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    });
+  };
+
+  const submitFeedback = async () => {
     if (!feedbackText.trim()) return;
 
     try {
-      const response = await apiEndpoints.submitChatFeedback({
+      await apiEndpoints.submitFeedback({
         message_id: feedbackModal.messageId,
         feedback_type: feedbackModal.type,
-        comment: feedbackText
+        feedback_text: feedbackText,
+        session_id: sessionId
       });
-
-      if (response.status === 200) {
-        alert('Thank you for your feedback!');
-        setFeedbackModal({ show: false, messageId: null, type: null });
-        setFeedbackText('');
-      }
+      
+      setFeedbackModal({ show: false, messageId: null, type: null });
+      setFeedbackText('');
     } catch (error) {
-      console.error('Error submitting feedback:', error);
-      alert('Failed to submit feedback. Please try again.');
+      console.error('Failed to submit feedback:', error);
     }
   };
 
-  const FeedbackModal = () => (
-    feedbackModal.show && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Feedback</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Help us improve by sharing your thoughts on this response.
-            </p>
-            <textarea
-              className="w-full p-3 border rounded-lg resize-none"
-              rows={4}
-              placeholder="What did you think about this response?"
-              value={feedbackText}
-              onChange={(e) => setFeedbackText(e.target.value)}
-            />
-            <div className="flex justify-end gap-2 mt-4">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setFeedbackModal({ show: false, messageId: null, type: null });
-                  setFeedbackText('');
-                }}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleFeedbackSubmit}>
-                Submit
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  );
+  const submitContribution = async (messageId) => {
+    const contribution = contributionText[messageId];
+    if (!contribution || !contribution.trim()) return;
 
-  const ContributionBox = ({ messageId }) => {
-    // Use useRef to maintain cursor position
-    const textareaRef = useRef(null);
-    
-    const handleTextChange = (e) => {
-      const cursorPosition = e.target.selectionStart;
-      setContributionText(prev => ({ ...prev, [messageId]: e.target.value }));
-      
-      // Restore cursor position after state update
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.setSelectionRange(cursorPosition, cursorPosition);
-        }
-      }, 0);
-    };
+    try {
+      await apiEndpoints.submitContribution({
+        message_id: messageId,
+        contribution_text: contribution,
+        opt_in_credit: optInCredit,
+        session_id: sessionId
+      });
+
+      setShowContributionBox(prev => ({ ...prev, [messageId]: false }));
+      setContributionText(prev => ({ ...prev, [messageId]: '' }));
+    } catch (error) {
+      console.error('Failed to submit contribution:', error);
+    }
+  };
+
+  const handleBooster = async (messageId) => {
+    if (boosterUsage.remaining <= 0) {
+      alert('You have used your daily booster. Try again tomorrow!');
+      return;
+    }
+
+    setBoostingMessage(messageId);
+
+    try {
+      const originalMessage = messages.find(m => m.id === messageId);
+      const response = await apiEndpoints.boosterChat({
+        message: originalMessage.content,
+        session_id: sessionId,
+        use_knowledge_enhanced: true
+      });
+
+      const boosterMessage = {
+        id: Date.now() + Math.random(),
+        type: 'ai',
+        content: response.data.response,
+        timestamp: new Date(),
+        sources: response.data.sources || [],
+        confidence: response.data.confidence || null,
+        isBooster: true
+      };
+
+      setMessages(prev => [...prev, boosterMessage]);
+      setBoosterUsage(prev => ({ 
+        ...prev, 
+        remaining: prev.remaining - 1,
+        used: true 
+      }));
+
+    } catch (error) {
+      console.error('Booster failed:', error);
+    } finally {
+      setBoostingMessage(null);
+    }
+  };
+
+  const renderPersonalizationIndicator = () => {
+    if (!userPreferences || (!userPreferences.industry_sectors?.length && !userPreferences.disciplines?.length)) {
+      return null;
+    }
 
     return (
-      <div className="mt-4 p-4 border rounded-lg" style={{ backgroundColor: '#f8fafc', borderColor: '#c9d6e4' }}>
-        <div className="flex justify-between items-center mb-2">
-          <h5 className="font-semibold text-sm" style={{ color: '#0f2f57' }}>Add Knowledge</h5>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: false }))}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+      <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-blue-50 border-l-4 border-purple-400 mb-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Sparkles className="h-4 w-4 text-purple-600" />
+          <span className="text-sm font-medium text-purple-800">AI Personalized for You</span>
         </div>
-        <p className="text-xs mb-3" style={{ color: '#4b6b8b' }}>
-          Add your mentoring insights, best practices, or lessons learned to help other construction professionals.
-        </p>
-        <textarea
-          ref={textareaRef}
-          className="w-full p-3 rounded border resize-none"
-          style={{ borderColor: '#95a6b7', minHeight: '80px' }}
-          placeholder="Share your insights, best practices, or lessons learned..."
-          value={contributionText[messageId] || ''}
-          onChange={handleTextChange}
-        />
-        <div className="flex items-center justify-between mt-3">
-          <label className="flex items-center text-xs" style={{ color: '#4b6b8b' }}>
-            <input
-              type="checkbox"
-              checked={optInCredit}
-              onChange={(e) => setOptInCredit(e.target.checked)}
-              className="mr-2"
-            />
-            Credit me if this contribution is added to the knowledge base
-          </label>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowContributionBox(prev => ({ ...prev, [messageId]: false }))}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => handleContribution(messageId)}
-              style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
-            >
-              <Save className="h-3 w-3 mr-1" />
-              Submit
-            </Button>
-          </div>
+        <div className="flex flex-wrap gap-1">
+          {userPreferences.industry_sectors?.slice(0, 2).map((sector, index) => (
+            <Badge key={index} variant="outline" className="text-xs border-purple-200 text-purple-700 bg-purple-50">
+              {sector}
+            </Badge>
+          ))}
+          {userPreferences.disciplines?.slice(0, 2).map((discipline, index) => (
+            <Badge key={index} variant="outline" className="text-xs border-blue-200 text-blue-700 bg-blue-50">
+              {discipline}
+            </Badge>
+          ))}
+          {(userPreferences.industry_sectors?.length > 2 || userPreferences.disciplines?.length > 2) && (
+            <Badge variant="outline" className="text-xs border-gray-200 text-gray-600">
+              +{(userPreferences.industry_sectors?.length || 0) + (userPreferences.disciplines?.length || 0) - 4} more
+            </Badge>
+          )}
         </div>
       </div>
     );
   };
 
-  // Show Onboarding if first time user
-  if (showOnboarding && !onboardingCompleted) {
+  const filteredHistory = chatHistory.filter(conversation =>
+    conversation.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    conversation.preview?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (showOnboarding) {
     return (
       <OnboardingFlow 
-        onComplete={handleOnboardingComplete}
-        onSkip={handleOnboardingSkip}
+        onComplete={() => {
+          setShowOnboarding(false);
+          setOnboardingCompleted(true);
+          checkOnboardingStatus();
+          loadUserPreferences();
+        }} 
       />
     );
   }
 
-  // Show UserProfile if requested
   if (showUserProfile) {
-    return <UserProfile onBack={() => setShowUserProfile(false)} />;
+    return (
+      <UserProfile 
+        onClose={() => setShowUserProfile(false)}
+        onPreferencesUpdate={loadUserPreferences}
+      />
+    );
   }
 
   return (
-    <div className="h-screen flex" style={{ backgroundColor: '#f8fafc' }}>
-      {/* CSS for enhanced formatting */}
-      <style jsx>{`
-        .formatted-response h1, .formatted-response h2, .formatted-response h3 {
-          margin-top: 1.5rem;
-          margin-bottom: 0.75rem;
-        }
-        .formatted-response ul {
-          margin: 1rem 0;
-          padding-left: 1.5rem;
-        }
-        .formatted-response li {
-          margin-bottom: 0.5rem;
-          line-height: 1.5;
-        }
-        .formatted-response p {
-          margin-bottom: 1rem;
-          line-height: 1.6;
-        }
-        .formatted-response strong {
-          font-weight: 600;
-          color: #1f2937;
-        }
-        .formatted-response em {
-          font-style: italic;
-          color: #4b5563;
-        }
-      `}</style>
-      
-      {/* Feedback Modal */}
-      <FeedbackModal />
-      
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <div className="w-80 border-r flex flex-col" style={{ borderColor: '#c9d6e4', backgroundColor: '#f8fafc' }}>
+      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
         {/* Sidebar Header */}
-        <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
-          <Button
-            onClick={handleNewChat}
-            className="w-full justify-start mb-4"
-            style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New Chat
-          </Button>
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <img 
+                src="/onesource-icon.svg" 
+                alt="ONESource-ai" 
+                className="h-8 w-8"
+              />
+              <h1 className="font-bold text-lg text-gray-900">ONESource-ai</h1>
+            </div>
+            <Button
+              size="sm"
+              onClick={startNewConversation}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              New
+            </Button>
+          </div>
           
+          {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4" style={{ color: '#95a6b7' }} />
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search conversations..."
-              className="pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
             />
           </div>
         </div>
-        
-        {/* Current Plan Display */}
-        <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
-          <div className="flex items-center gap-2 mb-2">
-            <Crown className="h-4 w-4 text-yellow-600" />
-            <span className="text-sm font-semibold" style={{ color: '#0f2f57' }}>Your Plan</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <Badge 
-              className={`
-                ${subscriptionStatus?.subscription_tier === 'starter' ? 'bg-gray-100 text-gray-800' : ''}
-                ${subscriptionStatus?.subscription_tier === 'pro' ? 'bg-blue-100 text-blue-800' : ''}
-                ${subscriptionStatus?.subscription_tier === 'pro_plus' ? 'bg-purple-100 text-purple-800' : ''}
-              `}
-            >
-              {subscriptionStatus?.subscription_tier === 'starter' && '🆓 Starter'}
-              {subscriptionStatus?.subscription_tier === 'pro' && '⭐ Pro'}
-              {subscriptionStatus?.subscription_tier === 'pro_plus' && '👑 Pro-Plus'}
-              {!subscriptionStatus?.subscription_tier && '🔄 Loading...'}
-            </Badge>
-            {!boosterUsage.used && (
-              <Badge variant="outline" className="text-xs text-yellow-700 border-yellow-300">
-                <Sparkles className="h-3 w-3 mr-1" />
-                Booster Available
-              </Badge>
-            )}
-          </div>
-        </div>
-        
-        {/* AI Personalization Display */}
-        {userPreferences && (
-          <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-purple-600" />
-              <span className="text-sm font-semibold" style={{ color: '#0f2f57' }}>AI Personalized For You</span>
-            </div>
-            <div className="space-y-2">
-              {userPreferences.role && (
-                <div className="flex items-center gap-2 text-xs" style={{ color: '#4b6b8b' }}>
-                  <Badge variant="outline" className="text-xs">👤 {userPreferences.role}</Badge>
-                </div>
-              )}
-              {userPreferences.industries && userPreferences.industries.length > 0 && (
-                <div className="text-xs" style={{ color: '#4b6b8b' }}>
-                  🎯 <span className="font-medium">Focus:</span> {userPreferences.industries.slice(0, 2).join(', ')}
-                  {userPreferences.industries.length > 2 && ` +${userPreferences.industries.length - 2} more`}
-                </div>
-              )}
-              {userPreferences.experience_level && (
-                <div className="text-xs" style={{ color: '#4b6b8b' }}>
-                  📈 <span className="font-medium">Level:</span> {userPreferences.experience_level.charAt(0).toUpperCase() + userPreferences.experience_level.slice(1)}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-        
-        {/* Knowledge Enhancement Toggle */}
-        <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useKnowledgeEnhanced}
-              onChange={(e) => setUseKnowledgeEnhanced(e.target.checked)}
-              className="rounded"
-            />
-            <div className="flex items-center gap-1">
-              <Search className="h-3 w-3" style={{ color: '#4b6b8b' }} />
-              <span className="text-sm" style={{ color: '#4b6b8b' }}>
-                Search Knowledge Base
-              </span>
-            </div>
-          </label>
-          <p className="text-xs mt-1" style={{ color: '#95a6b7' }}>
-            Include relevant documents in responses
-          </p>
-        </div>
-        
-        {/* Trial Info */}
-        {trialInfo && (
-          <div className="p-4 border-b" style={{ borderColor: '#c9d6e4' }}>
-            <Alert className={trialInfo.subscription_required ? "border-red-200" : "border-blue-200"}>
-              <AlertTriangle className={`h-4 w-4 ${trialInfo.subscription_required ? 'text-red-600' : 'text-blue-600'}`} />
-              <AlertDescription className={`text-sm ${trialInfo.subscription_required ? 'text-red-800' : 'text-blue-800'}`}>
-                {trialInfo.message}
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
-        
-        {/* Chat History */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <h3 className="font-semibold text-sm mb-3" style={{ color: '#4b6b8b' }}>Recent Conversations</h3>
-          <div className="space-y-2">
-            {chatHistory
-              .filter(chat => 
-                !searchTerm || 
-                (chat.title && chat.title.toLowerCase().includes(searchTerm.toLowerCase()))
-              )
-              .map((chat) => (
-              <div
-                key={chat.session_id}
-                className="p-3 rounded-lg cursor-pointer hover:bg-opacity-50 transition-colors"
-                style={{ backgroundColor: '#c9d6e4' }}
-                onClick={() => handleChatLoad(chat.session_id)}
-              >
-                <div className="flex items-start gap-2">
-                  <MessageSquare className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#4b6b8b' }} />
-                  <div>
-                    <p className="font-medium text-sm line-clamp-2" style={{ color: '#0f2f57' }}>
-                      {chat.title || 'Untitled Conversation'}
-                    </p>
-                    <p className="text-xs mt-1" style={{ color: '#95a6b7' }}>
-                      {chat.timestamp ? new Date(chat.timestamp).toLocaleDateString() : 'No date available'}
-                    </p>
-                  </div>
-                </div>
+
+        {/* Personalization Indicator in Sidebar */}
+        {renderPersonalizationIndicator()}
+
+        {/* Subscription Status */}
+        <div className="p-4 border-b border-gray-200">
+          {subscriptionStatus?.is_trial ? (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Clock className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-800">Free Trial</span>
               </div>
-            ))}
-            {chatHistory.filter(chat => 
-              !searchTerm || 
-              (chat.title && chat.title.toLowerCase().includes(searchTerm.toLowerCase()))
-            ).length === 0 && searchTerm && (
-              <div className="text-center py-4 text-gray-500 text-sm">
-                No conversations found for "{searchTerm}"
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {/* User Profile */}
-        <div className="p-4 border-t" style={{ borderColor: '#c9d6e4' }}>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f2f57' }}>
-              <User className="h-4 w-4" style={{ color: '#f8fafc' }} />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-sm" style={{ color: '#0f2f57' }}>
-                {user?.displayName || user?.email || 'User'}
+              <p className="text-xs text-blue-700">
+                {trialInfo?.questions_remaining || 0} questions remaining
               </p>
-              <p className="text-xs" style={{ color: '#95a6b7' }}>
+              <Button size="sm" className="mt-2 w-full bg-blue-600 hover:bg-blue-700">
+                <a href="/pricing" className="text-white text-xs">Upgrade Now</a>
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <Crown className="h-4 w-4 text-green-600" />
+                <span className="text-sm font-medium text-green-800">
+                  {subscriptionStatus?.tier || 'Pro'} Plan
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Booster Status */}
+          <div className="mt-3 bg-purple-50 border border-purple-200 rounded-lg p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-purple-600" />
+                <span className="text-sm font-medium text-purple-800">Daily Booster</span>
+              </div>
+              <Badge variant="outline" className={`text-xs ${
+                boosterUsage.remaining > 0 
+                  ? 'border-purple-200 text-purple-700 bg-purple-50' 
+                  : 'border-gray-200 text-gray-600 bg-gray-50'
+              }`}>
+                {boosterUsage.remaining}/1
+              </Badge>
+            </div>
+            <p className="text-xs text-purple-700 mt-1">
+              {boosterUsage.remaining > 0 
+                ? 'Get enhanced responses with sources' 
+                : 'Resets tomorrow'
+              }
+            </p>
+          </div>
+        </div>
+
+        {/* Chat History */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-2">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+              Recent Conversations
+            </h3>
+            {filteredHistory.length > 0 ? (
+              filteredHistory.map((conversation) => (
+                <button
+                  key={conversation.id}
+                  onClick={() => loadConversation(conversation.id)}
+                  className={`w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors mb-1 ${
+                    sessionId === conversation.id ? 'bg-blue-50 border border-blue-200' : ''
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <MessageSquare className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {conversation.title || 'New Conversation'}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate mt-1">
+                        {conversation.preview || 'No messages yet'}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {new Date(conversation.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <MessageSquare className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">No conversations yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-gray-200 space-y-2">
+          {/* User Profile Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowUserProfile(true)}
+            className="w-full justify-start"
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Profile & Settings
+          </Button>
+
+          {/* Onboarding Button (if not completed) */}
+          {!onboardingCompleted && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowOnboarding(true)}
+              className="w-full justify-start border-orange-200 text-orange-700 hover:bg-orange-50"
+            >
+              <Star className="h-4 w-4 mr-2" />
+              Complete Setup
+            </Button>
+          )}
+
+          {/* User Info & Logout */}
+          <div className="flex items-center gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-gray-900 truncate">
                 {user?.email}
               </p>
             </div>
             <Button
-              size="sm"
               variant="ghost"
-              onClick={() => setShowUserProfile(true)}
-              className="p-1"
-              title="User Profile & Settings"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button
               size="sm"
-              variant="ghost"
-              onClick={logout}
-              className="p-1"
-              title="Sign out"
+              onClick={async () => {
+                const confirmLogout = window.confirm(
+                  'Are you sure you want to sign out? Your conversation history will be saved.'
+                );
+                
+                if (confirmLogout) {
+                  await logout();
+                }
+              }}
+              title="Logout - Your data will be preserved"
+              className="text-gray-500 hover:text-red-600"
             >
               <LogOut className="h-4 w-4" />
             </Button>
@@ -973,9 +558,11 @@ const ChatInterface = () => {
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#0f2f57' }}>
-                <Bot className="h-8 w-8" style={{ color: '#f8fafc' }} />
-              </div>
+              <img 
+                src="/onesource-icon.svg" 
+                alt="ONESource-ai" 
+                className="h-16 w-16 mb-4"
+              />
               <h2 className="text-xl font-semibold mb-2" style={{ color: '#0f2f57' }}>
                 Welcome to ONESource-ai
               </h2>
@@ -1018,71 +605,178 @@ const ChatInterface = () => {
                       
                       <div className="flex-1 min-w-0">
                         {message.type === 'user' ? (
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="font-medium" style={{ color: '#0f2f57' }}>{message.content}</p>
-                              {message.enhanced && (
-                                <Badge variant="secondary" className="text-xs">
-                                  Knowledge Enhanced
-                                </Badge>
-                              )}
-                            </div>
+                          <div className="prose max-w-none">
+                            <p className="text-gray-900 whitespace-pre-wrap">{message.content}</p>
                           </div>
                         ) : (
-                          <div>
-                            {message.knowledgeEnhanced && (
-                              <div className="mb-2 flex items-center gap-2">
-                                <Badge variant="default" className="text-xs bg-green-600">
-                                  Knowledge Enhanced
-                                </Badge>
-                                {message.knowledgeSources > 0 && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {message.knowledgeSources} sources
-                                  </Badge>
-                                )}
-                                {message.supplierContentUsed && (
-                                  <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">
-                                    Partner Content
-                                  </Badge>
-                                )}
+                          <div className="space-y-3">
+                            {/* AI Response Content */}
+                            <div className="prose max-w-none">
+                              <div 
+                                className="text-gray-900 whitespace-pre-wrap"
+                                dangerouslySetInnerHTML={{
+                                  __html: message.content.replace(/\n/g, '<br>')
+                                }}
+                              />
+                            </div>
+
+                            {/* Booster Badge */}
+                            {message.isBooster && (
+                              <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                                <Zap className="h-3 w-3 mr-1" />
+                                Enhanced Response
+                              </Badge>
+                            )}
+
+                            {/* Sources */}
+                            {message.sources && message.sources.length > 0 && (
+                              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
+                                <h4 className="text-sm font-medium text-blue-800 mb-2">Sources:</h4>
+                                <ul className="text-sm text-blue-700 space-y-1">
+                                  {message.sources.slice(0, 3).map((source, index) => (
+                                    <li key={index}>• {source}</li>
+                                  ))}
+                                </ul>
                               </div>
                             )}
-                            {message.boosted && (
-                              <div className="mb-3 flex items-center gap-2">
-                                <Badge className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-white">
-                                  <Star className="h-3 w-3 mr-1" />
-                                  Boosted to {message.boostTier}
-                                </Badge>
-                              </div>
-                            )}
-                            {renderAiResponse(message.content, message.isBoostPreview, message.boostTier)}
-                            <MessageActions messageId={message.id} content={message.content} message={message} />
+
+                            {/* Message Actions */}
+                            <div className="flex items-center gap-2 pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => copyToClipboard(message.content)}
+                                className="text-gray-500 hover:text-gray-700"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+
+                              {!message.isBooster && boosterUsage.remaining > 0 && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleBooster(message.id)}
+                                  disabled={boostingMessage === message.id}
+                                  className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                >
+                                  {boostingMessage === message.id ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                                  ) : (
+                                    <>
+                                      <Zap className="h-4 w-4 mr-1" />
+                                      Boost
+                                    </>
+                                  )}
+                                </Button>
+                              )}
+
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setFeedbackModal({ 
+                                  show: true, 
+                                  messageId: message.id, 
+                                  type: 'positive' 
+                                })}
+                                className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                              >
+                                <ThumbsUp className="h-4 w-4" />
+                              </Button>
+
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setFeedbackModal({ 
+                                  show: true, 
+                                  messageId: message.id, 
+                                  type: 'negative' 
+                                })}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <ThumbsDown className="h-4 w-4" />
+                              </Button>
+
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowContributionBox(prev => ({
+                                  ...prev,
+                                  [message.id]: !prev[message.id]
+                                }))}
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+
+                            {/* Contribution Box */}
                             {showContributionBox[message.id] && (
-                              <ContributionBox messageId={message.id} />
+                              <Card className="mt-3 border border-blue-200">
+                                <CardContent className="p-4">
+                                  <h4 className="text-sm font-medium text-blue-800 mb-2">
+                                    Add your expertise to help improve responses
+                                  </h4>
+                                  <textarea
+                                    className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
+                                    rows={3}
+                                    placeholder="Share additional insights, corrections, or relevant experience..."
+                                    value={contributionText[message.id] || ''}
+                                    onChange={(e) => setContributionText(prev => ({
+                                      ...prev,
+                                      [message.id]: e.target.value
+                                    }))}
+                                  />
+                                  <div className="flex items-center justify-between mt-2">
+                                    <label className="flex items-center text-xs text-gray-600">
+                                      <input
+                                        type="checkbox"
+                                        checked={optInCredit}
+                                        onChange={(e) => setOptInCredit(e.target.checked)}
+                                        className="mr-1"
+                                      />
+                                      Credit me for this contribution
+                                    </label>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => setShowContributionBox(prev => ({
+                                          ...prev,
+                                          [message.id]: false
+                                        }))}
+                                      >
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        onClick={() => submitContribution(message.id)}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                                      >
+                                        Submit
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
                             )}
                           </div>
                         )}
-                        
-                        <div className="flex items-center gap-2 mt-2 text-xs" style={{ color: '#95a6b7' }}>
-                          <Clock className="h-3 w-3" />
-                          {new Date(message.timestamp).toLocaleTimeString()}
-                          {message.tokensUsed && (
-                            <span>• {message.tokensUsed} tokens</span>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
-              
+
+              {/* Loading State */}
               {loading && (
                 <div className="px-6 py-6 bg-gray-50">
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#0f2f57' }}>
-                        <Bot className="h-4 w-4" style={{ color: '#f8fafc' }} />
-                      </div>
+                      <img 
+                        src="/onesource-icon.svg" 
+                        alt="ONESource-ai" 
+                        className="h-8 w-8 animate-pulse"
+                      />
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2" style={{ borderColor: '#0f2f57' }}></div>
@@ -1098,35 +792,117 @@ const ChatInterface = () => {
         </div>
 
         {/* Input Form */}
-        <div className="border-t p-4" style={{ borderColor: '#c9d6e4' }}>
-          <div className="max-w-4xl mx-auto">
-            <form onSubmit={handleSubmit} className="flex gap-3">
-              <div className="flex-1 relative">
-                <Input
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Ask about design codes, compliance requirements, or construction standards..."
-                  disabled={loading}
-                  className="pr-12 py-3"
-                  style={{ borderColor: '#c9d6e4' }}
-                />
-                <Button 
-                  type="submit" 
-                  disabled={loading || !inputMessage.trim()}
-                  size="icon"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8"
-                  style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </form>
-            <p className="text-xs mt-2 text-center" style={{ color: '#95a6b7' }}>
-              ONESource-ai can make mistakes. Check important compliance requirements with official sources.
-            </p>
+        <div className="border-t border-gray-200 bg-white p-6">
+          <div className="flex items-start gap-3 max-w-4xl mx-auto">
+            {/* Knowledge Enhanced Toggle */}
+            <div className="flex items-center gap-2 mt-3">
+              <input
+                type="checkbox"
+                id="knowledge-enhanced"
+                checked={useKnowledgeEnhanced}
+                onChange={(e) => setUseKnowledgeEnhanced(e.target.checked)}
+                className="rounded"
+              />
+              <label 
+                htmlFor="knowledge-enhanced" 
+                className="text-xs text-gray-600 cursor-pointer hover:text-gray-800"
+                title="Use your uploaded documents for enhanced responses"
+              >
+                📚 Enhanced
+              </label>
+            </div>
+
+            {/* Message Input */}
+            <div className="flex-1 relative">
+              <Input
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask about building codes, standards, or construction best practices..."
+                disabled={loading || (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0)}
+                className="pr-12 py-3 resize-none"
+                style={{ minHeight: '48px' }}
+              />
+              
+              <Button
+                onClick={sendMessage}
+                disabled={!inputMessage.trim() || loading || (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0)}
+                size="sm"
+                className="absolute right-2 top-2 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
+
+          {/* Trial Warning */}
+          {subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 1 && (
+            <Alert className="mt-3 max-w-4xl mx-auto border-orange-200 bg-orange-50">
+              <AlertTriangle className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-700">
+                {trialInfo.questions_remaining === 0 
+                  ? 'You have used all your free questions. '
+                  : `You have ${trialInfo.questions_remaining} free question remaining. `
+                }
+                <a href="/pricing" className="underline font-medium">Upgrade now</a> to continue getting expert construction guidance.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Copy Success Notification */}
+          {copySuccess && (
+            <Alert className="mt-3 max-w-4xl mx-auto border-green-200 bg-green-50">
+              <AlertDescription className="text-green-700">
+                Response copied to clipboard!
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
       </div>
+
+      {/* Feedback Modal */}
+      {feedbackModal.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="max-w-md w-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {feedbackModal.type === 'positive' ? (
+                  <ThumbsUp className="h-5 w-5 text-green-600" />
+                ) : (
+                  <ThumbsDown className="h-5 w-5 text-red-600" />
+                )}
+                {feedbackModal.type === 'positive' ? 'Positive' : 'Negative'} Feedback
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <textarea
+                className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                rows={4}
+                placeholder={`Tell us what was ${feedbackModal.type === 'positive' ? 'helpful' : 'wrong or unhelpful'} about this response...`}
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+              />
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setFeedbackModal({ show: false, messageId: null, type: null });
+                    setFeedbackText('');
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={submitFeedback}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Submit Feedback
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

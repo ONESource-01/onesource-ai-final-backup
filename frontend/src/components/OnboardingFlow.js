@@ -1,269 +1,177 @@
-import React, { useState } from 'react';
-import { Button } from './ui/button';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { apiEndpoints } from '../utils/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 import { Progress } from './ui/progress';
-import { 
-  CheckCircle, 
-  ArrowRight, 
-  ArrowLeft,
-  Building2,
-  Briefcase,
-  GraduationCap,
-  Target,
-  Sparkles
-} from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Alert, AlertDescription } from './ui/alert';
+import { CheckCircle, ArrowRight, ArrowLeft, Sparkles, Building, Users, Wrench } from 'lucide-react';
 
-const OnboardingFlow = ({ onComplete, onSkip }) => {
-  const [currentStep, setCurrentStep] = useState(0);
+const OnboardingFlow = ({ onComplete }) => {
+  const { user } = useAuth();
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    industries: [],
-    role: '',
+    industry_sectors: [],
+    disciplines: [],
     experience_level: '',
-    response_style: 'balanced',
-    custom_instructions: ''
+    primary_focus: '',
+    company_type: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const steps = [
-    { id: 'industries', title: 'Industry Focus', icon: Building2 },
-    { id: 'role', title: 'Your Role', icon: Briefcase },
-    { id: 'experience', title: 'Experience Level', icon: GraduationCap },
-    { id: 'preferences', title: 'AI Preferences', icon: Target }
+  // Define industry sectors and disciplines
+  const industrySectors = [
+    'Residential Construction',
+    'Commercial Construction', 
+    'Industrial Construction',
+    'Infrastructure',
+    'Mining',
+    'Energy & Utilities',
+    'Healthcare',
+    'Education',
+    'Hospitality',
+    'Retail',
+    'Transportation',
+    'Government & Public',
+    'Mixed-Use Development',
+    'Renovation & Retrofit',
+    'Green Building',
+    'Prefabricated Construction',
+    'High-Rise Construction'
   ];
 
-  const industryOptions = [
-    { id: 'commercial', name: 'Commercial Construction', icon: '🏢', color: 'blue' },
-    { id: 'residential', name: 'Residential Building', icon: '🏠', color: 'green' },
-    { id: 'fire_safety', name: 'Fire Safety Systems', icon: '🔥', color: 'red' },
-    { id: 'structural', name: 'Structural Engineering', icon: '🏗️', color: 'gray' },
-    { id: 'electrical', name: 'Electrical Systems', icon: '⚡', color: 'yellow' },
-    { id: 'hvac', name: 'HVAC Design', icon: '🌡️', color: 'indigo' },
-    { id: 'compliance', name: 'Building Compliance', icon: '📋', color: 'purple' },
-    { id: 'project_mgmt', name: 'Project Management', icon: '📊', color: 'pink' }
-  ];
-
-  const roleOptions = [
-    'Project Manager',
-    'Structural Engineer', 
-    'Fire Safety Engineer',
-    'Electrical Engineer',
-    'Building Designer',
-    'Compliance Officer',
-    'Construction Manager',
-    'Building Inspector',
-    'Architect',
-    'Other'
+  const disciplines = [
+    'Structural Engineering',
+    'Fire Safety Engineering',
+    'Mechanical Engineering',
+    'Electrical Engineering', 
+    'Hydraulic Engineering',
+    'Civil Engineering',
+    'Geotechnical Engineering',
+    'Environmental Engineering',
+    'Building Services',
+    'Project Management',
+    'Construction Management',
+    'Architecture',
+    'Building Surveying',
+    'Cost Estimation',
+    'Quality Assurance',
+    'Health & Safety',
+    'Building Code Compliance',
+    'Materials Engineering',
+    'Acoustic Engineering',
+    'Sustainability Consulting',
+    'Building Information Modeling (BIM)',
+    'Facility Management',
+    'Urban Planning',
+    'Landscape Architecture',
+    'Interior Design',
+    'Building Automation',
+    'Renewable Energy Systems',
+    'HVAC Design',
+    'Plumbing Design',
+    'Lighting Design',
+    'Security Systems',
+    'Telecommunications',
+    'Vertical Transportation',
+    'Waterproofing',
+    'Insulation & Thermal Performance',
+    'Seismic Design',
+    'Wind Engineering',
+    'Building Physics',
+    'Asset Management',
+    'Risk Assessment'
   ];
 
   const experienceLevels = [
-    { value: 'beginner', label: 'Beginner', desc: 'New to the industry', icon: '🌱' },
-    { value: 'intermediate', label: 'Intermediate', desc: '2-10 years experience', icon: '📈' },
-    { value: 'expert', label: 'Expert', desc: '10+ years experience', icon: '🏆' }
+    { value: 'entry', label: 'Entry Level (0-2 years)' },
+    { value: 'mid', label: 'Mid Level (3-7 years)' },
+    { value: 'senior', label: 'Senior Level (8-15 years)' },
+    { value: 'expert', label: 'Expert Level (15+ years)' }
   ];
 
-  const responseStyles = [
-    { value: 'technical', label: 'Technical Focus', desc: 'Detailed technical information', icon: '⚙️' },
-    { value: 'balanced', label: 'Balanced', desc: 'Mix of technical and practical', icon: '⚖️' },
-    { value: 'practical', label: 'Practical Focus', desc: 'Real-world applications', icon: '🔧' }
+  const companyTypes = [
+    'Construction Company',
+    'Engineering Consultancy',
+    'Architecture Firm',
+    'Government Agency',
+    'Educational Institution',
+    'Property Developer',
+    'Building Materials Supplier',
+    'Independent Contractor',
+    'Other'
   ];
 
-  const handleIndustryToggle = (industryId) => {
+  useEffect(() => {
+    document.title = 'Welcome Setup | ONESource-ai';
+  }, []);
+
+  const handleMultiSelect = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      industries: prev.industries.includes(industryId)
-        ? prev.industries.filter(id => id !== industryId)
-        : [...prev.industries, industryId]
+      [field]: prev[field].includes(value)
+        ? prev[field].filter(item => item !== value)
+        : [...prev[field], value]
     }));
   };
 
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      // Complete onboarding
-      onComplete(formData);
+  const handleSingleSelect = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const nextStep = () => {
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
-  const isStepValid = () => {
+  const submitOnboarding = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await apiEndpoints.completeOnboarding(formData);
+      if (response.data.success) {
+        onComplete();
+      }
+    } catch (error) {
+      console.error('Onboarding submission failed:', error);
+      setError(error.response?.data?.detail || 'Failed to save your preferences. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const canProceed = () => {
     switch (currentStep) {
-      case 0: return formData.industries.length > 0;
-      case 1: return formData.role.length > 0;
-      case 2: return formData.experience_level.length > 0;
-      case 3: return formData.response_style.length > 0;
-      default: return true;
-    }
-  };
-
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
-  const renderStep = () => {
-    switch (currentStep) {
-      case 0: // Industries
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <Building2 className="h-16 w-16 mx-auto mb-4 text-blue-600" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">What industries do you work in?</h2>
-              <p className="text-gray-600">Select all that apply - this helps personalize your AI responses</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {industryOptions.map((industry) => (
-                <div
-                  key={industry.id}
-                  className={`p-4 border-2 rounded-xl cursor-pointer transition-all transform hover:scale-105 ${
-                    formData.industries.includes(industry.id)
-                      ? 'border-blue-500 bg-blue-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => handleIndustryToggle(industry.id)}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{industry.icon}</span>
-                    <div>
-                      <p className="font-semibold text-gray-800">{industry.name}</p>
-                      {formData.industries.includes(industry.id) && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <CheckCircle className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm text-blue-600">Selected</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {formData.industries.length > 0 && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-green-800 font-medium">
-                  ✅ Great! Selected {formData.industries.length} {formData.industries.length === 1 ? 'industry' : 'industries'}
-                </p>
-              </div>
-            )}
-          </div>
-        );
-
-      case 1: // Role
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <Briefcase className="h-16 w-16 mx-auto mb-4 text-green-600" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">What's your role?</h2>
-              <p className="text-gray-600">This helps us understand your perspective and responsibilities</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {roleOptions.map((role) => (
-                <div
-                  key={role}
-                  className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                    formData.role === role
-                      ? 'border-green-500 bg-green-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, role }))}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-800">{role}</span>
-                    {formData.role === role && (
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 2: // Experience
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <GraduationCap className="h-16 w-16 mx-auto mb-4 text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">What's your experience level?</h2>
-              <p className="text-gray-600">This helps us adjust the complexity of our responses</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {experienceLevels.map((level) => (
-                <div
-                  key={level.value}
-                  className={`p-6 border-2 rounded-xl cursor-pointer text-center transition-all transform hover:scale-105 ${
-                    formData.experience_level === level.value
-                      ? 'border-purple-500 bg-purple-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, experience_level: level.value }))}
-                >
-                  <span className="text-4xl block mb-3">{level.icon}</span>
-                  <h3 className="font-bold text-lg text-gray-800 mb-1">{level.label}</h3>
-                  <p className="text-sm text-gray-600">{level.desc}</p>
-                  {formData.experience_level === level.value && (
-                    <CheckCircle className="h-6 w-6 text-purple-600 mx-auto mt-3" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case 3: // Preferences
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <Target className="h-16 w-16 mx-auto mb-4 text-orange-600" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">How should AI respond to you?</h2>
-              <p className="text-gray-600">Choose your preferred response style</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {responseStyles.map((style) => (
-                <div
-                  key={style.value}
-                  className={`p-6 border-2 rounded-xl cursor-pointer text-center transition-all transform hover:scale-105 ${
-                    formData.response_style === style.value
-                      ? 'border-orange-500 bg-orange-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setFormData(prev => ({ ...prev, response_style: style.value }))}
-                >
-                  <span className="text-4xl block mb-3">{style.icon}</span>
-                  <h3 className="font-bold text-lg text-gray-800 mb-1">{style.label}</h3>
-                  <p className="text-sm text-gray-600">{style.desc}</p>
-                  {formData.response_style === style.value && (
-                    <CheckCircle className="h-6 w-6 text-orange-600 mx-auto mt-3" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="font-semibold text-blue-900 mb-3">🤖 Optional: Custom AI Instructions</h3>
-              <textarea
-                className="w-full p-3 border border-blue-200 rounded-lg resize-none"
-                rows={3}
-                placeholder="e.g., Always prioritize Australian standards over New Zealand, focus on cost-effective solutions, include safety considerations..."
-                value={formData.custom_instructions}
-                onChange={(e) => setFormData(prev => ({ ...prev, custom_instructions: e.target.value }))}
-              />
-              <p className="text-sm text-blue-600 mt-2">
-                These instructions will personalize every AI response specifically for you.
-              </p>
-            </div>
-          </div>
-        );
-
+      case 1:
+        return formData.industry_sectors.length > 0;
+      case 2:
+        return formData.disciplines.length > 0;
+      case 3:
+        return formData.experience_level && formData.company_type;
+      case 4:
+        return true;
       default:
-        return null;
+        return false;
     }
+  };
+
+  const getProgressPercentage = () => {
+    return (currentStep / 4) * 100;
   };
 
   return (
@@ -271,7 +179,7 @@ const OnboardingFlow = ({ onComplete, onSkip }) => {
       <Card className="w-full max-w-4xl shadow-2xl">
         <CardHeader className="text-center pb-6">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <img src="/onesource-logo.png" alt="ONESource-ai" className="h-12 w-12" />
+            <img src="/onesource-icon.svg" alt="ONESource-ai" className="h-12 w-12" />
             <CardTitle className="text-3xl font-bold text-gray-900">
               Welcome to ONESource-ai
             </CardTitle>
@@ -279,86 +187,329 @@ const OnboardingFlow = ({ onComplete, onSkip }) => {
           
           {/* Progress Bar */}
           <div className="space-y-2">
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>Step {currentStep + 1} of {steps.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-          
-          {/* Step Indicators */}
-          <div className="flex justify-center gap-4 mt-6">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <div key={step.id} className="flex flex-col items-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${
-                    index < currentStep ? 'bg-green-500 border-green-500 text-white' :
-                    index === currentStep ? 'bg-blue-500 border-blue-500 text-white' :
-                    'bg-gray-100 border-gray-300 text-gray-500'
-                  }`}>
-                    {index < currentStep ? (
-                      <CheckCircle className="h-6 w-6" />
-                    ) : (
-                      <Icon className="h-6 w-6" />
-                    )}
-                  </div>
-                  <p className={`text-xs mt-1 ${
-                    index <= currentStep ? 'text-gray-800 font-medium' : 'text-gray-500'
-                  }`}>
-                    {step.title}
-                  </p>
-                </div>
-              );
-            })}
+            <Progress value={getProgressPercentage()} className="h-2" />
+            <p className="text-sm text-gray-500">
+              Step {currentStep} of 4 - Setting up your personalized AI assistant
+            </p>
           </div>
         </CardHeader>
 
-        <CardContent className="px-8 pb-8">
-          {renderStep()}
-          
-          {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-            <div>
-              <Button
-                variant="ghost"
-                onClick={onSkip}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                Skip for now
-              </Button>
-            </div>
-            
-            <div className="flex gap-3">
-              {currentStep > 0 && (
-                <Button
-                  variant="outline"
-                  onClick={handleBack}
-                  className="flex items-center gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back
-                </Button>
+        <CardContent className="space-y-8">
+          {error && (
+            <Alert className="border-red-200 bg-red-50">
+              <AlertDescription className="text-red-700">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Step 1: Industry Sectors */}
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Building className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  What industry sectors do you work in?
+                </h3>
+                <p className="text-gray-600">
+                  Select all that apply. This helps us provide more relevant guidance for your projects.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 border rounded-lg">
+                {industrySectors.map((sector) => (
+                  <button
+                    key={sector}
+                    onClick={() => handleMultiSelect('industry_sectors', sector)}
+                    className={`p-3 text-left rounded-lg border-2 transition-all hover:shadow-md ${
+                      formData.industry_sectors.includes(sector)
+                        ? 'border-blue-500 bg-blue-50 text-blue-900'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">{sector}</span>
+                      {formData.industry_sectors.includes(sector) && (
+                        <CheckCircle className="h-4 w-4 text-blue-600" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {formData.industry_sectors.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Selected sectors:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.industry_sectors.map((sector) => (
+                      <Badge key={sector} variant="secondary" className="text-xs">
+                        {sector}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               )}
-              
+            </div>
+          )}
+
+          {/* Step 2: Disciplines */}
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                  <Wrench className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  What are your areas of expertise?
+                </h3>
+                <p className="text-gray-600">
+                  Choose the disciplines and specialties most relevant to your work.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-80 overflow-y-auto p-4 border rounded-lg">
+                {disciplines.map((discipline) => (
+                  <button
+                    key={discipline}
+                    onClick={() => handleMultiSelect('disciplines', discipline)}
+                    className={`p-3 text-left rounded-lg border-2 transition-all hover:shadow-md ${
+                      formData.disciplines.includes(discipline)
+                        ? 'border-green-500 bg-green-50 text-green-900'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">{discipline}</span>
+                      {formData.disciplines.includes(discipline) && (
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {formData.disciplines.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Selected disciplines:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.disciplines.map((discipline) => (
+                      <Badge key={discipline} variant="secondary" className="text-xs">
+                        {discipline}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 3: Experience & Company */}
+          {currentStep === 3 && (
+            <div className="space-y-8">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Users className="h-8 w-8 text-purple-600" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Tell us about your experience
+                </h3>
+                <p className="text-gray-600">
+                  This helps us calibrate responses to your level of expertise.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Experience Level */}
+                <div className="space-y-4">
+                  <Label className="text-base font-semibold">Experience Level</Label>
+                  <div className="space-y-3">
+                    {experienceLevels.map((level) => (
+                      <button
+                        key={level.value}
+                        onClick={() => handleSingleSelect('experience_level', level.value)}
+                        className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                          formData.experience_level === level.value
+                            ? 'border-purple-500 bg-purple-50 text-purple-900'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{level.label}</span>
+                          {formData.experience_level === level.value && (
+                            <CheckCircle className="h-5 w-5 text-purple-600" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Company Type */}
+                <div className="space-y-4">
+                  <Label className="text-base font-semibold">Company Type</Label>
+                  <div className="space-y-3">
+                    {companyTypes.map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => handleSingleSelect('company_type', type)}
+                        className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                          formData.company_type === type
+                            ? 'border-purple-500 bg-purple-50 text-purple-900'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{type}</span>
+                          {formData.company_type === type && (
+                            <CheckCircle className="h-5 w-5 text-purple-600" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Summary & Completion */}
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <Sparkles className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  You're all set!
+                </h3>
+                <p className="text-gray-600">
+                  Your AI assistant is now personalized for your expertise and industry focus.
+                </p>
+              </div>
+
+              {/* Summary */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 space-y-4">
+                <h4 className="font-semibold text-lg text-gray-900 flex items-center">
+                  <Sparkles className="h-5 w-5 mr-2 text-blue-600" />
+                  Your Personalized Profile
+                </h4>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Industry Sectors ({formData.industry_sectors.length})</h5>
+                    <div className="flex flex-wrap gap-1">
+                      {formData.industry_sectors.slice(0, 3).map((sector) => (
+                        <Badge key={sector} variant="outline" className="text-xs border-blue-200 text-blue-700">
+                          {sector}
+                        </Badge>
+                      ))}
+                      {formData.industry_sectors.length > 3 && (
+                        <Badge variant="outline" className="text-xs border-gray-200 text-gray-600">
+                          +{formData.industry_sectors.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Disciplines ({formData.disciplines.length})</h5>
+                    <div className="flex flex-wrap gap-1">
+                      {formData.disciplines.slice(0, 3).map((discipline) => (
+                        <Badge key={discipline} variant="outline" className="text-xs border-green-200 text-green-700">
+                          {discipline}
+                        </Badge>
+                      ))}
+                      {formData.disciplines.length > 3 && (
+                        <Badge variant="outline" className="text-xs border-gray-200 text-gray-600">
+                          +{formData.disciplines.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Experience Level</h5>
+                    <Badge variant="outline" className="border-purple-200 text-purple-700">
+                      {experienceLevels.find(level => level.value === formData.experience_level)?.label}
+                    </Badge>
+                  </div>
+
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Company Type</h5>
+                    <Badge variant="outline" className="border-purple-200 text-purple-700">
+                      {formData.company_type}
+                    </Badge>
+                  </div>
+                </div>
+
+                <Alert className="border-blue-200 bg-blue-50 mt-4">
+                  <Sparkles className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
+                    Your responses will now be tailored to your expertise level and industry focus. 
+                    You can always update these preferences later in your profile settings.
+                  </AlertDescription>
+                </Alert>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation */}
+          <div className="flex justify-between items-center pt-6">
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className="flex items-center"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+
+            <div className="flex gap-2">
+              {[1, 2, 3, 4].map((step) => (
+                <div
+                  key={step}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    step === currentStep 
+                      ? 'bg-blue-600' 
+                      : step < currentStep 
+                        ? 'bg-green-500' 
+                        : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {currentStep < 4 ? (
               <Button
-                onClick={handleNext}
-                disabled={!isStepValid()}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                onClick={nextStep}
+                disabled={!canProceed()}
+                className="flex items-center bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {currentStep === steps.length - 1 ? (
+                Next
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                onClick={submitOnboarding}
+                disabled={loading}
+                className="flex items-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              >
+                {loading ? (
                   <>
-                    <Sparkles className="h-4 w-4" />
-                    Complete Setup
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    Setting up...
                   </>
                 ) : (
                   <>
-                    Next
-                    <ArrowRight className="h-4 w-4" />
+                    Start Using ONESource-ai
+                    <Sparkles className="h-4 w-4 ml-2" />
                   </>
                 )}
               </Button>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
