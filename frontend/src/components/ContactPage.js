@@ -1,404 +1,292 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import PageHeader from "./PageHeader";
+import ContactForm from "./ContactForm";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import PageHeader from "./PageHeader";
 import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  MessageSquare, 
-  HelpCircle,
-  Zap,
-  Users,
-  Calendar,
-  Send,
-  CheckCircle,
-  AlertCircle
-} from "lucide-react";
+  Mail, MessageSquare, User, HelpCircle, Phone, MapPin, Clock,
+  ArrowRight, ExternalLink
+} from 'lucide-react';
 
 const ContactPage = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    profession: "",
-    subject: "",
-    message: "",
-    priority: "medium"
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [selectedContactType, setSelectedContactType] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setSubmitted(true);
-  };
+  useEffect(() => {
+    document.title = 'Contact Us | ONESource-ai';
+  }, []);
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const contactMethods = [
+  const contactOptions = [
     {
-      title: "Email Support",
-      description: "Get detailed help from our construction experts",
-      icon: Mail,
-      contact: "support@onesource-ai.com",
-      responseTime: "Within 4 hours",
-      color: "#0f2f57",
-      recommended: true
-    },
-    {
-      title: "Phone Support", 
-      description: "Speak directly with our technical team",
-      icon: Phone,
-      contact: "+61 2 1234 5678",
-      responseTime: "Mon-Fri 9AM-5PM AEDT",
-      color: "#16a34a",
-      recommended: false
-    },
-    {
-      title: "Live Chat",
-      description: "Quick answers to common questions",
-      icon: MessageSquare,
-      contact: "Available in-app",
-      responseTime: "Usually within 15 mins",
-      color: "#dc2626",
-      recommended: false
-    }
-  ];
-
-  const supportTypes = [
-    {
-      title: "Technical Support",
-      description: "Issues with AI responses, features, or account access",
-      icon: Zap,
-      examples: ["AI not responding", "Feature not working", "Login problems"]
-    },
-    {
-      title: "Construction Guidance",
-      description: "Questions about building codes, standards, or compliance",
+      id: 'support',
+      title: 'Technical Support',
       icon: HelpCircle,
-      examples: ["AS/NZS standards", "BCA requirements", "Compliance guidance"]
+      description: 'Get help with technical issues, account problems, or general questions',
+      color: 'blue'
     },
     {
-      title: "Account & Billing",
-      description: "Subscription changes, payments, or plan upgrades", 
-      icon: Users,
-      examples: ["Change subscription", "Billing questions", "Refund requests"]
+      id: 'feedback',
+      title: 'Send Feedback',
+      icon: MessageSquare,
+      description: 'Share your thoughts, suggestions, or report issues to help us improve',
+      color: 'green'
     },
     {
-      title: "Training & Demos",
-      description: "Learn how to get the most from ONESource-ai",
-      icon: Calendar,
-      examples: ["Team training", "Feature demos", "Best practices"]
+      id: 'accounts',
+      title: 'Account Issues',
+      icon: User,
+      description: 'Report problems with billing, subscriptions, or login issues',
+      color: 'orange'
+    },
+    {
+      id: 'knowledge',
+      title: 'Knowledge Bank Ideas',
+      icon: Mail,
+      description: 'Suggest new sources, content, or improvements for our knowledge banks',
+      color: 'purple'
     }
   ];
 
-  if (submitted) {
+  if (selectedContactType) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8fafc' }}>
-        <Card className="max-w-lg mx-auto">
-          <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold mb-4" style={{ color: '#0f2f57' }}>
-              Message Sent Successfully!
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Thank you for contacting ONESource-ai. Our construction experts will review your message and respond within 4 hours during business days.
-            </p>
-            <div className="space-y-3">
-              <Button 
-                onClick={() => setSubmitted(false)}
-                style={{ backgroundColor: '#0f2f57', color: 'white' }}
-                className="w-full"
-              >
-                Send Another Message
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => window.location.href = '/'}
-                className="w-full"
-              >
-                Return to Home
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <PageHeader 
+          title="Contact ONESource-ai" 
+          subtitle="We're here to help with any questions or issues you may have"
+        />
+        
+        <div className="max-w-7xl mx-auto p-6" style={{ backgroundColor: '#f8fafc', minHeight: 'calc(100vh - 200px)' }}>
+          {/* Back Button */}
+          <div className="mb-6">
+            <Button
+              onClick={() => setSelectedContactType(null)}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <ArrowRight className="h-4 w-4 rotate-180" />
+              Back to Contact Options
+            </Button>
+          </div>
+
+          {/* Contact Form */}
+          <div className="flex justify-center">
+            <ContactForm 
+              type={selectedContactType}
+              onClose={() => setSelectedContactType(null)}
+            />
+          </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8fafc' }}>
+    <>
       <PageHeader 
-        title="Contact Our Construction Experts"
-        subtitle="Get personalized support for your construction projects, technical questions, or help maximizing ONESource-ai for your team."
+        title="Contact ONESource-ai" 
+        subtitle="We're here to help with any questions or issues you may have"
       />
+      
+      <div className="max-w-7xl mx-auto p-6" style={{ backgroundColor: '#f8fafc', minHeight: 'calc(100vh - 200px)' }}>
+        
+        {/* Back to Chat Button */}
+        <div className="mb-6">
+          <Button
+            onClick={() => window.location.href = '/chat'}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <ArrowRight className="h-4 w-4 rotate-180" />
+            Back to Chat
+          </Button>
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Contact Methods */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-8 text-center" style={{ color: '#0f2f57' }}>
-            Choose Your Preferred Contact Method
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6">
-            {contactMethods.map((method, index) => (
-              <Card key={index} className={`hover:shadow-lg transition-shadow ${method.recommended ? 'ring-2' : ''}`}
-                style={{ ringColor: method.recommended ? method.color : 'transparent' }}>
-                <CardContent className="p-6">
-                  {method.recommended && (
-                    <Badge className="mb-3" style={{ backgroundColor: method.color, color: 'white' }}>
-                      Recommended
-                    </Badge>
-                  )}
-                  <div className="flex items-center mb-4">
-                    <div 
-                      className="w-12 h-12 rounded-lg flex items-center justify-center mr-4"
-                      style={{ backgroundColor: method.color + '20' }}
-                    >
-                      <method.icon className="w-6 h-6" style={{ color: method.color }} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold" style={{ color: '#0f2f57' }}>
-                        {method.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">{method.description}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center">
-                      <span className="font-medium" style={{ color: method.color }}>{method.contact}</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <Clock className="w-4 h-4 mr-2" />
-                      {method.responseTime}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <section>
+        <div className="grid lg:grid-cols-3 gap-8">
+          
+          {/* Contact Options */}
+          <div className="lg:col-span-2">
             <h2 className="text-2xl font-bold mb-6" style={{ color: '#0f2f57' }}>
-              Send Us a Message
+              How can we help you?
             </h2>
-            <Card>
-              <CardContent className="p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        required
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
-                        style={{ borderColor: '#c9d6e4', focusRingColor: '#0f2f57' }}
-                        value={formData.name}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        required
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
-                        style={{ borderColor: '#c9d6e4' }}
-                        value={formData.email}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
-                        Company/Organization
-                      </label>
-                      <input
-                        type="text"
-                        name="company"
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
-                        style={{ borderColor: '#c9d6e4' }}
-                        value={formData.company}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
-                        Profession
-                      </label>
-                      <select
-                        name="profession"
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
-                        style={{ borderColor: '#c9d6e4' }}
-                        value={formData.profession}
-                        onChange={handleInputChange}
-                      >
-                        <option value="">Select your profession</option>
-                        <option value="architect">Architect</option>
-                        <option value="structural-engineer">Structural Engineer</option>
-                        <option value="civil-engineer">Civil Engineer</option>
-                        <option value="mechanical-engineer">Mechanical Engineer</option>
-                        <option value="electrical-engineer">Electrical Engineer</option>
-                        <option value="building-surveyor">Building Surveyor</option>
-                        <option value="construction-manager">Construction Manager</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
-                      Subject *
-                    </label>
-                    <input
-                      type="text"
-                      name="subject"
-                      required
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
-                      style={{ borderColor: '#c9d6e4' }}
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      placeholder="Brief description of your inquiry"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
-                      Priority Level
-                    </label>
-                    <select
-                      name="priority"
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
-                      style={{ borderColor: '#c9d6e4' }}
-                      value={formData.priority}
-                      onChange={handleInputChange}
-                    >
-                      <option value="low">Low - General inquiry</option>
-                      <option value="medium">Medium - Standard support</option>
-                      <option value="high">High - Urgent assistance needed</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: '#0f2f57' }}>
-                      Message *
-                    </label>
-                    <textarea
-                      name="message"
-                      required
-                      rows={6}
-                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2"
-                      style={{ borderColor: '#c9d6e4' }}
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      placeholder="Please provide details about your question or the assistance you need..."
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full"
-                    style={{ backgroundColor: '#0f2f57', color: 'white' }}
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {contactOptions.map((option) => {
+                const IconComponent = option.icon;
+                return (
+                  <Card 
+                    key={option.id}
+                    className={`hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-${option.color}-200`}
+                    onClick={() => setSelectedContactType(option.id)}
                   >
-                    {isSubmitting ? (
-                      <span className="flex items-center">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Sending Message...
-                      </span>
-                    ) : (
-                      <span className="flex items-center justify-center">
-                        <Send className="w-4 h-4 mr-2" />
-                        Send Message
-                      </span>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </section>
-
-          {/* Support Information */}
-          <section>
-            <h2 className="text-2xl font-bold mb-6" style={{ color: '#0f2f57' }}>
-              What Can We Help You With?
-            </h2>
-            <div className="space-y-6">
-              {supportTypes.map((type, index) => (
-                <Card key={index}>
-                  <CardContent className="p-6">
-                    <div className="flex items-start">
-                      <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center mr-4 flex-shrink-0">
-                        <type.icon className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold mb-2" style={{ color: '#0f2f57' }}>
-                          {type.title}
-                        </h3>
-                        <p className="text-gray-600 mb-3">{type.description}</p>
-                        <div className="text-sm">
-                          <span className="font-medium text-gray-700">Common topics: </span>
-                          <span className="text-gray-600">{type.examples.join(", ")}</span>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg bg-${option.color}-100`}>
+                          <IconComponent className={`h-5 w-5 text-${option.color}-600`} />
                         </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        <span style={{ color: '#0f2f57' }}>{option.title}</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 mb-4">{option.description}</p>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className={`w-full hover:bg-${option.color}-50 hover:border-${option.color}-300`}
+                      >
+                        Get Started
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
 
-            {/* Contact Info */}
-            <Card className="mt-6" style={{ backgroundColor: '#f1f5f9' }}>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-4" style={{ color: '#0f2f57' }}>
-                  Our Location & Hours
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-3 text-gray-500" />
-                    <span>Sydney, Australia (Remote-first team)</span>
+            {/* Quick Actions */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#0f2f57' }}>
+                Quick Actions
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = 'mailto:support@onesource-ai.com'}
+                  className="flex items-center gap-2"
+                >
+                  <Mail className="h-4 w-4" />
+                  Direct Email
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = '/help'}
+                  className="flex items-center gap-2"
+                >
+                  <HelpCircle className="h-4 w-4" />
+                  Help Center
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = '/knowledge'}
+                  className="flex items-center gap-2"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Knowledge Vault
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Information Sidebar */}
+          <div className="space-y-6">
+            
+            {/* Contact Details */}
+            <Card>
+              <CardHeader>
+                <CardTitle style={{ color: '#0f2f57' }}>Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <Mail className="h-5 w-5 text-blue-600 mt-1" />
+                  <div>
+                    <p className="font-medium text-gray-900">Email Support</p>
+                    <a 
+                      href="mailto:support@onesource-ai.com" 
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      support@onesource-ai.com
+                    </a>
                   </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-3 text-gray-500" />
-                    <span>Monday - Friday: 9:00 AM - 5:00 PM AEDT</span>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <Clock className="h-5 w-5 text-green-600 mt-1" />
+                  <div>
+                    <p className="font-medium text-gray-900">Business Hours</p>
+                    <p className="text-sm text-gray-600">
+                      Monday - Friday<br />
+                      9:00 AM - 5:00 PM AEST
+                    </p>
                   </div>
-                  <div className="flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-3 text-gray-500" />
-                    <span>Emergency support available 24/7 for critical issues</span>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <MapPin className="h-5 w-5 text-purple-600 mt-1" />
+                  <div>
+                    <p className="font-medium text-gray-900">Location</p>
+                    <p className="text-sm text-gray-600">
+                      Australia & New Zealand<br />
+                      Serving the construction industry
+                    </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </section>
+
+            {/* Response Times */}
+            <Card>
+              <CardHeader>
+                <CardTitle style={{ color: '#0f2f57' }}>Response Times</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">General Support</span>
+                  <span className="text-sm font-medium text-green-600">24 hours</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Account Issues</span>
+                  <span className="text-sm font-medium text-blue-600">12 hours</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Urgent Issues</span>
+                  <span className="text-sm font-medium text-red-600">4 hours</span>
+                </div>
+                <div className="pt-2 border-t border-gray-200">
+                  <p className="text-xs text-gray-500">
+                    Response times are during business hours. 
+                    Urgent issues are prioritized.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Self-Service Options */}
+            <Card>
+              <CardHeader>
+                <CardTitle style={{ color: '#0f2f57' }}>Self-Service</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4">
+                  Get instant help with common questions and issues:
+                </p>
+                <div className="space-y-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.href = '/help'}
+                    className="w-full justify-start text-left"
+                  >
+                    <HelpCircle className="h-4 w-4 mr-2" />
+                    Help Center & FAQ
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.href = '/knowledge'}
+                    className="w-full justify-start text-left"
+                  >
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Knowledge Vault Guide
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
