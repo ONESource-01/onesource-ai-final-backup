@@ -178,6 +178,98 @@ class BackendTester:
                 self.log_test("Subscription Status Check", False, "Missing required subscription fields", data)
         else:
             self.log_test("Subscription Status Check", False, f"Status: {status}", data)
+
+    async def test_subscription_status_endpoint_fix(self):
+        """Test the specific subscription status endpoint fixes mentioned in review request"""
+        print("\n=== Testing Subscription Status Endpoint Fixes ===")
+        
+        # Use fresh mock auth token to simulate new user
+        fresh_user_headers = {"Authorization": "Bearer fresh_user_token_123"}
+        
+        # Test GET /api/user/subscription-status endpoint
+        success, data, status = await self.make_request("GET", "/user/subscription-status", headers=fresh_user_headers)
+        
+        if success and isinstance(data, dict):
+            # Check for both "subscription_tier" and "tier" fields as mentioned in review
+            has_subscription_tier = "subscription_tier" in data
+            has_tier = "tier" in data
+            
+            if has_subscription_tier and has_tier:
+                subscription_tier = data.get("subscription_tier")
+                tier = data.get("tier")
+                
+                # Verify new users get "starter" tier by default
+                if subscription_tier == "starter" and tier == "starter":
+                    self.log_test("Subscription Status Dual Fields", True, 
+                                f"✅ Both fields present: subscription_tier='{subscription_tier}', tier='{tier}'")
+                    self.log_test("New User Default Starter Tier", True, 
+                                "✅ New users correctly get 'starter' tier by default")
+                else:
+                    self.log_test("New User Default Starter Tier", False, 
+                                f"Expected 'starter' for both fields, got subscription_tier='{subscription_tier}', tier='{tier}'")
+            else:
+                missing_fields = []
+                if not has_subscription_tier:
+                    missing_fields.append("subscription_tier")
+                if not has_tier:
+                    missing_fields.append("tier")
+                self.log_test("Subscription Status Dual Fields", False, 
+                            f"Missing required fields: {', '.join(missing_fields)}", data)
+        else:
+            self.log_test("Subscription Status Endpoint", False, f"Status: {status}", data)
+        
+        # Test GET /api/user/profile endpoint for new user starter tier
+        success, data, status = await self.make_request("GET", "/user/profile", headers=fresh_user_headers)
+        
+        if success and isinstance(data, dict):
+            subscription_tier = data.get("subscription_tier")
+            if subscription_tier == "starter":
+                self.log_test("User Profile Default Starter Tier", True, 
+                            "✅ New user profile correctly shows 'starter' subscription_tier")
+            else:
+                self.log_test("User Profile Default Starter Tier", False, 
+                            f"Expected 'starter', got '{subscription_tier}'")
+        else:
+            self.log_test("User Profile Endpoint", False, f"Status: {status}", data)
+
+    async def test_mock_firebase_service_starter_tier(self):
+        """Test that mock Firebase service correctly returns starter tier for new users"""
+        print("\n=== Testing Mock Firebase Service Starter Tier ===")
+        
+        # Test with multiple different mock tokens to simulate different new users
+        test_users = [
+            {"token": "new_user_token_1", "name": "Test User 1"},
+            {"token": "new_user_token_2", "name": "Test User 2"},
+            {"token": "fresh_starter_user", "name": "Fresh Starter User"},
+        ]
+        
+        for user in test_users:
+            headers = {"Authorization": f"Bearer {user['token']}"}
+            
+            # Test subscription status for each new user
+            success, data, status = await self.make_request("GET", "/user/subscription", headers=headers)
+            
+            if success and isinstance(data, dict):
+                subscription_tier = data.get("subscription_tier")
+                tier = data.get("tier")
+                
+                if subscription_tier == "starter":
+                    self.log_test(f"Mock Firebase Service - {user['name']}", True, 
+                                f"✅ Mock service correctly returns 'starter' tier for new user")
+                else:
+                    self.log_test(f"Mock Firebase Service - {user['name']}", False, 
+                                f"Expected 'starter', got '{subscription_tier}'")
+                
+                # Check that tier field is also present and correct
+                if tier == "starter":
+                    self.log_test(f"Mock Firebase Tier Field - {user['name']}", True, 
+                                "✅ 'tier' field correctly set to 'starter'")
+                else:
+                    self.log_test(f"Mock Firebase Tier Field - {user['name']}", False, 
+                                f"Expected tier='starter', got '{tier}'")
+            else:
+                self.log_test(f"Mock Firebase Service - {user['name']}", False, 
+                            f"Failed to get subscription status: {status}", data)
     
     async def test_ai_chat_system(self):
         """Test AI chat system"""
