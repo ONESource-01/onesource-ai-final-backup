@@ -846,7 +846,7 @@ const ChatInterface = () => {
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Ask about building codes, standards, or construction best practices..."
                 disabled={loading || (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0)}
                 className="pr-12 py-3 resize-none"
