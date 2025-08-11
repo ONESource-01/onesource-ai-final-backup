@@ -511,6 +511,17 @@ const ChatInterface = () => {
             Profile & Settings
           </Button>
 
+          {/* Knowledge Vault Link */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.location.href = '/knowledge'}
+            className="w-full justify-start"
+          >
+            <Database className="h-4 w-4 mr-2" />
+            Knowledge Vault
+          </Button>
+
           {/* Onboarding Button (if not completed) */}
           {!onboardingCompleted && (
             <Button
