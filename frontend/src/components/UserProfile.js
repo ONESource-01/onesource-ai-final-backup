@@ -629,7 +629,7 @@ const UserProfile = ({ onClose, onPreferencesUpdate }) => {
                 <img 
                   src="/onesource-primary-logo.svg" 
                   alt="ONESource-ai" 
-                  className="h-15 w-auto"
+                  className="h-8 w-auto"
                 />
               </div>
             </div>
