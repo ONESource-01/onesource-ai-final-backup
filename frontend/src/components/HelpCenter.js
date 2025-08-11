@@ -28,6 +28,122 @@ const HelpCenter = () => {
   const preloadedQuestions = [
     {
       id: 1,
+      question: "What is ONESource-ai's 3-Phase AI Intelligence system?",
+      category: "ai-intelligence",
+      answer: `ONESource-ai's revolutionary 3-Phase AI Intelligence system provides progressively sophisticated construction expertise based on your subscription level:
+
+🧠 **Phase 1: Enhanced Prompting** (Starter Plan)
+• Construction-specific prompt templates for different disciplines
+• Industry-focused language and terminology
+• Mandatory compliance references to AS/NZS, NCC, and BCA standards
+• Professional response structure with Technical Answers and Mentoring Insights
+
+⚙️ **Phase 2: Workflow Intelligence** (Pro Plan) 
+• Intelligent project stage detection (Concept, Design, Approval, Construction, etc.)
+• Tailored next steps and consultant recommendations based on detected project phase
+• Critical considerations and oversight areas specific to your project stage
+• Smart workflow templates and implementation guidance
+
+🎯 **Phase 3: Specialized Training** (Pro+ Plan)
+• Deep discipline-specific knowledge libraries (Structural, Fire Safety, Sustainability, etc.)
+• Comprehensive standards databases mapped to each specialization
+• Advanced calculation methodologies and professional templates
+• Multi-discipline coordination guidance and specialized workflows
+
+Each phase builds upon the previous, delivering increasingly sophisticated construction intelligence as you progress through subscription tiers.`
+    },
+    {
+      id: 2,
+      question: "How does Phase 1: Enhanced Prompting work?",
+      category: "ai-intelligence", 
+      answer: `**Phase 1: Enhanced Prompting** transforms generic AI responses into construction-specific expertise:
+
+🏗️ **Discipline-Specific Templates:**
+• Structural Engineering: AS 1170 focus with structural design loads
+• Building Codes: NCC/BCA compliance with specific clause references
+• Fire Safety: AS 1851, AS 3786 integration with system requirements
+• Sustainability: Green Star and NABERS framework alignment
+• MEP Systems: AS/NZS standards for mechanical, electrical, plumbing
+
+📋 **Professional Response Structure:**
+• 🛠️ Technical Answer: Detailed standards, calculations, compliance paths
+• 🧐 Mentoring Insight: Practical guidance and industry best practices
+• 📋 Next Steps: Clear actionable recommendations
+
+✅ **Compliance Focus:**
+• Mandatory AS/NZS standard references with current editions
+• NCC and BCA section citations where applicable
+• State-specific regulatory variations noted
+• Professional certification requirements highlighted
+
+**Available to:** All users (Starter Plan and above)
+**Benefit:** Eliminates generic AI responses, ensures construction industry relevance`
+    },
+    {
+      id: 3,
+      question: "What advantages does Phase 2: Workflow Intelligence provide?",
+      category: "ai-intelligence",
+      answer: `**Phase 2: Workflow Intelligence** intelligently detects your project stage and provides targeted guidance:
+
+🎯 **Smart Stage Detection:**
+• **Concept Planning:** Site analysis, preliminary budgets, council pre-application
+• **Design Development:** Architectural drawings, structural engineering, services design
+• **Regulatory Approval:** Building consent applications, engineering certificates
+• **Procurement:** Tender documentation, contractor selection, contract negotiation
+• **Construction:** Site inspections, quality control, progress management
+• **Completion:** Final inspections, defects rectification, handover processes
+
+⚙️ **Intelligent Recommendations:**
+• Stage-specific next steps tailored to your project phase
+• Key consultant recommendations (Architect, Engineer, Certifier, etc.)
+• Critical considerations and common oversight areas
+• Typical timeline expectations and milestone planning
+
+🧠 **Professional Guidance:**
+• Industry best practices for each project stage
+• Risk mitigation strategies specific to your phase
+• Coordination requirements between disciplines
+• Authority liaison and approval processes
+
+**Available to:** Pro Plan subscribers and above
+**Benefit:** Eliminates guesswork, provides expert project management guidance at every stage`
+    },
+    {
+      id: 4,
+      question: "How does Phase 3: Specialized Training enhance my expertise?",
+      category: "ai-intelligence",
+      answer: `**Phase 3: Specialized Training** delivers deep, discipline-specific construction expertise:
+
+🏗️ **Comprehensive Knowledge Libraries:**
+• **Structural:** Complete AS 1170 series, AS 3600 concrete, AS 4100 steel design
+• **Fire Safety:** AS 1851 maintenance, AS 3786 detection, egress calculations
+• **Sustainability:** Green Star criteria, NABERS protocols, energy modeling
+• **Building Codes:** Full NCC interpretation, alternative solutions, DTS compliance
+• **MEP Systems:** AS/NZS hydraulic, electrical, mechanical integration
+
+📊 **Advanced Capabilities:**
+• Complex calculation methodologies with step-by-step guidance
+• Cross-standard compliance checking and conflict resolution
+• Multi-discipline coordination protocols and interface management
+• Performance-based solution development and documentation
+
+🎯 **Professional Templates:**
+• Design calculation templates for common scenarios  
+• Compliance checklists and verification procedures
+• Professional certification pathways and requirements
+• Quality assurance protocols and testing procedures
+
+⚡ **Specialized Features:**
+• Advanced comparison tables across jurisdictions
+• Historical standard changes and transition guidance
+• Industry-specific workflows and best practice protocols
+• Professional development recommendations and certifications
+
+**Available to:** Pro+ Plan subscribers
+**Benefit:** Access to specialist-level expertise across all major construction disciplines`
+    },
+    {
+      id: 5,
       question: "How does ONESource-ai handle my privacy when I load documents?",
       category: "privacy",
       answer: `ONESource-ai takes your document privacy seriously:
