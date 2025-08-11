@@ -279,13 +279,13 @@ const ChatInterface = () => {
     formatted = formatted.replace(/^##\s*(.*?)$/gm, 
       '<div class="mt-3 mb-1"><h4 class="text-sm font-bold text-gray-800">$1</h4></div>');
     
-    // Convert bullet points with MINIMAL spacing - Emergent style
+    // Convert bullet points with ULTRA-TIGHT spacing - Emergent style
     formatted = formatted.replace(/^\s*[-•]\s*\*\*(.*?)\*\*:\s*(.*?)$/gm, 
-      '<div class="flex items-start gap-2 mb-1 ml-3"><span class="flex-shrink-0 w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5"></span><div><strong class="text-gray-900 font-medium">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
+      '<div class="flex items-start gap-2 mb-0.5 ml-3"><span class="flex-shrink-0 w-1 h-1 bg-blue-600 rounded-full mt-2"></span><div><strong class="text-gray-900 font-medium">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
     
-    // Convert simple bullet points with tight spacing
+    // Convert simple bullet points with ultra-tight spacing
     formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, 
-      '<div class="flex items-start gap-2 mb-1 ml-3"><span class="flex-shrink-0 w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5"></span><span class="text-gray-700">$1</span></div>');
+      '<div class="flex items-start gap-2 mb-0.5 ml-3"><span class="flex-shrink-0 w-1 h-1 bg-blue-500 rounded-full mt-2"></span><span class="text-gray-700">$1</span></div>');
     
     // Add clickable links to standards
     formatted = formatted.replace(/\b(NCC|National Construction Code)\b/g, 
