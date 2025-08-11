@@ -9,7 +9,8 @@ import { Alert, AlertDescription } from "./ui/alert";
 import { 
   Search, MessageSquare, Mail, Phone, FileText, Video, 
   HelpCircle, Book, Shield, Users, Copyright, Database,
-  ExternalLink, ArrowRight, Bot, Lightbulb, MessageCircle
+  ExternalLink, ArrowRight, Bot, Lightbulb, MessageCircle,
+  Brain, CheckCircle
 } from "lucide-react";
 
 const HelpCenter = () => {
