@@ -213,25 +213,71 @@ To provide more targeted guidance, please clarify:
                 if user_profile.get('has_uploaded_documents'):
                     context += f"\n- User has uploaded their own reference documents - minimize boilerplate compliance statements"
             
-            # Add AI Intelligence System context
+            # 3-PHASE AI INTELLIGENCE SUBSCRIPTION GATING
+            subscription_tier = user_profile.get('subscription_tier', 'starter') if user_profile else 'starter'
+            
+            # Phase 1: Enhanced Prompting (Available to ALL tiers - Starter+)
+            phase1_available = True
+            
+            # Phase 2: Workflow Intelligence (Available to Pro+ tiers)
+            phase2_available = subscription_tier in ['pro', 'consultant', 'pro_plus']
+            
+            # Phase 3: Specialized Training (Available to Pro+ tiers only)
+            phase3_available = subscription_tier in ['consultant', 'pro_plus']
+            
+            # Build AI Intelligence context based on subscription tier
             ai_context = f"""
 
-ENHANCED AI INTELLIGENCE CONTEXT:
+ENHANCED AI INTELLIGENCE CONTEXT:"""
+            
+            # Add Phase 1 context (always available)
+            ai_context += f"""
 
-**DETECTED PROJECT STAGE**: {workflow_info['current_stage']}
-Current stage considerations: {', '.join(workflow_info['critical_considerations'])}
+🧠 **PHASE 1: ENHANCED PROMPTING ACTIVE**
+- Construction-specific prompt templates applied
+- Detected discipline: {detected_discipline.replace('_', ' ').title()}
+- Professional response structure with Technical Answer, Mentoring Insight, and Next Steps"""
+            
+            # Add Phase 2 context (Pro+ only)
+            if phase2_available:
+                ai_context += f"""
 
-**WORKFLOW RECOMMENDATIONS**:
-Next steps: {'; '.join(workflow_info['typical_next_steps'][:3])}
-Key consultants: {', '.join(workflow_info['key_consultants'])}
+⚙️ **PHASE 2: WORKFLOW INTELLIGENCE ACTIVE**
+- Detected project stage: {workflow_info['current_stage']}
+- Critical stage considerations: {', '.join(workflow_info['critical_considerations'])}
+- Next steps: {'; '.join(workflow_info['typical_next_steps'][:3])}
+- Key consultants recommended: {', '.join(workflow_info['key_consultants'])}"""
+            else:
+                ai_context += f"""
 
-**SPECIALIZED DISCIPLINE**: {detected_discipline.replace('_', ' ').title()}
-Relevant standards: {', '.join(specialized_context['specialized_knowledge'].get('key_standards', [])[:3])}
+⚙️ **PHASE 2: WORKFLOW INTELLIGENCE PREVIEW**
+- ⚡ UPGRADE TO PRO PLAN to unlock intelligent project stage detection
+- ⚡ Get tailored next steps and consultant recommendations
+- ⚡ Access workflow templates and implementation guidance"""
+            
+            # Add Phase 3 context (Pro+ only)
+            if phase3_available:
+                ai_context += f"""
+
+🎯 **PHASE 3: SPECIALIZED TRAINING ACTIVE**
+- Deep specialized knowledge for: {detected_discipline.replace('_', ' ').title()}
+- Key standards database: {', '.join(specialized_context['specialized_knowledge'].get('key_standards', [])[:3])}
+- Advanced calculation methodologies available
+- Multi-discipline coordination guidance active"""
+            else:
+                ai_context += f"""
+
+🎯 **PHASE 3: SPECIALIZED TRAINING PREVIEW**
+- ⚡ UPGRADE TO PRO+ PLAN to unlock specialized training libraries
+- ⚡ Access advanced calculation templates and methodologies
+- ⚡ Get deep discipline-specific expertise and workflows"""
+            
+            ai_context += f"""
 
 **RESPONSE STRUCTURE REQUIRED**:
 1. Technical Answer with specific standard references and detailed comparison tables
-2. Mentoring Insight with workflow recommendations  
-3. Next Steps with clarifying questions
+2. Mentoring Insight with {"workflow recommendations" if phase2_available else "practical guidance"}  
+3. Next Steps with {"project-specific clarifying questions" if phase2_available else "general clarifications"}
 4. CREATE COMPARISON TABLES whenever comparing standards, codes, or jurisdictions
 
 **TABLE CREATION MANDATE**: Always create professional comparison tables when requested. This is essential for construction professionals.
