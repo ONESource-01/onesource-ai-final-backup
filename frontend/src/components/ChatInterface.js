@@ -271,17 +271,56 @@ const ChatInterface = () => {
       `;
     });
     
-    // Convert section headers - Remove markdown and add proper emojis + bold
-    formatted = formatted.replace(/^###\s*Mentoring Insight[s]?:?$/gmi, 
-      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧐 <strong>Mentoring Insight</strong></h3></div>');
+    // Convert ALL markdown headers to clean emoji headers - COMPREHENSIVE patterns
     
-    formatted = formatted.replace(/^#\s*Next Steps:?$/gmi, 
-      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>');
+    // Handle ### patterns (h3)
+    formatted = formatted.replace(/^###\s*(.*?)$/gmi, (match, title) => {
+      if (title.toLowerCase().includes('compliance')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">✅ <strong>' + title + '</strong></h3></div>';
+      }
+      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900">' + title + '</h3></div>';
+    });
     
-    formatted = formatted.replace(/^##\s*Clarifying Questions?:?$/gmi, 
-      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>');
+    // Handle # patterns (h1) - Convert to appropriate emojis
+    formatted = formatted.replace(/^#\s*(.*?)$/gmi, (match, title) => {
+      const lowerTitle = title.toLowerCase();
+      
+      if (lowerTitle.includes('alternative')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔄 <strong>Alternative Solutions</strong></h3></div>';
+      }
+      if (lowerTitle.includes('authority')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🏛️ <strong>Authority Requirements</strong></h3></div>';
+      }
+      if (lowerTitle.includes('documentation')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📄 <strong>Documentation Needed</strong></h3></div>';
+      }
+      if (lowerTitle.includes('mentoring')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧐 <strong>Mentoring Insight</strong></h3></div>';
+      }
+      if (lowerTitle.includes('next steps') || lowerTitle.includes('clarifying')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div><div class="mt-2 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>';
+      }
+      
+      // Default for any other # headers
+      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900">' + title + '</h3></div>';
+    });
     
-    // Convert section headers with emoji - existing ones
+    // Handle ## patterns (h2)  
+    formatted = formatted.replace(/^##\s*(.*?)$/gmi, (match, title) => {
+      const lowerTitle = title.toLowerCase();
+      
+      if (lowerTitle.includes('clarifying') || lowerTitle.includes('questions')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>';
+      }
+      if (lowerTitle.includes('technical') || lowerTitle.includes('differences')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">⚙️ <strong>' + title + '</strong></h3></div>';
+      }
+      
+      // Default for any other ## headers
+      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900">' + title + '</h3></div>';
+    });
+    
+    // Convert section headers with existing emojis
     formatted = formatted.replace(/^(🛠️|🧐|📋|🔗)\s*\*\*(.*?)\*\*:?$/gm, 
       '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-1">$1 <strong>$2</strong></h3></div>');
     
