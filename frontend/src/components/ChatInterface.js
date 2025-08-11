@@ -297,9 +297,12 @@ const ChatInterface = () => {
     formatted = formatted.replace(/\b(NZS \d{4}(?:\.\d+)?)\b/g, 
       '<a href="https://www.standards.govt.nz/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
     
-    // CRITICAL: Minimal line spacing like Emergent - convert line breaks
+    // CRITICAL: Ultra-minimal line spacing like Emergent - convert line breaks
     formatted = formatted.replace(/\n\n/g, '<br>');  // Double breaks become single
-    formatted = formatted.replace(/\n/g, '<br>');     // Single breaks preserved
+    formatted = formatted.replace(/\n/g, '');        // Remove single breaks entirely for tighter spacing
+    
+    // Wrap in container with forced tight spacing
+    formatted = `<div style="line-height: 1.3; margin: 0; padding: 0;">${formatted}</div>`;
     
     return formatted;
   };
