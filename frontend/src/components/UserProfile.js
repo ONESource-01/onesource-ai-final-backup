@@ -10,6 +10,7 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
 import { Separator } from './ui/separator';
+import SmartAutoComplete from './SmartAutoComplete';
 import { 
   User, 
   Settings, 
@@ -32,7 +33,9 @@ import {
   Briefcase,
   GraduationCap,
   ChevronRight,
-  Home
+  Home,
+  Building,
+  Wrench
 } from 'lucide-react';
 
 const UserProfile = ({ onBack }) => {
