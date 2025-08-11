@@ -425,12 +425,21 @@ const ChatInterface = () => {
             </div>
           ) : (
             <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mb-2">
                 <Crown className="h-4 w-4 text-green-600" />
                 <span className="text-sm font-medium text-green-800">
                   {subscriptionStatus?.tier || 'Pro'} Plan
                 </span>
               </div>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="w-full text-xs border-green-300 text-green-700 hover:bg-green-100"
+                onClick={() => window.location.href = '/pricing'}
+              >
+                <Crown className="h-3 w-3 mr-1" />
+                View Plans & Upgrade
+              </Button>
             </div>
           )}
 
