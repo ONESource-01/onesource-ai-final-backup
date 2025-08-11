@@ -428,7 +428,7 @@ const ChatInterface = () => {
               <div className="flex items-center gap-2 mb-2">
                 <Crown className="h-4 w-4 text-green-600" />
                 <span className="text-sm font-medium text-green-800">
-                  {subscriptionStatus?.tier || 'Pro'} Plan
+                  {subscriptionStatus?.tier || 'Starter'} Plan
                 </span>
               </div>
               <Button 
