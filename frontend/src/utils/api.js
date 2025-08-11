@@ -26,6 +26,7 @@ export const apiEndpoints = {
   
   // Auth and user management
   getUserProfile: () => api.get('/user/profile'),
+  updateUserPreferences: (data) => api.post('/user/preferences', data),
   completeOnboarding: (data) => api.post('/user/onboarding', data),
   getSubscriptionStatus: () => api.get('/user/subscription'),
 
