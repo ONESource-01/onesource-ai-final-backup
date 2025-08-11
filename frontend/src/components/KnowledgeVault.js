@@ -430,10 +430,25 @@ const KnowledgeVault = () => {
                     <Button 
                       onClick={() => document.getElementById('personal-upload').click()}
                       disabled={isUploading}
-                      className="mt-2"
+                      className="mt-2 bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      {isUploading ? 'Uploading...' : 'Choose Files'}
+                      {isUploading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4 mr-2" />
+                          Choose Files
+                        </>
+                      )}
                     </Button>
+                    
+                    {/* Upload Instructions */}
+                    <p className="text-xs text-gray-400 mt-2">
+                      Supported: PDF, DOC, DOCX, TXT • Max 10MB per file
+                    </p>
                   </div>
                 </div>
 
