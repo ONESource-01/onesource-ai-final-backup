@@ -270,29 +270,33 @@ const ChatInterface = () => {
       return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>' + cleanTitle + '</strong></h3></div>';
     });
     
-    // Handle ## patterns - Sub-sections  
-    formatted = formatted.replace(/^##\s*(.*?)$/gmi, (match, title) => {
-      const cleanTitle = title.trim();
+    // Handle ## patterns - Sub-sections (ENHANCED to catch all variations)
+    formatted = formatted.replace(/^##\s*(\d+\.?\s*)?(.*?)$/gmi, (match, number, title) => {
+      const cleanTitle = title ? title.trim() : '';
       const lowerTitle = cleanTitle.toLowerCase();
+      const fullTitle = (number || '') + cleanTitle;
       
       if (lowerTitle.includes('code requirements') || lowerTitle.includes('requirements')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📝 <strong>' + cleanTitle + '</strong></h4></div>';
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📝 <strong>' + fullTitle + '</strong></h4></div>';
       }
       if (lowerTitle.includes('compliance')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">✅ <strong>' + cleanTitle + '</strong></h4></div>';
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">✅ <strong>' + fullTitle + '</strong></h4></div>';
       }
       if (lowerTitle.includes('alternative')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔄 <strong>' + cleanTitle + '</strong></h4></div>';
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔄 <strong>' + fullTitle + '</strong></h4></div>';
+      }
+      if (lowerTitle.includes('authority')) {
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🏛️ <strong>' + fullTitle + '</strong></h4></div>';
       }
       if (lowerTitle.includes('workflow') || lowerTitle.includes('recommendations')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">⚙️ <strong>' + cleanTitle + '</strong></h4></div>';
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">⚙️ <strong>' + fullTitle + '</strong></h4></div>';
       }
       if (lowerTitle.includes('questions') || lowerTitle.includes('clarify')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">❓ <strong>' + cleanTitle + '</strong></h4></div>';
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">❓ <strong>' + fullTitle + '</strong></h4></div>';
       }
       
-      // Default
-      return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔹 <strong>' + cleanTitle + '</strong></h4></div>';
+      // Default - handles any ## pattern including numbered ones
+      return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔹 <strong>' + fullTitle + '</strong></h4></div>';
     });
     
     // Handle ### patterns - Minor sections
