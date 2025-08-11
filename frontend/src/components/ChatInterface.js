@@ -58,7 +58,6 @@ const ChatInterface = () => {
   // Initialize session and load data
   useEffect(() => {
     if (user && idToken) {
-      initializeSession();
       checkSubscriptionStatus();
       loadChatHistory();
       checkOnboardingStatus();
