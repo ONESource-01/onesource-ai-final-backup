@@ -378,6 +378,7 @@ Selecting the correct experience level ensures you receive responses that match 
 
   const categories = [
     { id: 'all', name: 'All Topics', icon: Book },
+    { id: 'ai-intelligence', name: '3-Phase AI Intelligence', icon: Brain },
     { id: 'privacy', name: 'Privacy & Security', icon: Shield },
     { id: 'community', name: 'Community Knowledge', icon: Users },
     { id: 'copyright', name: 'Copyright & IP', icon: Copyright },
