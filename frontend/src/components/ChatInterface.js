@@ -893,16 +893,16 @@ const ChatInterface = () => {
       {feedbackModal.show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <Card className="max-w-md w-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <div className="p-6">
+              <div className="flex items-center gap-2 text-lg font-semibold mb-4">
                 {feedbackModal.type === 'positive' ? (
                   <ThumbsUp className="h-5 w-5 text-green-600" />
                 ) : (
                   <ThumbsDown className="h-5 w-5 text-red-600" />
                 )}
                 {feedbackModal.type === 'positive' ? 'Positive' : 'Negative'} Feedback
-              </CardTitle>
-            </CardHeader>
+              </div>
+            </div>
             <CardContent className="space-y-4">
               <textarea
                 className="w-full p-3 border border-gray-300 rounded-lg resize-none"
