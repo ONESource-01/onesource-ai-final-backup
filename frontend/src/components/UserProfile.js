@@ -246,13 +246,26 @@ const UserProfile = ({ onClose, onPreferencesUpdate }) => {
     setSuccess('');
 
     try {
-      await apiEndpoints.updateUserPreferences(userPreferences);
+      // Map frontend field names to backend field names
+      const backendPreferences = {
+        industries: userPreferences.industry_sectors,
+        role: userPreferences.company_type,
+        experience_level: userPreferences.experience_level,
+        response_style: "balanced", // Default value
+        ai_focus_areas: userPreferences.disciplines,
+        custom_instructions: userPreferences.custom_instructions
+      };
+
+      console.log("🚀 SAVE PREFERENCES DEBUG - Sending:", backendPreferences);
+      
+      await apiEndpoints.updateUserPreferences(backendPreferences);
       setSuccess('Your preferences have been saved successfully!');
       if (onPreferencesUpdate) {
         onPreferencesUpdate();
       }
     } catch (error) {
       console.error('Failed to save preferences:', error);
+      console.error('Error response:', error.response);
       setError('Failed to save preferences. Please try again.');
     } finally {
       setLoading(false);
