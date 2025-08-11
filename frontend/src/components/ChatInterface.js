@@ -234,7 +234,7 @@ const ChatInterface = () => {
     }
   };
 
-  // Format AI response with clean, professional styling and useful links
+  // Format AI response with professional construction industry styling
   const formatAIResponse = (content) => {
     if (!content) return '';
     
@@ -243,13 +243,48 @@ const ChatInterface = () => {
     // Convert **bold** to proper HTML bold
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
     
-    // Convert numbered section headers (1. **Header**: content)
-    formatted = formatted.replace(/^(\d+)\.\s*\*\*(.*?)\*\*[:.]?\s*/gm, 
-      '<div class="mb-4 mt-6"><h3 class="text-lg font-bold text-gray-900 mb-2">$1. $2</h3></div>');
+    // Convert markdown tables to professional HTML tables
+    formatted = formatted.replace(/(\|.*\|[\r\n]+\|[-\s\|:]+\|[\r\n]+((\|.*\|[\r\n]*)+))/gm, (match) => {
+      const lines = match.trim().split('\n');
+      const headers = lines[0].split('|').filter(cell => cell.trim()).map(cell => cell.trim());
+      const rows = lines.slice(2).map(line => 
+        line.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
+      );
+      
+      return `
+        <div class="my-6 overflow-x-auto">
+          <table class="min-w-full border-collapse border border-gray-300 bg-white shadow-sm rounded-lg">
+            <thead class="bg-blue-50">
+              <tr>
+                ${headers.map(header => `<th class="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-900 text-sm">${header}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(row => `
+                <tr class="hover:bg-gray-50">
+                  ${row.map(cell => `<td class="border border-gray-300 px-4 py-3 text-sm text-gray-700">${cell}</td>`).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    });
     
-    // Convert bullet points with bold terms (- **Term**: description)
+    // Convert numbered section headers with enhanced styling
+    formatted = formatted.replace(/^(#{1,3})\s*(\d+\.?\s*)(.*?)$/gm, (match, hashes, number, title) => {
+      const level = hashes.length;
+      const classes = {
+        1: 'text-xl font-bold text-gray-900 mt-8 mb-4 pb-2 border-b-2 border-blue-200',
+        2: 'text-lg font-semibold text-gray-800 mt-6 mb-3',
+        3: 'text-base font-medium text-gray-700 mt-4 mb-2'
+      };
+      return `<h${level} class="${classes[level]}">${number}${title}</h${level}>`;
+    });
+    
+    // Convert bullet points with professional styling
     formatted = formatted.replace(/^\s*[-•]\s*\*\*(.*?)\*\*:\s*(.*?)$/gm, 
-      '<div class="flex items-start gap-3 mb-3 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></span><div><strong class="text-gray-900">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
+      '<div class="flex items-start gap-3 mb-3 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-2"></span><div><strong class="text-gray-900 font-medium">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
     
     // Convert simple bullet points
     formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, 
@@ -270,11 +305,11 @@ const ChatInterface = () => {
     formatted = formatted.replace(/\b(AS\/NZS \d{4}(?:\.\d+)?)\b/g, 
       '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
     
-    // Link ABCB (Australian Building Codes Board)
-    formatted = formatted.replace(/\b(ABCB|Australian Building Codes Board)\b/g, 
-      '<a href="https://www.abcb.gov.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline">$1</a>');
+    // Link NZS standards
+    formatted = formatted.replace(/\b(NZS \d{4}(?:\.\d+)?)\b/g, 
+      '<a href="https://www.standards.govt.nz/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
     
-    // Add section breaks for major sections
+    // Add section breaks and enhance spacing
     formatted = formatted.replace(/\n\n/g, '<div class="mb-4"></div>');
     formatted = formatted.replace(/\n/g, '<br/>');
     
