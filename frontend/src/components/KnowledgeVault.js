@@ -11,18 +11,8 @@ import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Progress } from './ui/progress';
 import { 
-  Upload, 
-  FileText, 
-  Users, 
-  Shield, 
-  CheckCircle, 
-  AlertTriangle, 
-  Info,
-  Building,
-  Plus,
-  X,
-  Eye,
-  Download
+  Upload, FileText, Users, Shield, CheckCircle, AlertTriangle, Info,
+  Building, Plus, X, Eye, Download, ArrowLeft, Search, MessageSquare
 } from 'lucide-react';
 import { apiEndpoints } from '../utils/api';
 
@@ -34,6 +24,9 @@ const KnowledgeVault = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
   
   // Partner registration form
   const [showPartnerForm, setShowPartnerForm] = useState(false);
@@ -142,6 +135,44 @@ const KnowledgeVault = () => {
     }
   };
 
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    
+    setSearchLoading(true);
+    setSearchResults(null);
+
+    try {
+      // Search both personal and community documents
+      const personalResponse = await apiEndpoints.searchPersonalDocuments({ query: searchQuery });
+      const communityResponse = await apiEndpoints.searchCommunityDocuments({ query: searchQuery });
+      
+      const personalResults = personalResponse.data.results || [];
+      const communityResults = communityResponse.data.results || [];
+      
+      setSearchResults({
+        personal: personalResults,
+        community: communityResults,
+        total: personalResults.length + communityResults.length
+      });
+    } catch (error) {
+      console.error('Search failed:', error);
+      setSearchResults({
+        personal: [],
+        community: [],
+        total: 0,
+        error: 'Search functionality is currently unavailable. Please try again later.'
+      });
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const loadPersonalDocuments = async () => {
     try {
       const response = await apiEndpoints.getPersonalDocuments();
@@ -184,7 +215,7 @@ const KnowledgeVault = () => {
             </div>
             <nav className="flex items-center space-x-6">
               <a href="/" className="text-gray-600 hover:text-gray-900">Home</a>
-              <a href="/chat" className="text-gray-600 hover:text-gray-900">Chat</a>
+              <a href="/help" className="text-gray-600 hover:text-gray-900">Help</a>
               <Button asChild>
                 <a href="/chat">Go to Chat</a>
               </Button>
@@ -194,6 +225,18 @@ const KnowledgeVault = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back to Chat Button */}
+        <div className="mb-6">
+          <Button
+            onClick={() => window.location.href = '/chat'}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Chat
+          </Button>
+        </div>
+
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Knowledge Vault</h1>
@@ -201,6 +244,120 @@ const KnowledgeVault = () => {
             Manage your documents and access the community knowledge base for enhanced AI responses
           </p>
         </div>
+
+        {/* Search Bar */}
+        <div className="mb-8">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search your documents and community knowledge..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyPress={handleSearchKeyPress}
+                    className="pl-10"
+                  />
+                </div>
+                <Button 
+                  onClick={handleSearch} 
+                  disabled={searchLoading || !searchQuery.trim()}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {searchLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4 mr-1" />
+                      Search
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Search Results */}
+        {searchResults && (
+          <div className="mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Search Results ({searchResults.total} found)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {searchResults.error ? (
+                  <Alert className="border-red-200 bg-red-50">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription className="text-red-700">
+                      {searchResults.error}
+                    </AlertDescription>
+                  </Alert>
+                ) : searchResults.total === 0 ? (
+                  <div className="text-center py-8">
+                    <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-2">No documents found matching your search.</p>
+                    <p className="text-sm text-gray-400">
+                      Try different keywords or check your document uploads.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Personal Results */}
+                    {searchResults.personal.length > 0 && (
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <Shield className="h-4 w-4 mr-2 text-blue-600" />
+                          Personal Documents ({searchResults.personal.length})
+                        </h4>
+                        <div className="space-y-2">
+                          {searchResults.personal.map((doc, index) => (
+                            <div key={index} className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium text-blue-900">{doc.filename || `Document ${index + 1}`}</p>
+                                  <p className="text-sm text-blue-700">{doc.snippet || 'No preview available'}</p>
+                                </div>
+                                <Badge className="bg-blue-100 text-blue-800">Personal</Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Community Results */}
+                    {searchResults.community.length > 0 && (
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                          <Users className="h-4 w-4 mr-2 text-green-600" />
+                          Community Knowledge ({searchResults.community.length})
+                        </h4>
+                        <div className="space-y-2">
+                          {searchResults.community.map((doc, index) => (
+                            <div key={index} className="p-3 bg-green-50 rounded-lg border border-green-200">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium text-green-900">{doc.filename || `Document ${index + 1}`}</p>
+                                  <p className="text-sm text-green-700">{doc.snippet || 'No preview available'}</p>
+                                  {doc.partner && (
+                                    <p className="text-xs text-green-600">by {doc.partner}</p>
+                                  )}
+                                </div>
+                                <Badge className="bg-green-100 text-green-800">Community</Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Results Display */}
         {(uploadResult || partnerResult) && (
