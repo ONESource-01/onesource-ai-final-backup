@@ -119,9 +119,9 @@ const AuthPage = () => {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <img 
-              src="/onesource-logo.png" 
+              src="/onesource-primary-logo.svg" 
               alt="ONESource-ai" 
-              className="h-20 w-auto mr-2"
+              className="h-30 w-auto mr-2"
             />
           </div>
           <p style={{ color: '#4b6b8b' }}>

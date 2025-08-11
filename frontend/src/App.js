@@ -66,7 +66,12 @@ const AppContent = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <img 
+            src="/onesource-icon.svg" 
+            alt="ONESource-ai" 
+            className="h-16 w-auto mx-auto mb-4 animate-pulse"
+          />
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-4" />
           <p className="text-gray-600">Loading ONESource-ai...</p>
         </div>
       </div>
@@ -140,9 +145,9 @@ const LandingPage = () => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <img 
-                src="/onesource-logo.png" 
+                src="/onesource-primary-logo.svg" 
                 alt="ONESource-ai" 
-                className="h-16 w-auto mr-3"
+                className="h-24 w-auto mr-3"
               />
             </div>
             <nav className="flex items-center space-x-6">
@@ -310,9 +315,9 @@ const LandingPage = () => {
             <div>
               <div className="flex items-center mb-4">
                 <img 
-                  src="/onesource-logo.png" 
+                  src="/onesource-primary-logo.svg" 
                   alt="ONESource-ai" 
-                  className="h-12 w-auto mr-3"
+                  className="h-18 w-auto mr-3"
                 />
               </div>
               <p style={{ color: '#95a6b7' }}>

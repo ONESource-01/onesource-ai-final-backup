@@ -15,9 +15,9 @@ const PageHeader = ({ title, subtitle, showAuth = true }) => {
             <div className="flex items-center">
               <a href="/" className="flex items-center">
                 <img 
-                  src="/onesource-logo.png" 
+                  src="/onesource-primary-logo.svg" 
                   alt="ONESource-ai" 
-                  className="h-16 w-auto mr-3"
+                  className="h-24 w-auto mr-3"
                 />
               </a>
             </div>
