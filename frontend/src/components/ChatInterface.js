@@ -330,32 +330,38 @@ const ChatInterface = () => {
     setBoostingMessage(messageId);
 
     try {
-      const originalMessage = messages.find(m => m.id === messageId);
+      // Find the user question that triggered this AI response
+      const messageIndex = messages.findIndex(m => m.id === messageId);
+      const userMessage = messageIndex > 0 ? messages[messageIndex - 1] : null;
+      
+      if (!userMessage || userMessage.type !== 'user') {
+        throw new Error('Could not find original user question');
+      }
+
       const response = await apiEndpoints.boosterChat({
-        message: originalMessage.content,
-        session_id: sessionId,
-        use_knowledge_enhanced: true
+        question: userMessage.content,
+        current_tier: subscriptionStatus?.subscription_tier || 'starter',
+        target_tier: 'pro'
       });
 
       const boosterMessage = {
         id: Date.now() + Math.random(),
         type: 'ai',
-        content: response.data.response,
+        content: response.data.boosted_response,
         timestamp: new Date(),
-        sources: response.data.sources || [],
-        confidence: response.data.confidence || null,
-        isBooster: true
+        isBooster: true,
+        sources: response.data.sources || []
       };
 
       setMessages(prev => [...prev, boosterMessage]);
       setBoosterUsage(prev => ({ 
-        ...prev, 
-        remaining: prev.remaining - 1,
-        used: true 
+        used: true,
+        remaining: prev.remaining - 1 
       }));
 
     } catch (error) {
       console.error('Booster failed:', error);
+      alert('Failed to generate boosted response. Please try again.');
     } finally {
       setBoostingMessage(null);
     }
