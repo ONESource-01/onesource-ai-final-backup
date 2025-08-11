@@ -136,7 +136,7 @@ const ChatInterface = () => {
   const startNewConversation = () => {
     setMessages([]);
     setSessionId(null);
-    initializeSession();
+    // Session will be created automatically when sending first message
   };
 
   const sendMessage = async () => {
