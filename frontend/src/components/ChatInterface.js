@@ -161,12 +161,14 @@ const ChatInterface = () => {
     setLoading(true);
 
     try {
-      const response = await apiEndpoints.chat({
-        message: trimmedMessage,
+      const requestData = {
+        question: trimmedMessage,
         session_id: sessionId,
-        use_knowledge_enhanced: useKnowledgeEnhanced,
-        user_preferences: userPreferences
-      });
+      };
+
+      const response = useKnowledgeEnhanced 
+        ? await apiEndpoints.askEnhancedQuestion(requestData)
+        : await apiEndpoints.askQuestion(requestData);
 
       const aiMessage = {
         id: Date.now() + 1,
