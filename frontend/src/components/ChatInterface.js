@@ -240,10 +240,71 @@ const ChatInterface = () => {
     
     let formatted = content;
     
-    // Convert **bold** to proper HTML bold
+    // STEP 1: Handle markdown headers FIRST (before line breaks are removed)
+    
+    // Handle # patterns - Main sections
+    formatted = formatted.replace(/^#\s*(\d+\.?\s*)?(.*?)$/gmi, (match, number, title) => {
+      const cleanTitle = title.trim();
+      const lowerTitle = cleanTitle.toLowerCase();
+      
+      if (lowerTitle.includes('technical answer') || lowerTitle.includes('technical')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🛠️ <strong>Technical Answer</strong></h3></div>';
+      }
+      if (lowerTitle.includes('mentoring') || lowerTitle.includes('insight')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧐 <strong>Mentoring Insight</strong></h3></div>';
+      }
+      if (lowerTitle.includes('next steps') || lowerTitle.includes('clarifying')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>';
+      }
+      if (lowerTitle.includes('alternative')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔄 <strong>Alternative Solutions</strong></h3></div>';
+      }
+      if (lowerTitle.includes('authority')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🏛️ <strong>Authority Requirements</strong></h3></div>';
+      }
+      if (lowerTitle.includes('documentation')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📄 <strong>Documentation Needed</strong></h3></div>';
+      }
+      
+      // Default
+      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>' + cleanTitle + '</strong></h3></div>';
+    });
+    
+    // Handle ## patterns - Sub-sections  
+    formatted = formatted.replace(/^##\s*(.*?)$/gmi, (match, title) => {
+      const cleanTitle = title.trim();
+      const lowerTitle = cleanTitle.toLowerCase();
+      
+      if (lowerTitle.includes('code requirements') || lowerTitle.includes('requirements')) {
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📝 <strong>' + cleanTitle + '</strong></h4></div>';
+      }
+      if (lowerTitle.includes('compliance')) {
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">✅ <strong>' + cleanTitle + '</strong></h4></div>';
+      }
+      if (lowerTitle.includes('alternative')) {
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔄 <strong>' + cleanTitle + '</strong></h4></div>';
+      }
+      if (lowerTitle.includes('workflow') || lowerTitle.includes('recommendations')) {
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">⚙️ <strong>' + cleanTitle + '</strong></h4></div>';
+      }
+      if (lowerTitle.includes('questions') || lowerTitle.includes('clarify')) {
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">❓ <strong>' + cleanTitle + '</strong></h4></div>';
+      }
+      
+      // Default
+      return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔹 <strong>' + cleanTitle + '</strong></h4></div>';
+    });
+    
+    // Handle ### patterns - Minor sections
+    formatted = formatted.replace(/^###\s*(.*?)$/gmi, (match, title) => {
+      const cleanTitle = title.trim();
+      return '<div class="mt-2 mb-1"><h5 class="text-sm font-medium text-gray-700 flex items-center gap-2">▪️ <strong>' + cleanTitle + '</strong></h5></div>';
+    });
+    
+    // STEP 2: Convert **bold** to proper HTML bold
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
     
-    // Convert markdown tables to professional HTML tables
+    // STEP 3: Handle markdown tables
     formatted = formatted.replace(/(\|.*\|[\r\n]+\|[-\s\|:]+\|[\r\n]+((\|.*\|[\r\n]*)+))/gm, (match) => {
       const lines = match.trim().split('\n');
       const headers = lines[0].split('|').filter(cell => cell.trim()).map(cell => cell.trim());
@@ -271,72 +332,14 @@ const ChatInterface = () => {
       `;
     });
     
-    // Convert ALL markdown headers to clean emoji headers - COMPREHENSIVE patterns
-    
-    // Handle ### patterns (h3)
-    formatted = formatted.replace(/^###\s*(.*?)$/gmi, (match, title) => {
-      if (title.toLowerCase().includes('compliance')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">✅ <strong>' + title + '</strong></h3></div>';
-      }
-      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900">' + title + '</h3></div>';
-    });
-    
-    // Handle # patterns (h1) - Convert to appropriate emojis
-    formatted = formatted.replace(/^#\s*(.*?)$/gmi, (match, title) => {
-      const lowerTitle = title.toLowerCase();
-      
-      if (lowerTitle.includes('alternative')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔄 <strong>Alternative Solutions</strong></h3></div>';
-      }
-      if (lowerTitle.includes('authority')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🏛️ <strong>Authority Requirements</strong></h3></div>';
-      }
-      if (lowerTitle.includes('documentation')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📄 <strong>Documentation Needed</strong></h3></div>';
-      }
-      if (lowerTitle.includes('mentoring')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧐 <strong>Mentoring Insight</strong></h3></div>';
-      }
-      if (lowerTitle.includes('next steps') || lowerTitle.includes('clarifying')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div><div class="mt-2 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>';
-      }
-      
-      // Default for any other # headers
-      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900">' + title + '</h3></div>';
-    });
-    
-    // Handle ## patterns (h2)  
-    formatted = formatted.replace(/^##\s*(.*?)$/gmi, (match, title) => {
-      const lowerTitle = title.toLowerCase();
-      
-      if (lowerTitle.includes('clarifying') || lowerTitle.includes('questions')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>';
-      }
-      if (lowerTitle.includes('technical') || lowerTitle.includes('differences')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">⚙️ <strong>' + title + '</strong></h3></div>';
-      }
-      
-      // Default for any other ## headers
-      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900">' + title + '</h3></div>';
-    });
-    
-    // Convert section headers with existing emojis
-    formatted = formatted.replace(/^(🛠️|🧐|📋|🔗)\s*\*\*(.*?)\*\*:?$/gm, 
-      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-1">$1 <strong>$2</strong></h3></div>');
-    
-    // Convert numbered headers with tight spacing
-    formatted = formatted.replace(/^##\s*(.*?)$/gm, 
-      '<div class="mt-3 mb-1"><h4 class="text-sm font-bold text-gray-800">$1</h4></div>');
-    
-    // Convert bullet points with ULTRA-TIGHT spacing - Emergent style
+    // STEP 4: Convert bullet points with ultra-tight spacing
     formatted = formatted.replace(/^\s*[-•]\s*\*\*(.*?)\*\*:\s*(.*?)$/gm, 
       '<div class="flex items-start gap-2 mb-0.5 ml-3"><span class="flex-shrink-0 w-1 h-1 bg-blue-600 rounded-full mt-2"></span><div><strong class="text-gray-900 font-medium">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
     
-    // Convert simple bullet points with ultra-tight spacing
     formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, 
       '<div class="flex items-start gap-2 mb-0.5 ml-3"><span class="flex-shrink-0 w-1 h-1 bg-blue-500 rounded-full mt-2"></span><span class="text-gray-700">$1</span></div>');
     
-    // Add clickable links to standards
+    // STEP 5: Add clickable links
     formatted = formatted.replace(/\b(NCC|National Construction Code)\b/g, 
       '<a href="https://ncc.abcb.gov.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline">$1</a>');
     
@@ -346,11 +349,11 @@ const ChatInterface = () => {
     formatted = formatted.replace(/\b(NZS \d{4}(?:\.\d+)?)\b/g, 
       '<a href="https://www.standards.govt.nz/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
     
-    // CRITICAL: Ultra-minimal line spacing like Emergent - convert line breaks
+    // STEP 6: Handle line breaks LAST (after all markdown processing)
     formatted = formatted.replace(/\n\n/g, '<br>');  // Double breaks become single
-    formatted = formatted.replace(/\n/g, '');        // Remove single breaks entirely for tighter spacing
+    formatted = formatted.replace(/\n/g, '');        // Remove single breaks for tight spacing
     
-    // Wrap in container with forced tight spacing
+    // STEP 7: Wrap in container with tight spacing
     formatted = `<div style="line-height: 1.3; margin: 0; padding: 0;">${formatted}</div>`;
     
     return formatted;
