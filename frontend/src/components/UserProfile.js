@@ -35,7 +35,9 @@ import {
   ChevronRight,
   Home,
   Building,
-  Wrench
+  Wrench,
+  Info,
+  HelpCircle
 } from 'lucide-react';
 
 const UserProfile = ({ onClose, onPreferencesUpdate }) => {
