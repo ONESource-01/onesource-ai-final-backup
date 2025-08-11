@@ -375,6 +375,113 @@ class AIIntelligencePhases:
             """
         }
     
+    @staticmethod
+    def get_sector_contexts() -> Dict[str, str]:
+        """Industry sector-specific contexts for 17 sectors"""
+        return {
+            "commercial": """
+            SECTOR CONTEXT: Commercial buildings (offices, retail, mixed-use developments)
+            KEY CONSIDERATIONS: Open plan flexibility, high occupancy loads, 24/7 operations, tenant requirements, base building vs tenant fit-out, accessibility compliance, energy efficiency ratings
+            TYPICAL CHALLENGES: Services distribution in open plan, acoustic privacy, after-hours security, parking ratios, waste management
+            """,
+            
+            "industrial": """
+            SECTOR CONTEXT: Industrial facilities (warehouses, manufacturing plants, distribution hubs)
+            KEY CONSIDERATIONS: Heavy loading, high bay construction, specialised services, process requirements, heavy vehicle access, dangerous goods storage
+            TYPICAL CHALLENGES: Structural loads, fire protection for high rack storage, process ventilation, crane loads, truck maneuvering areas
+            """,
+            
+            "mining_resources": """
+            SECTOR CONTEXT: Mining infrastructure (processing plants, camps, remote facilities)
+            KEY CONSIDERATIONS: Remote locations, harsh environments, temporary vs permanent facilities, worker accommodation, process plant requirements
+            TYPICAL CHALLENGES: Extreme weather design, logistics constraints, power generation, water supply, waste disposal
+            """,
+            
+            "health": """
+            SECTOR CONTEXT: Healthcare facilities (hospitals, aged care, medical centres, specialist clinics)
+            KEY CONSIDERATIONS: Infection control, life safety systems, medical gases, specialised equipment, patient accessibility, 24/7 operations
+            TYPICAL CHALLENGES: Air pressure relationships, electrical reliability, water quality, medical equipment integration, patient flow
+            """,
+            
+            "data_centres": """
+            SECTOR CONTEXT: Data processing facilities (hyperscale, enterprise, colocation)
+            KEY CONSIDERATIONS: Power density, cooling requirements, redundancy, security, electromagnetic compatibility, future expansion
+            TYPICAL CHALLENGES: Power distribution, cooling efficiency, fire suppression (water-free), raised floor systems, cable management
+            """,
+            
+            "residential": """
+            SECTOR CONTEXT: Residential buildings (apartments, townhouses, detached housing)
+            KEY CONSIDERATIONS: Acoustic privacy, accessibility, energy efficiency, natural ventilation, fire safety, building defects legislation
+            TYPICAL CHALLENGES: Acoustic separation, waterproofing, thermal performance, fire egress, common area maintenance
+            """,
+            
+            "hotels_hospitality": """
+            SECTOR CONTEXT: Hospitality facilities (hotels, resorts, serviced apartments)
+            KEY CONSIDERATIONS: Guest comfort, noise control, 24/7 operations, food service facilities, recreational amenities, security
+            TYPICAL CHALLENGES: Acoustic privacy between rooms, hot water systems, kitchen ventilation, swimming pool areas, fire safety
+            """,
+            
+            "education": """
+            SECTOR CONTEXT: Educational facilities (schools, universities, research facilities)
+            KEY CONSIDERATIONS: Large occupancy numbers, varied age groups, specialised teaching spaces, accessibility, security, future flexibility
+            TYPICAL CHALLENGES: Assembly occupancy, laboratory requirements, sports facility integration, acoustic control, technology infrastructure
+            """,
+            
+            "transport_infrastructure": """
+            SECTOR CONTEXT: Transport facilities (airports, rail, ports, roads, bridges)
+            KEY CONSIDERATIONS: Public access, high traffic volumes, security requirements, weather exposure, maintenance access, future expansion
+            TYPICAL CHALLENGES: Structural loads, environmental exposure, public safety, operational continuity, heritage considerations
+            """,
+            
+            "energy_utilities": """
+            SECTOR CONTEXT: Energy facilities (power generation, renewable energy, water/wastewater plants)
+            KEY CONSIDERATIONS: Process requirements, environmental impact, safety systems, regulatory compliance, operational reliability
+            TYPICAL CHALLENGES: Hazardous area design, environmental compliance, process safety, maintenance access, emergency systems
+            """,
+            
+            "government_civic": """
+            SECTOR CONTEXT: Government facilities (courthouses, civic centres, defence facilities)
+            KEY CONSIDERATIONS: Public access, security requirements, ceremonial spaces, accessibility compliance, heritage considerations
+            TYPICAL CHALLENGES: Security vs accessibility balance, public gathering areas, technology integration, long-term durability
+            """,
+            
+            "retail_entertainment": """
+            SECTOR CONTEXT: Public facilities (shopping centres, cinemas, stadiums, cultural venues)
+            KEY CONSIDERATIONS: High occupancy, emergency egress, accessibility, atmospheric control, entertainment systems, food service
+            TYPICAL CHALLENGES: Large span structures, acoustic control, crowd management, fire safety in assembly spaces, HVAC for variable loads
+            """,
+            
+            "agriculture_food": """
+            SECTOR CONTEXT: Food processing facilities (abattoirs, cold storage, food manufacturing plants)
+            KEY CONSIDERATIONS: Food safety requirements, temperature control, hygiene standards, process equipment, waste management
+            TYPICAL CHALLENGES: Temperature and humidity control, drainage systems, equipment loads, cleaning requirements, pest exclusion
+            """,
+            
+            "sports_recreation": """
+            SECTOR CONTEXT: Recreation facilities (aquatic centres, gyms, sports complexes)
+            KEY CONSIDERATIONS: Specialised environments, high humidity areas, equipment loads, spectator areas, accessibility
+            TYPICAL CHALLENGES: Pool hall environments, equipment foundations, acoustic control, ventilation for high occupancy
+            """,
+            
+            "mixed_use": """
+            SECTOR CONTEXT: Mixed-use developments (integrated residential/commercial/retail hubs)
+            KEY CONSIDERATIONS: Multiple occupancy types, shared services, acoustic separation, fire separation, parking requirements
+            TYPICAL CHALLENGES: Services distribution, fire compartmentation, acoustic separation, waste management, access control
+            """,
+            
+            "specialist_facilities": """
+            SECTOR CONTEXT: Specialised facilities (laboratories, cleanrooms, high-security facilities)
+            KEY CONSIDERATIONS: Controlled environments, specialised services, security requirements, contamination control, precise environmental control
+            TYPICAL CHALLENGES: Air quality control, vibration control, electromagnetic compatibility, waste disposal, decontamination systems
+            """,
+            
+            "others": """
+            SECTOR CONTEXT: Other specialised or unique facility types not covered by standard categories
+            KEY CONSIDERATIONS: Project-specific requirements, unique challenges, specialised regulatory requirements, innovative solutions
+            TYPICAL CHALLENGES: Non-standard design criteria, limited precedents, specialised approval processes, unique risk factors
+            """
+        }
+    
     @staticmethod 
     def detect_workflow_stage(question: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Phase 2: Workflow Intelligence - Detect project stage and suggest next steps"""
