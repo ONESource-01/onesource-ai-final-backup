@@ -685,9 +685,9 @@ const ChatInterface = () => {
                             {/* AI Response Content */}
                             <div className="prose max-w-none">
                               <div 
-                                className="text-gray-900 whitespace-pre-wrap"
+                                className="text-gray-800 leading-relaxed"
                                 dangerouslySetInnerHTML={{
-                                  __html: message.content.replace(/\n/g, '<br>')
+                                  __html: formatAIResponse(message.content)
                                 }}
                               />
                             </div>
