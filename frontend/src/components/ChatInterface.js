@@ -733,11 +733,15 @@ const ChatInterface = () => {
                           </div>
                         ) : (
                           <div className="space-y-3">
-                            {/* AI Response Content - Tight spacing like Emergent */}
+                            {/* AI Response Content - ULTRA-TIGHT spacing like Emergent */}
                             <div className="prose max-w-none">
                               <div 
-                                className="text-gray-800 leading-tight text-sm"
-                                style={{ lineHeight: '1.4' }}
+                                className="text-gray-800 text-sm"
+                                style={{ 
+                                  lineHeight: '1.3',
+                                  marginBottom: '0px',
+                                  paddingBottom: '0px'
+                                }}
                                 dangerouslySetInnerHTML={{
                                   __html: formatAIResponse(message.content)
                                 }}
