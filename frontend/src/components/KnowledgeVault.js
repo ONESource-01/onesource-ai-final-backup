@@ -454,12 +454,15 @@ const KnowledgeVault = () => {
 
                 {/* Upload Progress */}
                 {isUploading && uploadProgress > 0 && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Upload Progress</span>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex justify-between text-sm font-medium text-blue-800 mb-2">
+                      <span>Uploading Documents...</span>
                       <span>{uploadProgress}%</span>
                     </div>
-                    <Progress value={uploadProgress} className="w-full" />
+                    <Progress value={uploadProgress} className="w-full h-3" />
+                    <p className="text-xs text-blue-600 mt-2">
+                      Please wait while your documents are being processed...
+                    </p>
                   </div>
                 )}
 
