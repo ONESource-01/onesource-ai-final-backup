@@ -55,7 +55,7 @@ class AIIntelligencePhases:
             5. **Further Actions** - Next steps and professional consultations needed
             
             IMPORTANT: Always emphasize that complex structural work requires certified structural engineer approval.
-            STANDARDS AUSTRALIA COMPLIANCE: Reference standards by number and title only. Do not reproduce copyrighted content.
+            CREATE COMPARISON TABLES: Always create detailed comparison tables when comparing different standards, codes, or jurisdictions.
             """,
             
             "building_codes": """
