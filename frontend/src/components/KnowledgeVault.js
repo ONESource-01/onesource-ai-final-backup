@@ -70,10 +70,10 @@ const KnowledgeVault = () => {
       files.forEach(file => formData.append('files', file));
       formData.append('upload_type', 'personal');
 
-      // Simulate progress
+      // Simulate progress with more visible timing
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => Math.min(prev + 10, 90));
-      }, 200);
+        setUploadProgress(prev => Math.min(prev + 15, 85));
+      }, 500);
 
       const response = await apiEndpoints.uploadDocuments(formData);
       
