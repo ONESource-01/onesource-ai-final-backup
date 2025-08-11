@@ -228,6 +228,55 @@ const HelpCenter = () => {
 • Partner directory includes qualified professionals
 • Professional development resources available
 • Continuing education opportunities promoted`
+    },
+    {
+      id: 7,
+      question: "How does ONESource-ai adapt responses based on my experience level?",
+      category: "personalization",
+      answer: `ONESource-ai personalizes every response based on your selected experience level to provide the most appropriate guidance:
+
+**Graduate / Beginner (0-2 years):**
+• AI provides detailed explanations, step-by-step guidance, educational context, and mentoring advice
+• Perfect for learning fundamental concepts and building confidence
+
+**Response Examples:**
+• Explains basic concepts like "What is a fire rating?" before discussing specific requirements
+• Provides step-by-step compliance checklists with explanations for each step
+• Includes educational context: "This requirement exists because..." with safety rationale
+• Offers learning resources and suggests professional development pathways
+
+**Intermediate (3-7 years):**
+• AI offers practical solutions with moderate detail, focuses on real-world applications
+• Provides tips for professional development and efficiency improvements
+
+**Response Examples:**
+• Provides practical solutions: "For this scenario, you could use Method A or B, here's when to choose each"
+• Focuses on real-world applications and common challenges you'll face
+• Includes efficiency tips: "Pro tip: This calculation can be simplified by..."
+• Suggests when to consult specialists and what questions to ask them
+
+**Senior (8-15 years):**
+• AI provides advanced technical insights, discusses complex scenarios
+• Offers strategic perspectives and focuses on leadership and decision-making aspects
+
+**Response Examples:**
+• Discusses complex scenarios: "When dealing with conflicting code requirements, consider..."
+• Offers strategic perspectives on project risks and mitigation strategies
+• Focuses on leadership aspects: "When presenting this to stakeholders, emphasize..."
+• Provides advanced technical insights and alternative design approaches
+
+**Expert / Principal (15+ years):**
+• AI delivers concise, high-level insights, focuses on innovation and cutting-edge practices
+• Discusses industry trends and provides expert-to-expert technical discourse
+
+**Response Examples:**
+• Delivers concise, high-level insights without basic explanations
+• Discusses cutting-edge practices and emerging industry trends
+• Provides expert-to-expert technical discourse with advanced terminology
+• Focuses on innovation opportunities and industry leadership perspectives
+
+**Why This Matters:**
+Selecting the correct experience level ensures you receive responses that match your expertise, learning style, and professional needs. This personalization makes ONESource-ai more effective and relevant to your specific career stage.`
     }
   ];
 
