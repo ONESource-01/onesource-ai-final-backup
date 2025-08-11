@@ -226,8 +226,10 @@ const ChatInterface = () => {
   };
 
   const handleKeyPress = (e) => {
+    console.log("🔥 KEY PRESSED:", e.key, "Shift:", e.shiftKey);
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      console.log("🔥 ENTER PRESSED - CALLING SEND MESSAGE");
       sendMessage();
     }
   };
