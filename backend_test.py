@@ -271,6 +271,138 @@ class BackendTester:
                 self.log_test(f"Mock Firebase Service - {user['name']}", False, 
                             f"Failed to get subscription status: {status}", data)
     
+    async def test_critical_chat_functionality(self):
+        """🚨 CRITICAL URGENT TESTING - Test chat responses as reported by user"""
+        print("\n🚨 === CRITICAL CHAT RESPONSE TESTING ===")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test the EXACT questions mentioned in the review request
+        critical_questions = [
+            {
+                "question": "What are fire safety requirements for buildings?",
+                "test_name": "Basic Fire Safety Question",
+                "session_id": "critical_test_1"
+            },
+            {
+                "question": "What are fire safety requirements for high-rise buildings in Australia?",
+                "test_name": "Specific Fire Safety Question (from review)",
+                "session_id": "critical_test_2"
+            },
+            {
+                "question": "What is the minimum concrete strength for structural elements?",
+                "test_name": "Concrete Strength Question (from review)",
+                "session_id": "critical_test_3"
+            }
+        ]
+        
+        print("🔍 Testing POST /api/chat/ask endpoint...")
+        
+        for question_data in critical_questions:
+            print(f"\n🧪 Testing: {question_data['test_name']}")
+            print(f"   Question: {question_data['question']}")
+            
+            success, data, status = await self.make_request("POST", "/chat/ask", question_data, mock_headers)
+            
+            if success and isinstance(data, dict):
+                if "response" in data:
+                    response_content = data["response"]
+                    
+                    # Check response length and content
+                    if isinstance(response_content, dict):
+                        # Dual-layer response format
+                        technical = response_content.get("technical", "")
+                        mentoring = response_content.get("mentoring", "")
+                        total_length = len(str(technical)) + len(str(mentoring))
+                        
+                        if total_length > 100:  # Substantial response
+                            self.log_test(f"✅ {question_data['test_name']} - Response Quality", True, 
+                                        f"Substantial dual-layer response ({total_length} chars)")
+                            
+                            # Check for Australian standards references
+                            full_response = str(technical) + str(mentoring)
+                            if any(std in full_response for std in ["AS ", "AS/NZS", "BCA", "NCC", "Australian"]):
+                                self.log_test(f"✅ {question_data['test_name']} - AU Standards", True, 
+                                            "Contains Australian standards references")
+                            else:
+                                self.log_test(f"⚠️ {question_data['test_name']} - AU Standards", False, 
+                                            "Missing Australian standards references")
+                        else:
+                            self.log_test(f"❌ {question_data['test_name']} - Response Quality", False, 
+                                        f"Response too short ({total_length} chars)")
+                    
+                    elif isinstance(response_content, str):
+                        # Single string response
+                        response_length = len(response_content)
+                        if response_length > 100:
+                            self.log_test(f"✅ {question_data['test_name']} - Response Quality", True, 
+                                        f"Substantial response ({response_length} chars)")
+                            
+                            # Check for Australian standards references
+                            if any(std in response_content for std in ["AS ", "AS/NZS", "BCA", "NCC", "Australian"]):
+                                self.log_test(f"✅ {question_data['test_name']} - AU Standards", True, 
+                                            "Contains Australian standards references")
+                        else:
+                            self.log_test(f"❌ {question_data['test_name']} - Response Quality", False, 
+                                        f"Response too short ({response_length} chars)")
+                    
+                    # Check for session ID and tokens
+                    if "session_id" in data:
+                        self.log_test(f"✅ {question_data['test_name']} - Session Tracking", True, 
+                                    f"Session ID: {data['session_id']}")
+                    
+                    if "tokens_used" in data:
+                        self.log_test(f"✅ {question_data['test_name']} - Token Tracking", True, 
+                                    f"Tokens: {data['tokens_used']}")
+                    
+                    # Print first 200 chars of response for verification
+                    response_preview = str(response_content)[:200] + "..." if len(str(response_content)) > 200 else str(response_content)
+                    print(f"   📝 Response Preview: {response_preview}")
+                    
+                else:
+                    self.log_test(f"❌ {question_data['test_name']} - Missing Response", False, 
+                                "No 'response' field in API response", data)
+            else:
+                self.log_test(f"❌ {question_data['test_name']} - API Failure", False, 
+                            f"Status: {status}, Data: {data}")
+        
+        print("\n🔍 Testing POST /api/chat/ask-enhanced endpoint...")
+        
+        # Test enhanced chat endpoint
+        enhanced_question = {
+            "question": "What are fire safety requirements for high-rise buildings in Australia?",
+            "session_id": "critical_enhanced_test"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/ask-enhanced", enhanced_question, mock_headers)
+        
+        if success and isinstance(data, dict):
+            if "response" in data:
+                response_content = data["response"]
+                response_length = len(str(response_content))
+                
+                self.log_test("✅ Enhanced Chat - Response Quality", True, 
+                            f"Enhanced response received ({response_length} chars)")
+                
+                # Check for knowledge integration
+                if "knowledge_used" in data and data["knowledge_used"]:
+                    self.log_test("✅ Enhanced Chat - Knowledge Integration", True, 
+                                "Knowledge base successfully integrated")
+                
+                # Check for knowledge sources
+                if isinstance(response_content, dict) and "knowledge_sources" in response_content:
+                    sources = response_content["knowledge_sources"]
+                    self.log_test("✅ Enhanced Chat - Knowledge Sources", True, 
+                                f"Found {sources} knowledge sources")
+                
+                print(f"   📝 Enhanced Response Preview: {str(response_content)[:200]}...")
+            else:
+                self.log_test("❌ Enhanced Chat - Missing Response", False, 
+                            "No 'response' field in enhanced API response", data)
+        else:
+            self.log_test("❌ Enhanced Chat - API Failure", False, 
+                        f"Status: {status}, Data: {data}")
+
     async def test_ai_chat_system(self):
         """Test AI chat system"""
         print("\n=== Testing AI Chat System ===")
