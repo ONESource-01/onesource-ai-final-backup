@@ -91,41 +91,65 @@ Remember: You are positioned as the authoritative source for AU/NZ construction 
                 # Phase 3: Get specialized context
                 specialized_context = AIIntelligencePhases.get_specialized_context("general", question)
                 
-                # Enhanced mock response with contextual intelligence
+                # Enhanced mock response with professional construction industry formatting
                 mock_response = f"""🛠️ **Technical Answer:**
 
-Fire safety requirements for high-rise buildings in Australia are governed primarily by:
+Here's a comprehensive comparison of earthquake-resistant design requirements between Australia and New Zealand:
 
-• **NCC Volume One** - Class 2-9 buildings over 25m effective height
-• **AS 1851-2012** - Maintenance of fire protection systems
-• **AS 3786-2014** - Smoke alarms using scattered light
-• **AS 4072.1-2005** - Components for fire detection systems
+## **Seismic Design Code Comparison**
 
-**Key Requirements:**
-• Automatic fire detection systems in all Class 2-9 buildings >25m height
-• Emergency warning systems compliant with AS 1670.4
-• Fire-isolated stair pressurization per AS 1668.1
-• Sprinkler system coverage per AS 2118.1
+| **Aspect** | **Australia** | **New Zealand** |
+|------------|---------------|-----------------|
+| **Primary Standard** | AS 1170.4-2007 | NZS 1170.5:2004 |
+| **Seismic Hazard Factor** | Z = 0.08-0.23 | Z = 0.13-0.96 |
+| **Design Philosophy** | Force-based design | Performance-based design |
+| **Ductility Classes** | Limited ductility design | Ductile/Limited ductile |
+| **Site Classification** | A, B, C, D, E | A, B, C, D, E |
+| **Return Period** | 500 years (1/500 annual probability) | 500 years (1/500 annual probability) |
+| **Structural Systems** | SMF, EEFW, BRF | MRF, EBF, CBF, Structural Walls |
+
+## **Key Technical Differences:**
+
+**Australia (AS 1170.4):**
+• Lower seismic hazard factors reflecting lower seismic activity
+• Simplified force-based approach with linear elastic analysis
+• Focus on minimum seismic provisions for most regions
+• Special provisions for higher risk areas (e.g., Adelaide, parts of Victoria)
+
+**New Zealand (NZS 1170.5):**
+• Comprehensive performance-based design approach
+• Higher seismic hazard factors reflecting active tectonic environment
+• Detailed capacity design principles and ductility requirements
+• Specific provisions for different structural systems and materials
 
 🧐 **Mentoring Insight:**
 
-Based on your professional background, key considerations for high-rise fire safety:
+Critical considerations for your earthquake-resistant design project:
 
-**Project Timeline Considerations:**
-• Ensure you're working with the current NCC version for your project's approval date
-• Early coordination with fire engineer and building certifier is critical
-• Interface coordination between fire services and structural penetrations
+**Project Context Dependencies:**
+• Building importance level significantly affects design forces in both jurisdictions
+• Site-specific seismic hazard studies may be required for critical facilities
+• Soil conditions and site effects can dramatically influence design requirements
 
-**Common Oversight Areas:**
-• Smoke extract system coordination with HVAC zones
-• Emergency lift requirements for buildings >75m
-• Fire services access and equipment location planning
-• Integration of fire safety with facade and cladding systems
+**Cross-Border Design Considerations:**
+• NZ standards generally more stringent due to higher seismic risk
+• Australian approach may require supplementary analysis for performance verification
+• Consider building usage, occupancy, and structural system early in design
 
-**Documentation Requirements:**
-• Fire Safety Management Plans must be prepared early in design
-• Performance-based solutions require extensive documentation
-• Regular design reviews with fire safety consultant recommended"""
+📋 **Next Steps / Clarifications:**
+
+To provide more targeted guidance, please clarify:
+• What building type and occupancy class are you designing for?
+• Which jurisdiction and specific location within AU/NZ?
+• What structural system are you considering (concrete, steel, timber)?
+• Is this new construction or seismic retrofit of existing building?
+• What design software or analysis method are you planning to use?
+
+🔗 **Key References:**
+• [AS 1170.4-2007 Earthquake Actions](https://www.standards.org.au/)
+• [NZS 1170.5:2004 Earthquake Actions](https://www.standards.govt.nz/)
+• [ABCB National Construction Code](https://ncc.abcb.gov.au/)
+• [MBIE New Zealand Building Code](https://www.building.govt.nz/)"""
 
                 return {
                     "response": mock_response,
