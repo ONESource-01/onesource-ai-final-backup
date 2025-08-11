@@ -234,45 +234,34 @@ const ChatInterface = () => {
     }
   };
 
-  // Format AI response with rich visual styling
+  // Format AI response with clean, professional styling
   const formatAIResponse = (content) => {
     if (!content) return '';
     
     let formatted = content;
     
-    // Convert numbered lists to styled lists
-    formatted = formatted.replace(/^\d+\.\s*\*\*(.*?)\*\*:(.*?)$/gm, 
-      '<div class="mb-3"><div class="flex items-start gap-2"><span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-medium">$1</span><div class="flex-1"><strong class="text-gray-900">$1:</strong><span class="text-gray-700">$2</span></div></div></div>');
-    
     // Convert **bold** to proper HTML bold
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
     
-    // Convert section headers (lines starting with numbers and **)
+    // Convert numbered section headers (1. **Header**: content)
     formatted = formatted.replace(/^(\d+)\.\s*\*\*(.*?)\*\*[:.]?\s*/gm, 
-      '<div class="mb-4 mt-6"><div class="flex items-center gap-3 mb-2"><span class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">$1</span><h3 class="text-lg font-bold text-gray-900">$2</h3></div>');
+      '<div class="mb-4 mt-6"><h3 class="text-lg font-bold text-gray-900 mb-2">$1. $2</h3></div>');
     
-    // Convert bullet points to styled lists
-    formatted = formatted.replace(/^\s*[-•]\s*\*\*(.*?)\*\*:(.*?)$/gm, 
-      '<div class="flex items-start gap-3 mb-2 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></span><div><strong class="text-gray-900">$1:</strong><span class="text-gray-700"> $2</span></div></div>');
+    // Convert bullet points with bold terms (- **Term**: description)
+    formatted = formatted.replace(/^\s*[-•]\s*\*\*(.*?)\*\*:\s*(.*?)$/gm, 
+      '<div class="flex items-start gap-3 mb-3 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></span><div><strong class="text-gray-900">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
     
     // Convert simple bullet points
     formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, 
       '<div class="flex items-start gap-3 mb-2 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></span><span class="text-gray-700">$1</span></div>');
     
-    // Add icons to common construction terms
-    formatted = formatted.replace(/\b(Fire Safety|Fire Detection|Egress|Safety|Standards)\b/gi, 
-      '🔥 <strong class="text-red-600">$1</strong>');
-    formatted = formatted.replace(/\b(Australian Standards|AS \d+|NCC|BCA)\b/gi, 
-      '📋 <strong class="text-blue-600">$1</strong>');
-    formatted = formatted.replace(/\b(Construction|Building|Structural)\b/gi, 
-      '🏗️ <strong class="text-orange-600">$1</strong>');
+    // Add subtle highlighting for key standards (only major ones, not every word)
+    formatted = formatted.replace(/\b(AS \d+|NCC|BCA)\b/g, 
+      '<span class="font-medium text-blue-600 bg-blue-50 px-1 rounded">$1</span>');
     
-    // Convert line breaks to proper spacing
-    formatted = formatted.replace(/\n\n/g, '</div><div class="mb-4">');
+    // Add section breaks for major sections
+    formatted = formatted.replace(/\n\n/g, '<div class="mb-4"></div>');
     formatted = formatted.replace(/\n/g, '<br/>');
-    
-    // Wrap in container
-    formatted = `<div class="space-y-4">${formatted}</div>`;
     
     return formatted;
   };
