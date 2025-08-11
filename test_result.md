@@ -627,18 +627,17 @@ metadata:
 
 test_plan:
   current_focus:
-    - "🚀 BOOSTER FRONTEND TESTING COMPLETED SUCCESSFULLY ✅"
-    - "Booster button UI working perfectly with sparkles icon and (1/1) counter"
-    - "Hover tooltip functionality confirmed with detailed explanation"
-    - "Enhanced response styling and professional formatting verified"
-    - "Sidebar 'Booster Available' badge working correctly"
-    - "Fire safety question integration successful with Australian standards"
-    - "All critical booster frontend functionality verified and production-ready"
+    - "✅ SUBSCRIPTION STATUS ENDPOINT FIXES TESTING COMPLETED SUCCESSFULLY"
+    - "Both 'subscription_tier' and 'tier' fields now present and correctly set to 'starter'"
+    - "New users correctly get 'starter' tier by default (5/5 fresh users tested)"
+    - "Mock Firebase service working consistently for new user experience"
+    - "Backend health confirmed - all services running correctly after changes"
+    - "Trial system functional with proper question limits and tracking"
   stuck_tasks: 
     - "Firebase authentication configuration - API key issues preventing full auth flow (non-critical - demo auth working)"
     - "SendGrid API key configuration - needs valid API key for email functionality in production (non-critical for core functionality)"
   test_all: false
-  test_priority: "booster_frontend_verification_complete"
+  test_priority: "subscription_fixes_verification_complete"
 
 agent_communication:
   - agent: "main"
