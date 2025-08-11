@@ -526,9 +526,9 @@ const UserProfile = ({ onBack }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <img 
-                  src="/onesource-logo.png" 
+                  src="/onesource-primary-logo.svg" 
                   alt="ONESource-ai" 
-                  className="h-10 w-10"
+                  className="h-15 w-auto"
                 />
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">User Profile</h1>
