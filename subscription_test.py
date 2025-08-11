@@ -31,14 +31,14 @@ async def test_subscription_fixes():
     print("=" * 60)
     
     async with aiohttp.ClientSession() as session:
-        # Test 1: GET /api/user/subscription-status endpoint
+        # Test 1: GET /api/user/subscription endpoint (the correct endpoint)
         print("\n=== Test 1: Subscription Status Endpoint ===")
         
         # Use fresh mock auth token to simulate new user
         fresh_user_headers = {"Authorization": "Bearer fresh_user_token_123"}
         
         try:
-            url = f"{API_BASE}/user/subscription-status"
+            url = f"{API_BASE}/user/subscription"
             async with session.get(url, headers=fresh_user_headers) as response:
                 status = response.status
                 try:
