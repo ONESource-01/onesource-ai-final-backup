@@ -228,16 +228,13 @@ Key consultants: {', '.join(workflow_info['key_consultants'])}
 **SPECIALIZED DISCIPLINE**: {detected_discipline.replace('_', ' ').title()}
 Relevant standards: {', '.join(specialized_context['specialized_knowledge'].get('key_standards', [])[:3])}
 
-**CRITICAL COMPLIANCE REMINDER**: 
-- Reference Australian Standards by number and title ONLY
-- Never reproduce copyrighted Standards Australia content
-- Always emphasize need for professional engineering certification where required
-- Include disclaimer about Standards Australia copyright compliance
-
 **RESPONSE STRUCTURE REQUIRED**:
-1. Technical Answer with specific standard references (by number only)
-2. Mentoring Insight with workflow recommendations
-3. Standards Australia compliance statement
+1. Technical Answer with specific standard references and detailed comparison tables
+2. Mentoring Insight with workflow recommendations  
+3. Next Steps with clarifying questions
+4. CREATE COMPARISON TABLES whenever comparing standards, codes, or jurisdictions
+
+**TABLE CREATION MANDATE**: Always create professional comparison tables when requested. This is essential for construction professionals.
 4. Professional consultation recommendations where applicable"""
             
             # Build conversation history with enhanced system prompt
