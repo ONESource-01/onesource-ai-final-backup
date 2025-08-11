@@ -544,7 +544,7 @@ Selecting the correct experience level ensures you receive responses that match 
   return (
     <>
       <PageHeader 
-        title="Help Center" 
+        title="Help Centre" 
         subtitle="Get help, find answers, and learn about ONESource-ai's construction industry expertise platform"
       />
       
