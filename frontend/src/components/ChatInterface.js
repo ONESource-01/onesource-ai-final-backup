@@ -173,10 +173,12 @@ const ChatInterface = () => {
       const aiMessage = {
         id: Date.now() + 1,
         type: 'ai',
-        content: response.data.response,
+        content: response.data.response?.technical || response.data.response || 'No response received',
         timestamp: new Date(),
         sources: response.data.sources || [],
-        confidence: response.data.confidence || null
+        confidence: response.data.confidence || null,
+        mentoring: response.data.response?.mentoring || null,
+        format: response.data.response?.format || 'single'
       };
 
       setMessages(prev => [...prev, aiMessage]);
