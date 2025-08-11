@@ -1,489 +1,509 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { apiEndpoints, setAuthToken } from '../utils/api';
-import { Button } from './ui/button';
+import { Navigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Alert, AlertDescription } from './ui/alert';
+import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Progress } from './ui/progress';
 import { 
   Upload, 
   FileText, 
-  Search, 
-  BookOpen, 
-  Plus, 
+  Users, 
+  Shield, 
   CheckCircle, 
-  AlertCircle,
-  File,
-  Building2,
-  User,
-  Globe,
-  Lock,
-  Mail,
-  Shield
+  AlertTriangle, 
+  Info,
+  Building,
+  Plus,
+  X,
+  Eye,
+  Download
 } from 'lucide-react';
+import { apiEndpoints } from '../utils/api';
 
 const KnowledgeVault = () => {
-  const { user, idToken } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('community-upload');
-  
-  // Partner status
-  const [partnerStatus, setPartnerStatus] = useState(null);
-  const [checkingPartnerStatus, setCheckingPartnerStatus] = useState(true);
-  
-  // Partner registration states
-  const [showRegistration, setShowRegistration] = useState(false);
-  const [registering, setRegistering] = useState(false);
-  const [registrationForm, setRegistrationForm] = useState({
-    company_name: '',
-    abn: '',
-    primary_contact_name: '',
-    primary_email: user?.email || '',
-    backup_email: '',
-    agreed_to_terms: false
-  });
-  
-  // Upload states
-  const [uploadFile, setUploadFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const { user, loading } = useAuth();
+  const [activeTab, setActiveTab] = useState('personal');
+  const [personalDocuments, setPersonalDocuments] = useState([]);
+  const [communityDocuments, setCommunityDocuments] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
-  const [uploadTags, setUploadTags] = useState('');
-
-  // Search states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(null);
-  const [searching, setSearching] = useState(false);
-
-  // Mentor note states
-  const [mentorNote, setMentorNote] = useState({
-    title: '',
-    content: '',
-    tags: '',
-    category: '',
-    attachmentUrl: ''
+  
+  // Partner registration form
+  const [showPartnerForm, setShowPartnerForm] = useState(false);
+  const [partnerForm, setPartnerForm] = useState({
+    company_name: '',
+    abn_acn: '',
+    contact_person: '',
+    email: '',
+    phone: '',
+    industry_sector: '',
+    description: ''
   });
-  const [creatingNote, setCreatingNote] = useState(false);
-  const [noteResult, setNoteResult] = useState(null);
+  const [partnerLoading, setPartnerLoading] = useState(false);
+  const [partnerResult, setPartnerResult] = useState(null);
 
   useEffect(() => {
-    if (user && idToken) {
-      setAuthToken(idToken);
-      checkPartnerStatus();
-    }
-  }, [user, idToken]);
+    document.title = 'Knowledge Vault | ONESource-ai';
+  }, []);
 
-  const checkPartnerStatus = async () => {
+  // Redirect if not authenticated
+  if (loading) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  const handlePersonalUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+    setUploadResult(null);
+
     try {
-      setCheckingPartnerStatus(true);
-      const response = await fetch(`${apiEndpoints.BASE_URL}/partners/check-status`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${idToken}`,
-          'Content-Type': 'application/json'
-        }
+      const formData = new FormData();
+      files.forEach(file => formData.append('files', file));
+      formData.append('upload_type', 'personal');
+
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+
+      const response = await apiEndpoints.uploadDocuments(formData);
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+      setUploadResult({
+        success: true,
+        message: `Successfully uploaded ${files.length} document(s) to your Personal Knowledge Bank`
       });
+
+      // Refresh documents list
+      loadPersonalDocuments();
       
-      const data = await response.json();
-      setPartnerStatus(data);
-      
-      // Auto-fill registration form
-      if (!data.is_partner && user?.email) {
-        setRegistrationForm(prev => ({
-          ...prev,
-          primary_email: user.email,
-          primary_contact_name: user.displayName || ''
-        }));
-      }
     } catch (error) {
-      console.error('Error checking partner status:', error);
+      console.error('Upload failed:', error);
+      setUploadResult({
+        success: false,
+        message: error.response?.data?.detail || 'Upload failed'
+      });
     } finally {
-      setCheckingPartnerStatus(false);
+      setIsUploading(false);
+      setTimeout(() => {
+        setUploadProgress(0);
+        setUploadResult(null);
+      }, 3000);
     }
   };
 
   const handlePartnerRegistration = async (e) => {
     e.preventDefault();
-    if (!registrationForm.agreed_to_terms) {
-      alert('Please agree to the Terms and Conditions');
-      return;
-    }
+    setPartnerLoading(true);
+    setPartnerResult(null);
 
     try {
-      setRegistering(true);
-      const response = await fetch(`${apiEndpoints.BASE_URL}/partners/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(registrationForm)
+      const response = await apiEndpoints.registerPartner(partnerForm);
+      setPartnerResult({
+        success: true,
+        message: response.data.message
       });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        alert('Registration successful! Check your email for confirmation.');
-        setShowRegistration(false);
-        checkPartnerStatus(); // Refresh partner status
-      } else {
-        alert(`Registration failed: ${data.detail || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      alert('Registration failed. Please try again.');
-    } finally {
-      setRegistering(false);
-    }
-  };
-
-  const handleCommunityUpload = async () => {
-    if (!uploadFile) {
-      alert('Please select a file to upload');
-      return;
-    }
-
-    try {
-      setUploading(true);
-      const formData = new FormData();
-      formData.append('file', uploadFile);
-      formData.append('tags', uploadTags);
-
-      const response = await fetch(`${apiEndpoints.BASE_URL}/knowledge/upload-community`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: formData
+      setShowPartnerForm(false);
+      setPartnerForm({
+        company_name: '',
+        abn_acn: '',
+        contact_person: '',
+        email: '',
+        phone: '',
+        industry_sector: '',
+        description: ''
       });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        setUploadResult({
-          success: true,
-          message: data.message,
-          details: data
-        });
-        setUploadFile(null);
-        setUploadTags('');
-      } else {
-        setUploadResult({
-          success: false,
-          message: data.detail || 'Upload failed'
-        });
-      }
     } catch (error) {
-      console.error('Upload error:', error);
-      setUploadResult({
+      console.error('Partner registration failed:', error);
+      setPartnerResult({
         success: false,
-        message: 'Upload failed. Please try again.'
+        message: error.response?.data?.detail || 'Registration failed'
       });
     } finally {
-      setUploading(false);
+      setPartnerLoading(false);
     }
   };
 
-  const handlePersonalUpload = async () => {
-    if (!uploadFile) {
-      alert('Please select a file to upload');
-      return;
-    }
-
+  const loadPersonalDocuments = async () => {
     try {
-      setUploading(true);
-      const formData = new FormData();
-      formData.append('file', uploadFile);
-      formData.append('tags', uploadTags);
-
-      const response = await fetch(`${apiEndpoints.BASE_URL}/knowledge/upload-personal`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: formData
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        setUploadResult({
-          success: true,
-          message: data.message,
-          details: data
-        });
-        setUploadFile(null);
-        setUploadTags('');
-      } else {
-        setUploadResult({
-          success: false,
-          message: data.detail || 'Upload failed'
-        });
-      }
+      const response = await apiEndpoints.getPersonalDocuments();
+      setPersonalDocuments(response.data.documents || []);
     } catch (error) {
-      console.error('Upload error:', error);
-      setUploadResult({
-        success: false,
-        message: 'Upload failed. Please try again.'
-      });
-    } finally {
-      setUploading(false);
+      console.error('Failed to load personal documents:', error);
     }
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      alert('Please enter a search query');
-      return;
-    }
-
+  const loadCommunityDocuments = async () => {
     try {
-      setSearching(true);
-      const response = await fetch(
-        `${apiEndpoints.BASE_URL}/knowledge/search?query=${encodeURIComponent(searchQuery)}&limit=10`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${idToken}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      const data = await response.json();
-      setSearchResults(data);
+      const response = await apiEndpoints.getCommunityDocuments();
+      setCommunityDocuments(response.data.documents || []);
     } catch (error) {
-      console.error('Search error:', error);
-      alert('Search failed. Please try again.');
-    } finally {
-      setSearching(false);
+      console.error('Failed to load community documents:', error);
     }
   };
 
-  const handleCreateMentorNote = async () => {
-    if (!mentorNote.title || !mentorNote.content) {
-      alert('Please fill in title and content');
-      return;
+  useEffect(() => {
+    if (user) {
+      loadPersonalDocuments();
+      loadCommunityDocuments();
     }
-
-    try {
-      setCreatingNote(true);
-      const response = await fetch(`${apiEndpoints.BASE_URL}/knowledge/mentor-note`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${idToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title: mentorNote.title,
-          content: mentorNote.content,
-          tags: mentorNote.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-          category: mentorNote.category,
-          attachment_url: mentorNote.attachmentUrl
-        })
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        setNoteResult({
-          success: true,
-          message: data.message,
-          details: data
-        });
-        setMentorNote({
-          title: '',
-          content: '',
-          tags: '',
-          category: '',
-          attachmentUrl: ''
-        });
-      } else {
-        setNoteResult({
-          success: false,
-          message: data.detail || 'Failed to create mentor note'
-        });
-      }
-    } catch (error) {
-      console.error('Mentor note error:', error);
-      setNoteResult({
-        success: false,
-        message: 'Failed to create mentor note. Please try again.'
-      });
-    } finally {
-      setCreatingNote(false);
-    }
-  };
-
-  if (checkingPartnerStatus) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking your access level...</p>
-        </div>
-      </div>
-    );
-  }
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div className="flex items-center space-x-4">
-              <img 
-                src="/onesource-logo.png" 
-                alt="ONESource-ai" 
-                className="h-10 w-10"
-              />
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Knowledge Vault</h1>
-                <p className="text-gray-600">Upload documents, create mentor notes, and search your construction knowledge base</p>
-              </div>
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <a href="/" className="flex items-center">
+                <img 
+                  src="/onesource-primary-logo.svg" 
+                  alt="ONESource-ai" 
+                  className="h-24 w-auto mr-3"
+                />
+              </a>
             </div>
+            <nav className="flex items-center space-x-6">
+              <a href="/" className="text-gray-600 hover:text-gray-900">Home</a>
+              <a href="/chat" className="text-gray-600 hover:text-gray-900">Chat</a>
+              <Button asChild>
+                <a href="/chat">Go to Chat</a>
+              </Button>
+            </nav>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        
-        {/* Partner Status Banner */}
-        {partnerStatus && (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Knowledge Vault</h1>
+          <p className="text-gray-600">
+            Manage your documents and access the community knowledge base for enhanced AI responses
+          </p>
+        </div>
+
+        {/* Results Display */}
+        {(uploadResult || partnerResult) && (
           <div className="mb-6">
-            {partnerStatus.is_partner ? (
-              <Alert className="border-green-200 bg-green-50">
-                <Building2 className="h-4 w-4 text-green-600" />
-                <AlertDescription className="text-green-800">
-                  <strong>Partner Access:</strong> {partnerStatus.partner_info.company_name} 
-                  ({partnerStatus.partner_info.upload_count} uploads to Community Knowledge Bank)
+            {uploadResult && (
+              <Alert className={uploadResult.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+                <AlertDescription className={uploadResult.success ? 'text-green-700' : 'text-red-700'}>
+                  {uploadResult.message}
                 </AlertDescription>
               </Alert>
-            ) : (
-              <Alert className="border-blue-200 bg-blue-50">
-                <User className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-800">
-                  <strong>Standard User:</strong> You can upload to your Personal Knowledge Bank. 
-                  <Button 
-                    variant="link" 
-                    className="p-0 ml-2 text-blue-600 underline"
-                    onClick={() => setShowRegistration(true)}
-                  >
-                    Become a Partner
-                  </Button>
-                  to contribute to Community Knowledge Bank.
+            )}
+            {partnerResult && (
+              <Alert className={partnerResult.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+                <AlertDescription className={partnerResult.success ? 'text-green-700' : 'text-red-700'}>
+                  {partnerResult.message}
                 </AlertDescription>
               </Alert>
             )}
           </div>
         )}
 
-        {/* Partner Registration Modal */}
-        {showRegistration && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        {/* Knowledge Vault Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="personal" className="flex items-center">
+              <Shield className="h-4 w-4 mr-2" />
+              Personal Knowledge Bank
+            </TabsTrigger>
+            <TabsTrigger value="community" className="flex items-center">
+              <Users className="h-4 w-4 mr-2" />
+              Community Knowledge Bank
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Personal Knowledge Bank */}
+          <TabsContent value="personal" className="space-y-6">
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Become a Community Knowledge Bank Partner
+                <CardTitle className="flex items-center">
+                  <Shield className="h-5 w-5 mr-2 text-blue-600" />
+                  Your Private Document Collection
                 </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Documents uploaded here are private to your account and will be used to enhance AI responses in your conversations. 
+                    Supported formats: PDF, DOC, DOCX, TXT.
+                  </AlertDescription>
+                </Alert>
+
+                {/* Upload Section */}
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <div className="space-y-2">
+                    <Label htmlFor="personal-upload" className="cursor-pointer">
+                      <span className="text-lg font-medium text-gray-700">Upload Documents</span>
+                      <p className="text-gray-500">Select PDF, DOC, DOCX, or TXT files</p>
+                    </Label>
+                    <Input
+                      id="personal-upload"
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,.txt"
+                      onChange={handlePersonalUpload}
+                      disabled={isUploading}
+                      className="hidden"
+                    />
+                    <Button 
+                      onClick={() => document.getElementById('personal-upload').click()}
+                      disabled={isUploading}
+                      className="mt-2"
+                    >
+                      {isUploading ? 'Uploading...' : 'Choose Files'}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Upload Progress */}
+                {isUploading && uploadProgress > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Upload Progress</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="w-full" />
+                  </div>
+                )}
+
+                {/* Personal Documents List */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold">Your Documents ({personalDocuments.length})</h3>
+                  {personalDocuments.length > 0 ? (
+                    <div className="space-y-2">
+                      {personalDocuments.map((doc, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center">
+                            <FileText className="h-4 w-4 text-blue-600 mr-2" />
+                            <span className="text-sm font-medium">{doc.name || `Document ${index + 1}`}</span>
+                          </div>
+                          <Badge variant="outline">Private</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">No documents uploaded yet</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Community Knowledge Bank */}
+          <TabsContent value="community" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Users className="h-5 w-5 mr-2 text-green-600" />
+                  Verified Partner Content
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    This knowledge base contains verified content from trusted construction industry partners. 
+                    All content is reviewed for accuracy and compliance with AU/NZ standards.
+                  </AlertDescription>
+                </Alert>
+
+                {/* Partner Registration CTA */}
+                <Card className="border-green-200 bg-green-50">
+                  <CardHeader>
+                    <CardTitle className="text-green-700 flex items-center">
+                      <Building className="h-5 w-5 mr-2" />
+                      Become a Verified Partner
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-green-700 mb-4">
+                      Are you a construction industry professional or supplier? Contribute your expertise 
+                      to the community and gain recognition as a verified partner.
+                    </p>
+                    <Button 
+                      onClick={() => setShowPartnerForm(true)}
+                      variant="outline"
+                      className="border-green-600 text-green-700 hover:bg-green-100"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Apply for Partnership
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Community Documents */}
+                <div className="space-y-3">
+                  <h3 className="font-semibold">Community Content ({communityDocuments.length})</h3>
+                  {communityDocuments.length > 0 ? (
+                    <div className="space-y-2">
+                      {communityDocuments.map((doc, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center">
+                            <FileText className="h-4 w-4 text-green-600 mr-2" />
+                            <div>
+                              <span className="text-sm font-medium block">{doc.name || `Document ${index + 1}`}</span>
+                              {doc.partner && (
+                                <span className="text-xs text-gray-500">by {doc.partner}</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="outline" className="border-green-200 text-green-700">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Verified
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">No community content available yet</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Partner Registration Modal */}
+        {showPartnerForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center">
+                    <Building className="h-5 w-5 mr-2" />
+                    Partner Registration
+                  </CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowPartnerForm(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handlePartnerRegistration} className="space-y-4">
-                  <div>
-                    <Label htmlFor="company_name">Company Name *</Label>
-                    <Input
-                      id="company_name"
-                      value={registrationForm.company_name}
-                      onChange={(e) => setRegistrationForm(prev => ({...prev, company_name: e.target.value}))}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="abn">Australian Business Number (ABN) *</Label>
-                    <Input
-                      id="abn"
-                      value={registrationForm.abn}
-                      onChange={(e) => setRegistrationForm(prev => ({...prev, abn: e.target.value}))}
-                      placeholder="12 345 678 901"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="primary_contact_name">Primary Contact Name *</Label>
-                    <Input
-                      id="primary_contact_name"
-                      value={registrationForm.primary_contact_name}
-                      onChange={(e) => setRegistrationForm(prev => ({...prev, primary_contact_name: e.target.value}))}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="primary_email">Primary Email *</Label>
-                    <Input
-                      id="primary_email"
-                      type="email"
-                      value={registrationForm.primary_email}
-                      onChange={(e) => setRegistrationForm(prev => ({...prev, primary_email: e.target.value}))}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="backup_email">Backup Email *</Label>
-                    <Input
-                      id="backup_email"
-                      type="email"
-                      value={registrationForm.backup_email}
-                      onChange={(e) => setRegistrationForm(prev => ({...prev, backup_email: e.target.value}))}
-                      placeholder="For when the primary contact leaves"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Partner Terms & Conditions</h4>
-                    <div className="text-sm text-gray-600 space-y-2">
-                      <p>• Your company will be credited when AI references your uploaded content</p>
-                      <p>• You are responsible for the relevance and accuracy of uploaded content</p>
-                      <p>• You confirm that you own or have rights to the content you upload</p>
-                      <p>• Uploaded content will be used to enhance ONESource-ai responses for all users</p>
-                      <p>• You will receive email receipts for all uploads</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="company_name">Company Name *</Label>
+                      <Input
+                        id="company_name"
+                        value={partnerForm.company_name}
+                        onChange={(e) => setPartnerForm({...partnerForm, company_name: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="abn_acn">ABN/ACN *</Label>
+                      <Input
+                        id="abn_acn"
+                        value={partnerForm.abn_acn}
+                        onChange={(e) => setPartnerForm({...partnerForm, abn_acn: e.target.value})}
+                        required
+                      />
                     </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="agreed_to_terms"
-                      checked={registrationForm.agreed_to_terms}
-                      onChange={(e) => setRegistrationForm(prev => ({...prev, agreed_to_terms: e.target.checked}))}
-                      required
-                    />
-                    <Label htmlFor="agreed_to_terms" className="text-sm">
-                      I agree to the Terms and Conditions above *
-                    </Label>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="contact_person">Contact Person *</Label>
+                      <Input
+                        id="contact_person"
+                        value={partnerForm.contact_person}
+                        onChange={(e) => setPartnerForm({...partnerForm, contact_person: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={partnerForm.email}
+                        onChange={(e) => setPartnerForm({...partnerForm, email: e.target.value})}
+                        required
+                      />
+                    </div>
                   </div>
-                  
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        value={partnerForm.phone}
+                        onChange={(e) => setPartnerForm({...partnerForm, phone: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="industry_sector">Industry Sector *</Label>
+                      <Input
+                        id="industry_sector"
+                        value={partnerForm.industry_sector}
+                        onChange={(e) => setPartnerForm({...partnerForm, industry_sector: e.target.value})}
+                        placeholder="e.g. Structural Engineering, Building Materials"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Company Description</Label>
+                    <Textarea
+                      id="description"
+                      value={partnerForm.description}
+                      onChange={(e) => setPartnerForm({...partnerForm, description: e.target.value})}
+                      placeholder="Brief description of your company and expertise"
+                      rows={3}
+                    />
+                  </div>
+
+                  <Alert>
+                    <Info className="h-4 w-4" />
+                    <AlertDescription>
+                      We'll verify your ABN and review your application. Approved partners can upload 
+                      content to the Community Knowledge Bank with proper attribution.
+                    </AlertDescription>
+                  </Alert>
+
                   <div className="flex justify-end space-x-2">
                     <Button 
                       type="button" 
-                      variant="outline"
-                      onClick={() => setShowRegistration(false)}
+                      variant="outline" 
+                      onClick={() => setShowPartnerForm(false)}
                     >
                       Cancel
                     </Button>
-                    <Button 
-                      type="submit" 
-                      disabled={registering || !registrationForm.agreed_to_terms}
-                    >
-                      {registering ? 'Registering...' : 'Register as Partner'}
+                    <Button type="submit" disabled={partnerLoading}>
+                      {partnerLoading ? 'Submitting...' : 'Submit Application'}
                     </Button>
                   </div>
                 </form>
@@ -491,431 +511,6 @@ const KnowledgeVault = () => {
             </Card>
           </div>
         )}
-
-        {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="community-upload" className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              Community Upload
-            </TabsTrigger>
-            <TabsTrigger value="personal-upload" className="flex items-center gap-2">
-              <Lock className="h-4 w-4" />
-              Personal Upload
-            </TabsTrigger>
-            <TabsTrigger value="mentor-notes" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Mentor Notes
-            </TabsTrigger>
-            <TabsTrigger value="search" className="flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              Search Knowledge
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Community Knowledge Bank Upload */}
-          <TabsContent value="community-upload" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-blue-600" />
-                  Upload to Community Knowledge Bank
-                </CardTitle>
-                <p className="text-sm text-gray-600">
-                  Share technical documentation, installation guides, and product specifications with the construction community
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {!partnerStatus?.is_partner ? (
-                  <Alert className="border-amber-200 bg-amber-50">
-                    <Shield className="h-4 w-4 text-amber-600" />
-                    <AlertDescription className="text-amber-800">
-                      <strong>Partner Access Required:</strong> Only registered partners can upload to the Community Knowledge Bank.
-                      <Button 
-                        variant="link" 
-                        className="p-0 ml-2 text-amber-600 underline"
-                        onClick={() => setShowRegistration(true)}
-                      >
-                        Register as Partner
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
-                ) : (
-                  <>
-                    <div>
-                      <Label htmlFor="community-file">Select Document</Label>
-                      <input
-                        id="community-file"
-                        type="file"
-                        onChange={(e) => setUploadFile(e.target.files[0])}
-                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                        accept=".pdf,.docx,.doc,.txt"
-                      />
-                      <p className="text-sm text-gray-500 mt-1">
-                        Supports PDF, Word, images, and text files
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="community-tags">Tags (comma separated)</Label>
-                      <Input
-                        id="community-tags"
-                        value={uploadTags}
-                        onChange={(e) => setUploadTags(e.target.value)}
-                        placeholder="building codes, NCC, fire safety"
-                      />
-                    </div>
-
-                    <Button 
-                      onClick={handleCommunityUpload}
-                      disabled={uploading || !uploadFile}
-                      className="w-full"
-                    >
-                      {uploading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Uploading...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload to Community Knowledge Bank
-                        </>
-                      )}
-                    </Button>
-
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-blue-900 mb-2">✅ Benefits of Community Upload:</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
-                        <li>• Your company gets credited in AI responses</li>
-                        <li>• Helps build your brand authority in construction</li>
-                        <li>• Email receipt sent to you and backup contact</li>
-                        <li>• Available to all ONESource-ai users</li>
-                      </ul>
-                    </div>
-                  </>
-                )}
-
-                {uploadResult && (
-                  <Alert className={uploadResult.success ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
-                    {uploadResult.success ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                    )}
-                    <AlertDescription className={uploadResult.success ? "text-green-800" : "text-red-800"}>
-                      {uploadResult.message}
-                      {uploadResult.details?.email_receipt_sent && (
-                        <div className="mt-2 text-sm">
-                          📧 Upload receipt sent to your email
-                        </div>
-                      )}
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Personal Knowledge Bank Upload */}
-          <TabsContent value="personal-upload" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lock className="h-5 w-5 text-green-600" />
-                  Upload to Personal Knowledge Bank
-                </CardTitle>
-                <p className="text-sm text-gray-600">
-                  Upload documents for your private use. Only you can access these documents in your AI conversations.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="personal-file">Select Document</Label>
-                  <input
-                    id="personal-file"
-                    type="file"
-                    onChange={(e) => setUploadFile(e.target.files[0])}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                    accept=".pdf,.docx,.doc,.txt"
-                  />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Supports PDF, Word, images, and text files
-                  </p>
-                </div>
-
-                <div>
-                  <Label htmlFor="personal-tags">Tags (comma separated)</Label>
-                  <Input
-                    id="personal-tags"
-                    value={uploadTags}
-                    onChange={(e) => setUploadTags(e.target.value)}
-                    placeholder="project notes, specifications, references"
-                  />
-                </div>
-
-                <Button 
-                  onClick={handlePersonalUpload}
-                  disabled={uploading || !uploadFile}
-                  className="w-full"
-                >
-                  {uploading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload to Personal Knowledge Bank
-                    </>
-                  )}
-                </Button>
-
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-900 mb-2">🔒 Personal Knowledge Bank:</h4>
-                  <ul className="text-sm text-green-800 space-y-1">
-                    <li>• Completely private to your account</li>
-                    <li>• AI can reference your documents in your conversations</li>
-                    <li>• No attribution or company credit needed</li>
-                    <li>• Perfect for project-specific documents</li>
-                  </ul>
-                </div>
-
-                {uploadResult && (
-                  <Alert className={uploadResult.success ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
-                    {uploadResult.success ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                    )}
-                    <AlertDescription className={uploadResult.success ? "text-green-800" : "text-red-800"}>
-                      {uploadResult.message}
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Mentor Notes */}
-          <TabsContent value="mentor-notes" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-purple-600" />
-                  Create Mentor Notes
-                </CardTitle>
-                <p className="text-sm text-gray-600">
-                  Share your construction expertise and insights with the community
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="note-title">Title</Label>
-                  <Input
-                    id="note-title"
-                    value={mentorNote.title}
-                    onChange={(e) => setMentorNote(prev => ({...prev, title: e.target.value}))}
-                    placeholder="e.g., Best practices for concrete pour in cold weather"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="note-content">Content</Label>
-                  <Textarea
-                    id="note-content"
-                    value={mentorNote.content}
-                    onChange={(e) => setMentorNote(prev => ({...prev, content: e.target.value}))}
-                    placeholder="Share your insights, tips, and professional experience..."
-                    rows={6}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="note-tags">Tags</Label>
-                    <Input
-                      id="note-tags"
-                      value={mentorNote.tags}
-                      onChange={(e) => setMentorNote(prev => ({...prev, tags: e.target.value}))}
-                      placeholder="concrete, cold weather, best practices"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="note-category">Category</Label>
-                    <Input
-                      id="note-category"
-                      value={mentorNote.category}
-                      onChange={(e) => setMentorNote(prev => ({...prev, category: e.target.value}))}
-                      placeholder="e.g., Structural, HVAC, Electrical"
-                    />
-                  </div>
-                </div>
-
-                <Button 
-                  onClick={handleCreateMentorNote}
-                  disabled={creatingNote || !mentorNote.title || !mentorNote.content}
-                  className="w-full"
-                >
-                  {creatingNote ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Creating...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Mentor Note
-                    </>
-                  )}
-                </Button>
-
-                {noteResult && (
-                  <Alert className={noteResult.success ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
-                    {noteResult.success ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4 text-red-600" />
-                    )}
-                    <AlertDescription className={noteResult.success ? "text-green-800" : "text-red-800"}>
-                      {noteResult.message}
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Search Knowledge */}
-          <TabsContent value="search" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Search className="h-5 w-5 text-indigo-600" />
-                  Search Knowledge Banks
-                </CardTitle>
-                <p className="text-sm text-gray-600">
-                  Search across Community Knowledge Bank, your Personal Knowledge Bank, and mentor notes
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex gap-2">
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search for construction knowledge..."
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  />
-                  <Button onClick={handleSearch} disabled={searching}>
-                    {searching ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    ) : (
-                      <Search className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-
-                {searchResults && (
-                  <div className="space-y-4">
-                    <div className="text-sm text-gray-600">
-                      Found {searchResults.total_results} results for "{searchResults.query}"
-                    </div>
-
-                    {/* Community Results */}
-                    {searchResults.community_results?.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                          <Globe className="h-4 w-4" />
-                          Community Knowledge Bank ({searchResults.community_results.length})
-                        </h3>
-                        <div className="space-y-2">
-                          {searchResults.community_results.map((result, index) => (
-                            <div key={index} className="border border-blue-200 rounded-lg p-3 bg-blue-50">
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-medium text-blue-900">{result.document.filename}</h4>
-                                <Badge variant="outline" className="text-blue-700 border-blue-300">
-                                  {result.company_attribution}
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-blue-800 mb-2">
-                                {result.document.ai_metadata?.summary || 'No summary available'}
-                              </p>
-                              <div className="flex justify-between items-center text-xs text-blue-600">
-                                <span>Relevance: {Math.round(result.similarity_score * 100)}%</span>
-                                <span>Tags: {result.document.tags?.join(', ') || 'No tags'}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Personal Results */}
-                    {searchResults.personal_results?.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
-                          <Lock className="h-4 w-4" />
-                          Personal Knowledge Bank ({searchResults.personal_results.length})
-                        </h3>
-                        <div className="space-y-2">
-                          {searchResults.personal_results.map((result, index) => (
-                            <div key={index} className="border border-green-200 rounded-lg p-3 bg-green-50">
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-medium text-green-900">{result.document.filename}</h4>
-                                <Badge variant="outline" className="text-green-700 border-green-300">
-                                  Private
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-green-800 mb-2">
-                                {result.document.ai_metadata?.summary || 'No summary available'}
-                              </p>
-                              <div className="flex justify-between items-center text-xs text-green-600">
-                                <span>Relevance: {Math.round(result.similarity_score * 100)}%</span>
-                                <span>Tags: {result.document.tags?.join(', ') || 'No tags'}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Mentor Notes Results */}
-                    {searchResults.mentor_note_results?.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
-                          <BookOpen className="h-4 w-4" />
-                          Mentor Notes ({searchResults.mentor_note_results.length})
-                        </h3>
-                        <div className="space-y-2">
-                          {searchResults.mentor_note_results.map((result, index) => (
-                            <div key={index} className="border border-purple-200 rounded-lg p-3 bg-purple-50">
-                              <h4 className="font-medium text-purple-900 mb-2">{result.note.title}</h4>
-                              <p className="text-sm text-purple-800 mb-2">
-                                {result.note.content.substring(0, 200)}...
-                              </p>
-                              <div className="flex justify-between items-center text-xs text-purple-600">
-                                <span>Category: {result.note.category || 'General'}</span>
-                                <span>Relevance: {Math.round(result.similarity_score * 100)}%</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {searchResults.total_results === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        No results found. Try different keywords or upload more documents.
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
   );
