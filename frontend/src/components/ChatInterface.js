@@ -71,16 +71,6 @@ const ChatInterface = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  const initializeSession = async () => {
-    try {
-      const response = await apiEndpoints.createSession();
-      setSessionId(response.data.session_id);
-    } catch (error) {
-      console.error('Session creation failed:', error);
-      // Continue without session - system will handle gracefully
-    }
-  };
-
   const checkSubscriptionStatus = async () => {
     try {
       const response = await apiEndpoints.getSubscriptionStatus();
