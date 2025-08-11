@@ -234,7 +234,7 @@ const ChatInterface = () => {
     }
   };
 
-  // Format AI response with clean, professional styling
+  // Format AI response with clean, professional styling and useful links
   const formatAIResponse = (content) => {
     if (!content) return '';
     
@@ -255,9 +255,24 @@ const ChatInterface = () => {
     formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, 
       '<div class="flex items-start gap-3 mb-2 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></span><span class="text-gray-700">$1</span></div>');
     
-    // Add subtle highlighting for key standards (only major ones, not every word)
-    formatted = formatted.replace(/\b(AS \d+|NCC|BCA)\b/g, 
-      '<span class="font-medium text-blue-600 bg-blue-50 px-1 rounded">$1</span>');
+    // Add clickable links to official standards and codes
+    formatted = formatted.replace(/\b(NCC|National Construction Code)\b/g, 
+      '<a href="https://ncc.abcb.gov.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline">$1</a>');
+    
+    formatted = formatted.replace(/\b(BCA|Building Code of Australia)\b/g, 
+      '<a href="https://ncc.abcb.gov.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline">$1</a>');
+    
+    // Link Australian Standards (AS xxxx)
+    formatted = formatted.replace(/\b(AS \d{4}(?:\.\d+)?)\b/g, 
+      '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
+    
+    // Link AS/NZS standards  
+    formatted = formatted.replace(/\b(AS\/NZS \d{4}(?:\.\d+)?)\b/g, 
+      '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
+    
+    // Link ABCB (Australian Building Codes Board)
+    formatted = formatted.replace(/\b(ABCB|Australian Building Codes Board)\b/g, 
+      '<a href="https://www.abcb.gov.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline">$1</a>');
     
     // Add section breaks for major sections
     formatted = formatted.replace(/\n\n/g, '<div class="mb-4"></div>');
