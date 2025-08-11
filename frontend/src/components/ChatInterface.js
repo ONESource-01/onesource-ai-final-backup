@@ -234,7 +234,7 @@ const ChatInterface = () => {
     }
   };
 
-  // Format AI response with professional construction industry styling
+  // Format AI response with tight spacing and professional typography (Emergent style)
   const formatAIResponse = (content) => {
     if (!content) return '';
     
@@ -252,17 +252,17 @@ const ChatInterface = () => {
       );
       
       return `
-        <div class="my-6 overflow-x-auto">
+        <div class="my-4 overflow-x-auto">
           <table class="min-w-full border-collapse border border-gray-300 bg-white shadow-sm rounded-lg">
             <thead class="bg-blue-50">
               <tr>
-                ${headers.map(header => `<th class="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-900 text-sm">${header}</th>`).join('')}
+                ${headers.map(header => `<th class="border border-gray-300 px-3 py-2 text-left font-semibold text-gray-900 text-sm">${header}</th>`).join('')}
               </tr>
             </thead>
             <tbody>
               ${rows.map(row => `
                 <tr class="hover:bg-gray-50">
-                  ${row.map(cell => `<td class="border border-gray-300 px-4 py-3 text-sm text-gray-700">${cell}</td>`).join('')}
+                  ${row.map(cell => `<td class="border border-gray-300 px-3 py-2 text-sm text-gray-700">${cell}</td>`).join('')}
                 </tr>
               `).join('')}
             </tbody>
@@ -271,47 +271,35 @@ const ChatInterface = () => {
       `;
     });
     
-    // Convert numbered section headers with enhanced styling
-    formatted = formatted.replace(/^(#{1,3})\s*(\d+\.?\s*)(.*?)$/gm, (match, hashes, number, title) => {
-      const level = hashes.length;
-      const classes = {
-        1: 'text-xl font-bold text-gray-900 mt-8 mb-4 pb-2 border-b-2 border-blue-200',
-        2: 'text-lg font-semibold text-gray-800 mt-6 mb-3',
-        3: 'text-base font-medium text-gray-700 mt-4 mb-2'
-      };
-      return `<h${level} class="${classes[level]}">${number}${title}</h${level}>`;
-    });
+    // Convert section headers with emoji - TIGHT spacing
+    formatted = formatted.replace(/^(🛠️|🧐|📋|🔗)\s*\*\*(.*?)\*\*:?$/gm, 
+      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-1">$1 $2</h3></div>');
     
-    // Convert bullet points with professional styling
+    // Convert numbered headers with tight spacing
+    formatted = formatted.replace(/^##\s*(.*?)$/gm, 
+      '<div class="mt-3 mb-1"><h4 class="text-sm font-bold text-gray-800">$1</h4></div>');
+    
+    // Convert bullet points with MINIMAL spacing - Emergent style
     formatted = formatted.replace(/^\s*[-•]\s*\*\*(.*?)\*\*:\s*(.*?)$/gm, 
-      '<div class="flex items-start gap-3 mb-3 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-2"></span><div><strong class="text-gray-900 font-medium">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
+      '<div class="flex items-start gap-2 mb-1 ml-3"><span class="flex-shrink-0 w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5"></span><div><strong class="text-gray-900 font-medium">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
     
-    // Convert simple bullet points
+    // Convert simple bullet points with tight spacing
     formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, 
-      '<div class="flex items-start gap-3 mb-2 ml-4"><span class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></span><span class="text-gray-700">$1</span></div>');
+      '<div class="flex items-start gap-2 mb-1 ml-3"><span class="flex-shrink-0 w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5"></span><span class="text-gray-700">$1</span></div>');
     
-    // Add clickable links to official standards and codes
+    // Add clickable links to standards
     formatted = formatted.replace(/\b(NCC|National Construction Code)\b/g, 
       '<a href="https://ncc.abcb.gov.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline">$1</a>');
     
-    formatted = formatted.replace(/\b(BCA|Building Code of Australia)\b/g, 
-      '<a href="https://ncc.abcb.gov.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline">$1</a>');
-    
-    // Link Australian Standards (AS xxxx)
     formatted = formatted.replace(/\b(AS \d{4}(?:\.\d+)?)\b/g, 
       '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
     
-    // Link AS/NZS standards  
-    formatted = formatted.replace(/\b(AS\/NZS \d{4}(?:\.\d+)?)\b/g, 
-      '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
-    
-    // Link NZS standards
     formatted = formatted.replace(/\b(NZS \d{4}(?:\.\d+)?)\b/g, 
       '<a href="https://www.standards.govt.nz/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
     
-    // Add section breaks and enhance spacing
-    formatted = formatted.replace(/\n\n/g, '<div class="mb-4"></div>');
-    formatted = formatted.replace(/\n/g, '<br/>');
+    // CRITICAL: Minimal line spacing like Emergent - convert line breaks
+    formatted = formatted.replace(/\n\n/g, '<br>');  // Double breaks become single
+    formatted = formatted.replace(/\n/g, '<br>');     // Single breaks preserved
     
     return formatted;
   };
