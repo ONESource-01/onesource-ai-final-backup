@@ -326,6 +326,9 @@ const ChatInterface = () => {
   };
 
   const handleBooster = async (messageId) => {
+    console.log("🚀 BOOST DEBUG - Starting with messageId:", messageId);
+    console.log("🚀 BOOST DEBUG - Booster usage:", boosterUsage);
+    
     if (boosterUsage.remaining <= 0) {
       alert('You have used your daily booster. Try again tomorrow!');
       return;
@@ -338,15 +341,25 @@ const ChatInterface = () => {
       const messageIndex = messages.findIndex(m => m.id === messageId);
       const userMessage = messageIndex > 0 ? messages[messageIndex - 1] : null;
       
+      console.log("🚀 BOOST DEBUG - Message index:", messageIndex);
+      console.log("🚀 BOOST DEBUG - User message found:", userMessage);
+      
       if (!userMessage || userMessage.type !== 'user') {
         throw new Error('Could not find original user question');
       }
 
-      const response = await apiEndpoints.boosterChat({
+      const requestData = {
         question: userMessage.content,
         current_tier: subscriptionStatus?.subscription_tier || 'starter',
         target_tier: 'pro'
-      });
+      };
+      
+      console.log("🚀 BOOST DEBUG - Request data:", requestData);
+      console.log("🚀 BOOST DEBUG - Calling boosterChat API...");
+
+      const response = await apiEndpoints.boosterChat(requestData);
+      
+      console.log("🚀 BOOST DEBUG - Response received:", response);
 
       const boosterMessage = {
         id: Date.now() + Math.random(),
@@ -357,15 +370,20 @@ const ChatInterface = () => {
         sources: response.data.sources || []
       };
 
+      console.log("🚀 BOOST DEBUG - Booster message created:", boosterMessage);
+
       setMessages(prev => [...prev, boosterMessage]);
       setBoosterUsage(prev => ({ 
         used: true,
         remaining: prev.remaining - 1 
       }));
 
+      console.log("🚀 BOOST DEBUG - Success!");
+
     } catch (error) {
-      console.error('Booster failed:', error);
-      alert('Failed to generate boosted response. Please try again.');
+      console.error('🚀 BOOST DEBUG - Error:', error);
+      console.error('🚀 BOOST DEBUG - Error response:', error.response);
+      alert(`Failed to generate boosted response: ${error.message}`);
     } finally {
       setBoostingMessage(null);
     }
