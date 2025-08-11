@@ -38,233 +38,227 @@ import {
   Wrench
 } from 'lucide-react';
 
-const UserProfile = ({ onBack }) => {
+const UserProfile = ({ onClose, onPreferencesUpdate }) => {
   const { user, idToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [userPreferences, setUserPreferences] = useState({
-    industries: [],
-    role: '',
+    industry_sectors: [],
+    disciplines: [],
     experience_level: '',
-    response_style: 'balanced',
-    ai_focus_areas: [],
+    company_type: '',
     custom_instructions: ''
   });
   const [personalDocuments, setPersonalDocuments] = useState([]);
-  const [uploadingDocument, setUploadingDocument] = useState(false);
-  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
-  // Industry options with icons and colors
-  const industryOptions = [
-    { id: 'commercial', name: 'Commercial Construction', icon: '🏢', color: 'blue' },
-    { id: 'residential', name: 'Residential Building', icon: '🏠', color: 'green' },
-    { id: 'fire_safety', name: 'Fire Safety Systems', icon: '🔥', color: 'red' },
-    { id: 'structural', name: 'Structural Engineering', icon: '🏗️', color: 'gray' },
-    { id: 'electrical', name: 'Electrical Systems', icon: '⚡', color: 'yellow' },
-    { id: 'hvac', name: 'HVAC Design', icon: '🌡️', color: 'indigo' },
-    { id: 'compliance', name: 'Building Compliance', icon: '📋', color: 'purple' },
-    { id: 'project_mgmt', name: 'Project Management', icon: '📊', color: 'pink' }
+  // V1 Beta Testing - Exact 17 Industry Sectors
+  const industrySectors = [
+    { name: 'Commercial', description: 'Offices, retail, mixed-use developments' },
+    { name: 'Industrial', description: 'Warehouses, manufacturing plants, distribution hubs' },
+    { name: 'Mining & Resources', description: 'Mining infrastructure, processing plants, camps' },
+    { name: 'Health', description: 'Hospitals, aged care, medical centres, specialist clinics' },
+    { name: 'Data Centres', description: 'Hyperscale, enterprise, colocation facilities' },
+    { name: 'Residential', description: 'Multi-unit apartments, townhouses, detached housing' },
+    { name: 'Hotels & Hospitality', description: 'Hotels, resorts, serviced apartments' },
+    { name: 'Education', description: 'Schools, universities, research facilities' },
+    { name: 'Transport & Infrastructure', description: 'Airports, rail, ports, roads, bridges' },
+    { name: 'Energy & Utilities', description: 'Power generation, renewable energy, water/wastewater plants' },
+    { name: 'Government & Civic', description: 'Courthouses, civic centres, defence facilities' },
+    { name: 'Retail & Entertainment', description: 'Shopping centres, cinemas, stadiums, cultural venues' },
+    { name: 'Agriculture & Food Processing', description: 'Abattoirs, cold storage, food manufacturing plants' },
+    { name: 'Sports & Recreation', description: 'Aquatic centres, gyms, sports complexes' },
+    { name: 'Mixed-Use Developments', description: 'Integrated residential/commercial/retail hubs' },
+    { name: 'Specialist Facilities', description: 'Laboratories, cleanrooms, high-security facilities' },
+    { name: 'Others', description: 'Other industry sectors not listed above' }
   ];
 
-  const roleOptions = [
-    'Project Manager',
-    'Structural Engineer', 
-    'Fire Safety Engineer',
-    'Electrical Engineer',
-    'Building Designer',
-    'Compliance Officer',
-    'Construction Manager',
-    'Building Inspector',
-    'Architect',
+  // V1 Beta Testing - Exact 40 Industry Disciplines
+  const disciplines = [
+    { name: 'Hydraulic Engineering / Plumbing', description: 'Water supply, drainage, and plumbing systems' },
+    { name: 'Mechanical Services (HVAC)', description: 'Heating, ventilation, and air conditioning systems' },
+    { name: 'Fire Protection (Wet & Dry Systems)', description: 'Sprinkler systems, fire pumps, and suppression systems' },
+    { name: 'Fire Engineering (Performance-Based Solutions)', description: 'Fire safety design and performance-based analysis' },
+    { name: 'Electrical Engineering', description: 'Power distribution, lighting, and electrical systems' },
+    { name: 'Communications & ICT', description: 'Telecommunications, data networks, and IT infrastructure' },
+    { name: 'Security Systems', description: 'Access control, CCTV, and integrated security solutions' },
+    { name: 'Vertical Transportation (Lifts, Escalators)', description: 'Elevator and escalator design and systems' },
+    { name: 'Building Automation / BMS', description: 'Building management and automation systems' },
+    { name: 'Acoustic Engineering', description: 'Sound control, noise management, and acoustic design' },
+    { name: 'Lighting Design', description: 'Illumination design and lighting systems' },
+    { name: 'Structural Engineering', description: 'Building structure design and analysis' },
+    { name: 'Civil Engineering', description: 'Site development, utilities, and civil infrastructure' },
+    { name: 'Geotechnical Engineering', description: 'Foundation design and soil engineering' },
+    { name: 'Seismic Engineering', description: 'Earthquake-resistant design and seismic analysis' },
+    { name: 'Architecture', description: 'Building design, space planning, and architectural solutions' },
+    { name: 'Interior Design', description: 'Interior space planning and design' },
+    { name: 'Landscape Architecture', description: 'Outdoor space design and landscape planning' },
+    { name: 'Urban Design & Town Planning', description: 'Urban planning and community development' },
+    { name: 'Sustainability / ESD (Environmentally Sustainable Design)', description: 'Environmental design and sustainability consulting' },
+    { name: 'Energy Modelling & Efficiency', description: 'Energy performance analysis and efficiency optimization' },
+    { name: 'Façade Engineering', description: 'Building envelope and façade design' },
+    { name: 'Waterproofing Design', description: 'Water ingress protection and waterproofing systems' },
+    { name: 'Roofing Systems', description: 'Roof design and roofing system selection' },
+    { name: 'Cladding Systems', description: 'External cladding design and specification' },
+    { name: 'Green Building Certification (NABERS, Green Star, WELL)', description: 'Green building rating and certification processes' },
+    { name: 'Project Management', description: 'Construction project planning and management' },
+    { name: 'Cost Planning / Quantity Surveying', description: 'Cost estimation and quantity surveying' },
+    { name: 'Contract Administration', description: 'Contract management and administration' },
+    { name: 'Design Management', description: 'Design coordination and management' },
+    { name: 'Risk Management', description: 'Project risk assessment and management' },
+    { name: 'Heritage Conservation', description: 'Heritage building restoration and conservation' },
+    { name: 'Modular & Prefabrication Engineering', description: 'Prefabricated and modular construction systems' },
+    { name: 'Industrial Process Engineering', description: 'Industrial facility and process design' },
+    { name: 'Hazardous Materials Management (Asbestos, Lead)', description: 'Hazardous material assessment and management' },
+    { name: 'Environmental Engineering', description: 'Environmental impact assessment and engineering' },
+    { name: 'Traffic & Transport Planning', description: 'Traffic engineering and transport planning' },
+    { name: 'Health Planning (Medical Equipment Integration)', description: 'Healthcare facility planning and medical equipment integration' },
+    { name: 'Wayfinding & Signage Design', description: 'Navigation systems and signage design' },
+    { name: 'Waste Management Planning', description: 'Waste management systems and planning' }
+  ];
+
+  const experienceLevels = [
+    { value: 'graduate', label: 'Graduate / Beginner (0-2 years)' },
+    { value: 'intermediate', label: 'Intermediate (3-7 years)' },
+    { value: 'senior', label: 'Senior (8-15 years)' },
+    { value: 'expert', label: 'Expert / Principal (15+ years)' }
+  ];
+
+  const companyTypes = [
+    'Construction Company',
+    'Engineering Consultancy',
+    'Architecture Firm',
+    'Government Agency',
+    'Educational Institution',
+    'Property Developer',
+    'Building Materials Supplier',
+    'Independent Contractor',
     'Other'
   ];
 
   useEffect(() => {
-    if (user && idToken) {
+    if (idToken) {
       setAuthToken(idToken);
-      loadUserData();
+      loadUserProfile();
+      loadSubscriptionStatus();
+      loadPersonalDocuments();
     }
-  }, [user, idToken]);
+  }, [idToken]);
 
-  const loadUserData = async () => {
+  const loadUserProfile = async () => {
     try {
-      setLoading(true);
+      const response = await apiEndpoints.getUserProfile();
+      const profile = response.data;
       
-      // Load subscription status
-      const subResponse = await apiEndpoints.getSubscriptionStatus();
-      setSubscriptionStatus(subResponse.data);
-      
-      // Load user preferences (check if exists)
-      try {
-        const prefResponse = await fetch(`${apiEndpoints.BASE_URL}/user/preferences`, {
-          headers: { 'Authorization': `Bearer ${idToken}` }
-        });
-        if (prefResponse.ok) {
-          const prefData = await prefResponse.json();
-          setUserPreferences(prefData);
-          setOnboardingCompleted(true);
-        }
-      } catch (error) {
-        console.log('No existing preferences found');
-      }
-
-      // Load personal documents
-      try {
-        const docsResponse = await fetch(`${apiEndpoints.BASE_URL}/knowledge/personal-documents`, {
-          headers: { 'Authorization': `Bearer ${idToken}` }
-        });
-        if (docsResponse.ok) {
-          const docsData = await docsResponse.json();
-          setPersonalDocuments(docsData.documents || []);
-        }
-      } catch (error) {
-        console.log('No personal documents found');
-      }
-
+      setUserPreferences({
+        industry_sectors: profile.preferences?.industry_sectors || [],
+        disciplines: profile.preferences?.disciplines || [],
+        experience_level: profile.preferences?.experience_level || '',
+        company_type: profile.preferences?.company_type || '',
+        custom_instructions: profile.preferences?.custom_instructions || ''
+      });
     } catch (error) {
-      console.error('Error loading user data:', error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to load user profile:', error);
     }
   };
 
-  const handleIndustryToggle = (industryId) => {
-    setUserPreferences(prev => ({
-      ...prev,
-      industries: prev.industries.includes(industryId)
-        ? prev.industries.filter(id => id !== industryId)
-        : [...prev.industries, industryId]
-    }));
+  const loadSubscriptionStatus = async () => {
+    try {
+      const response = await apiEndpoints.getSubscriptionStatus();
+      setSubscriptionStatus(response.data);
+    } catch (error) {
+      console.error('Failed to load subscription status:', error);
+    }
+  };
+
+  const loadPersonalDocuments = async () => {
+    try {
+      const response = await apiEndpoints.getPersonalDocuments();
+      setPersonalDocuments(response.data.documents || []);
+    } catch (error) {
+      console.error('Failed to load personal documents:', error);
+    }
   };
 
   const savePreferences = async () => {
-    try {
-      setLoading(true);
-      
-      const response = await fetch(`${apiEndpoints.BASE_URL}/user/preferences`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify(userPreferences)
-      });
+    setLoading(true);
+    setError('');
+    setSuccess('');
 
-      if (response.ok) {
-        setOnboardingCompleted(true);
-        alert('Preferences saved successfully!');
-      } else {
-        throw new Error('Failed to save preferences');
+    try {
+      await apiEndpoints.updateUserPreferences(userPreferences);
+      setSuccess('Your preferences have been saved successfully!');
+      if (onPreferencesUpdate) {
+        onPreferencesUpdate();
       }
     } catch (error) {
-      console.error('Error saving preferences:', error);
-      alert('Failed to save preferences. Please try again.');
+      console.error('Failed to save preferences:', error);
+      setError('Failed to save preferences. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDocumentUpload = async (file) => {
-    if (!file) return;
-
-    try {
-      setUploadingDocument(true);
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('tags', 'personal');
-
-      const response = await fetch(`${apiEndpoints.BASE_URL}/knowledge/upload-personal`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: formData
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert('Document uploaded successfully!');
-        loadUserData(); // Refresh document list
-      } else {
-        throw new Error('Upload failed');
-      }
-    } catch (error) {
-      console.error('Error uploading document:', error);
-      alert('Failed to upload document. Please try again.');
-    } finally {
-      setUploadingDocument(false);
-    }
+  const handleSectorChange = (selectedSectors) => {
+    setUserPreferences(prev => ({
+      ...prev,
+      industry_sectors: selectedSectors.map(sector => sector.name || sector)
+    }));
   };
 
-  const getIndustryDisplay = () => {
-    if (userPreferences.industries.length === 0) return 'No industries selected';
-    
-    return userPreferences.industries
-      .map(id => industryOptions.find(opt => opt.id === id))
-      .filter(Boolean)
-      .map(industry => `${industry.icon} ${industry.name}`)
-      .join(', ');
+  const handleDisciplineChange = (selectedDisciplines) => {
+    setUserPreferences(prev => ({
+      ...prev,
+      disciplines: selectedDisciplines.map(discipline => discipline.name || discipline)
+    }));
   };
 
   const OverviewTab = () => (
     <div className="space-y-6">
-      {/* User Info Card */}
+      {/* Account Information */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5 text-blue-600" />
-            Account Overview
+            Account Information
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-medium text-gray-600">Name</Label>
-              <p className="text-lg font-semibold">{user?.displayName || 'Not provided'}</p>
+              <Label className="text-sm font-medium text-gray-500">Email</Label>
+              <p className="font-medium">{user?.email}</p>
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-600">Email</Label>
-              <p className="text-lg">{user?.email}</p>
+              <Label className="text-sm font-medium text-gray-500">Account Type</Label>
+              <div className="flex items-center gap-2">
+                {subscriptionStatus?.is_trial ? (
+                  <Badge variant="outline" className="border-blue-200 text-blue-700">
+                    Free Trial
+                  </Badge>
+                ) : (
+                  <Badge className="bg-green-100 text-green-800 border-green-200">
+                    <Crown className="h-3 w-3 mr-1" />
+                    Pro Plan
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
-          
-          <Separator />
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <Crown className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-              <p className="text-sm text-gray-600">Current Plan</p>
-              <Badge className={`
-                ${subscriptionStatus?.subscription_tier === 'starter' ? 'bg-gray-100 text-gray-800' : ''}
-                ${subscriptionStatus?.subscription_tier === 'pro' ? 'bg-blue-100 text-blue-800' : ''}
-                ${subscriptionStatus?.subscription_tier === 'pro_plus' ? 'bg-purple-100 text-purple-800' : ''}
-              `}>
-                {subscriptionStatus?.subscription_tier === 'starter' && '🆓 Starter'}
-                {subscriptionStatus?.subscription_tier === 'pro' && '⭐ Pro'}
-                {subscriptionStatus?.subscription_tier === 'pro_plus' && '👑 Pro-Plus'}
-                {!subscriptionStatus?.subscription_tier && '🔄 Loading...'}
-              </Badge>
-            </div>
-            
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <BarChart3 className="h-8 w-8 mx-auto mb-2 text-green-600" />
-              <p className="text-sm text-gray-600">Questions This Month</p>
-              <p className="text-2xl font-bold text-green-700">
-                {subscriptionStatus?.monthly_questions_used || 0}
+
+          {subscriptionStatus?.trial_info && (
+            <div className="p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Free Trial:</strong> {subscriptionStatus.trial_info.questions_remaining} questions remaining
               </p>
             </div>
-            
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <FileText className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-              <p className="text-sm text-gray-600">Personal Documents</p>
-              <p className="text-2xl font-bold text-purple-700">{personalDocuments.length}</p>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* AI Personalization Card */}
+      {/* AI Personalization Status */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -273,44 +267,62 @@ const UserProfile = ({ onBack }) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {onboardingCompleted ? (
-            <div className="space-y-4">
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
-                <h4 className="font-semibold text-gray-800 mb-2">🎯 Your AI Focus Areas:</h4>
-                <p className="text-gray-700">{getIndustryDisplay()}</p>
-                {userPreferences.role && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    <Briefcase className="inline h-4 w-4 mr-1" />
-                    {userPreferences.role}
-                  </p>
-                )}
+          {userPreferences.industry_sectors.length > 0 || userPreferences.disciplines.length > 0 ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-green-700">
+                <CheckCircle className="h-4 w-4" />
+                <span className="text-sm font-medium">AI Personalization Active</span>
               </div>
               
-              {userPreferences.custom_instructions && (
-                <div className="p-4 bg-yellow-50 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 mb-2">🤖 Custom AI Instructions:</h4>
-                  <p className="text-gray-700 italic">"{userPreferences.custom_instructions}"</p>
-                </div>
-              )}
-              
-              <Button 
-                onClick={() => setActiveTab('personalization')}
-                variant="outline" 
-                className="w-full"
-              >
-                <Edit3 className="h-4 w-4 mr-2" />
-                Edit AI Personalization
-              </Button>
+              <div className="grid md:grid-cols-2 gap-4">
+                {userPreferences.industry_sectors.length > 0 && (
+                  <div>
+                    <Label className="text-xs font-medium text-gray-500">Industry Sectors</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {userPreferences.industry_sectors.slice(0, 3).map((sector, index) => (
+                        <Badge key={index} variant="outline" className="text-xs border-blue-200 text-blue-700">
+                          {sector}
+                        </Badge>
+                      ))}
+                      {userPreferences.industry_sectors.length > 3 && (
+                        <Badge variant="outline" className="text-xs border-gray-200 text-gray-600">
+                          +{userPreferences.industry_sectors.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {userPreferences.disciplines.length > 0 && (
+                  <div>
+                    <Label className="text-xs font-medium text-gray-500">Industry Disciplines</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {userPreferences.disciplines.slice(0, 3).map((discipline, index) => (
+                        <Badge key={index} variant="outline" className="text-xs border-green-200 text-green-700">
+                          {discipline}
+                        </Badge>
+                      ))}
+                      {userPreferences.disciplines.length > 3 && (
+                        <Badge variant="outline" className="text-xs border-gray-200 text-gray-600">
+                          +{userPreferences.disciplines.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
-            <div className="text-center py-8">
-              <Target className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">Personalize Your AI Experience</h3>
-              <p className="text-gray-500 mb-4">
-                Tell us about your industry focus and role to get more relevant responses
+            <div className="text-center py-4">
+              <AlertCircle className="h-8 w-8 text-orange-500 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 mb-3">
+                Complete your personalization to get tailored AI responses
               </p>
-              <Button onClick={() => setActiveTab('personalization')}>
-                <Settings className="h-4 w-4 mr-2" />
+              <Button 
+                size="sm" 
+                onClick={() => setActiveTab('personalization')}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
                 Set Up Personalization
               </Button>
             </div>
@@ -324,82 +336,119 @@ const UserProfile = ({ onBack }) => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Industry & Role Configuration</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Brain className="h-5 w-5 text-purple-600" />
+            AI Personalization Settings
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Industry Selection */}
-          <div>
-            <Label className="text-base font-semibold mb-3 block">
-              Select ALL industries you work in:
-            </Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {industryOptions.map((industry) => (
-                <div
-                  key={industry.id}
-                  className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                    userPreferences.industries.includes(industry.id)
-                      ? 'border-blue-500 bg-blue-50'
+        <CardContent className="space-y-8">
+          {success && (
+            <Alert className="border-green-200 bg-green-50">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription className="text-green-700">{success}</AlertDescription>
+            </Alert>
+          )}
+          
+          {error && (
+            <Alert className="border-red-200 bg-red-50">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-red-700">{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Industry Sectors - V1 Beta Requirement */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Building className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Industry Sectors</h3>
+            </div>
+            <p className="text-sm text-gray-600">Select ALL industries you work in (17 options available):</p>
+            
+            <SmartAutoComplete
+              options={industrySectors}
+              selected={industrySectors.filter(sector => 
+                userPreferences.industry_sectors.includes(sector.name)
+              )}
+              onSelectionChange={handleSectorChange}
+              placeholder="Type to search industry sectors (e.g., Commercial, Health, Mining)..."
+              label=""
+              maxHeight="300px"
+            />
+          </div>
+
+          {/* Industry Disciplines - V1 Beta Requirement */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Wrench className="h-5 w-5 text-green-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Industry Disciplines</h3>
+            </div>
+            <p className="text-sm text-gray-600">Select your areas of expertise (40 options available):</p>
+            
+            <SmartAutoComplete
+              options={disciplines}
+              selected={disciplines.filter(discipline => 
+                userPreferences.disciplines.includes(discipline.name)
+              )}
+              onSelectionChange={handleDisciplineChange}
+              placeholder="Type to search disciplines (e.g., Structural, Fire, HVAC, Project Management)..."
+              label=""
+              maxHeight="400px"
+            />
+          </div>
+
+          {/* Experience Level */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Experience Level</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {experienceLevels.map((level) => (
+                <button
+                  key={level.value}
+                  onClick={() => setUserPreferences(prev => ({ ...prev, experience_level: level.value }))}
+                  className={`p-3 text-left rounded-lg border-2 transition-all ${
+                    userPreferences.experience_level === level.value
+                      ? 'border-purple-500 bg-purple-50 text-purple-900'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
-                  onClick={() => handleIndustryToggle(industry.id)}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{industry.icon}</span>
-                    <div>
-                      <p className="font-medium">{industry.name}</p>
-                      {userPreferences.industries.includes(industry.id) && (
-                        <CheckCircle className="h-4 w-4 text-blue-600 mt-1" />
-                      )}
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm">{level.label}</span>
+                    {userPreferences.experience_level === level.value && (
+                      <CheckCircle className="h-4 w-4 text-purple-600" />
+                    )}
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Role Selection */}
-          <div>
-            <Label className="text-base font-semibold mb-3 block">Your Role:</Label>
-            <select
-              className="w-full p-3 border border-gray-300 rounded-lg"
-              value={userPreferences.role}
-              onChange={(e) => setUserPreferences(prev => ({ ...prev, role: e.target.value }))}
-            >
-              <option value="">Select your role...</option>
-              {roleOptions.map(role => (
-                <option key={role} value={role}>{role}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Experience Level */}
-          <div>
-            <Label className="text-base font-semibold mb-3 block">Experience Level:</Label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {[
-                { value: 'beginner', label: 'Beginner', icon: '🌱' },
-                { value: 'intermediate', label: 'Intermediate', icon: '📈' },
-                { value: 'expert', label: 'Expert', icon: '🏆' }
-              ].map(level => (
-                <div
-                  key={level.value}
-                  className={`p-3 border-2 rounded-lg cursor-pointer text-center transition-all ${
-                    userPreferences.experience_level === level.value
-                      ? 'border-green-500 bg-green-50'
+          {/* Company Type */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Company Type</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {companyTypes.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setUserPreferences(prev => ({ ...prev, company_type: type }))}
+                  className={`p-3 text-left rounded-lg border-2 transition-all ${
+                    userPreferences.company_type === type
+                      ? 'border-blue-500 bg-blue-50 text-blue-900'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
-                  onClick={() => setUserPreferences(prev => ({ ...prev, experience_level: level.value }))}
                 >
-                  <span className="text-2xl block mb-1">{level.icon}</span>
-                  <p className="font-medium">{level.label}</p>
-                </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm">{type}</span>
+                    {userPreferences.company_type === type && (
+                      <CheckCircle className="h-4 w-4 text-blue-600" />
+                    )}
+                  </div>
+                </button>
               ))}
             </div>
           </div>
 
           {/* Custom Instructions */}
-          <div>
-            <Label className="text-base font-semibold mb-3 block">Custom AI Instructions:</Label>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Custom AI Instructions</h3>
             <Textarea
               placeholder="e.g., Always prioritize Australian standards over New Zealand, focus on cost-effective solutions, include safety considerations..."
               rows={4}
@@ -407,7 +456,7 @@ const UserProfile = ({ onBack }) => {
               onChange={(e) => setUserPreferences(prev => ({ ...prev, custom_instructions: e.target.value }))}
               className="w-full"
             />
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-gray-500">
               These instructions will be included in every AI response to personalize your experience.
             </p>
           </div>
@@ -415,14 +464,14 @@ const UserProfile = ({ onBack }) => {
           <Button 
             onClick={savePreferences} 
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-purple-600 hover:bg-purple-700"
           >
             {loading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
             ) : (
               <Save className="h-4 w-4 mr-2" />
             )}
-            Save Personalization
+            Save Personalization Settings
           </Button>
         </CardContent>
       </Card>
@@ -450,104 +499,67 @@ const UserProfile = ({ onBack }) => {
               </ul>
             </div>
 
-            {/* Upload Section */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <p className="text-lg font-medium text-gray-700 mb-2">Upload Personal Documents</p>
-              <p className="text-sm text-gray-500 mb-4">
-                Drag and drop files here, or click to browse
+            <div className="text-center py-8">
+              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 mb-4">
+                {personalDocuments.length === 0 
+                  ? "No documents uploaded yet"
+                  : `${personalDocuments.length} document(s) in your Knowledge Bank`
+                }
               </p>
-              <input
-                type="file"
-                accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg"
-                onChange={(e) => handleDocumentUpload(e.target.files[0])}
-                className="hidden"
-                id="document-upload"
-              />
-              <label htmlFor="document-upload">
-                <Button as="span" disabled={uploadingDocument}>
-                  {uploadingDocument ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Choose Files
-                    </>
-                  )}
-                </Button>
-              </label>
+              <Button 
+                onClick={() => window.location.href = '/knowledge'}
+                variant="outline"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                Manage Documents
+              </Button>
             </div>
-
-            {/* Documents List */}
-            {personalDocuments.length > 0 && (
-              <div>
-                <h4 className="font-semibold mb-3">Your Documents ({personalDocuments.length})</h4>
-                <div className="space-y-2">
-                  {personalDocuments.map((doc, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-blue-600" />
-                        <div>
-                          <p className="font-medium">{doc.filename}</p>
-                          <p className="text-sm text-gray-500">
-                            Uploaded {new Date(doc.upload_timestamp).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <Badge variant="outline">Private</Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
     </div>
   );
 
-  if (loading && !subscriptionStatus) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your profile...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <div className="flex items-center">
                 <img 
                   src="/onesource-primary-logo.svg" 
                   alt="ONESource-ai" 
                   className="h-15 w-auto"
                 />
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">User Profile</h1>
-                  <p className="text-gray-600">Manage your account and personalize your AI experience</p>
-                </div>
               </div>
-              <Button variant="outline" onClick={onBack}>
-                <Home className="h-4 w-4 mr-2" />
+            </div>
+            
+            {/* Back Button - Positioned on RIGHT side */}
+            <div className="flex items-center space-x-4">
+              <Button
+                onClick={onClose || (() => window.location.href = '/chat')}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
                 Back to Chat
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto p-6">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">User Profile</h1>
+          <p className="text-gray-600">Manage your account and personalize your AI experience</p>
+        </div>
+
+        {/* Profile Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview" className="flex items-center gap-2">
@@ -556,11 +568,11 @@ const UserProfile = ({ onBack }) => {
             </TabsTrigger>
             <TabsTrigger value="personalization" className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
-              AI Personalization
+              Personalization
             </TabsTrigger>
             <TabsTrigger value="documents" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Personal Documents
+              Documents
             </TabsTrigger>
           </TabsList>
 
