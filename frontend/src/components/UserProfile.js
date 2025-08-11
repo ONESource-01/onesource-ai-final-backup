@@ -120,10 +120,66 @@ const UserProfile = ({ onClose, onPreferencesUpdate }) => {
   ];
 
   const experienceLevels = [
-    { value: 'graduate', label: 'Graduate / Beginner (0-2 years)' },
-    { value: 'intermediate', label: 'Intermediate (3-7 years)' },
-    { value: 'senior', label: 'Senior (8-15 years)' },
-    { value: 'expert', label: 'Expert / Principal (15+ years)' }
+    { 
+      value: 'graduate', 
+      label: 'Graduate / Beginner (0-2 years)',
+      icon: GraduationCap,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+      explanation: 'AI provides detailed explanations, step-by-step guidance, educational context, and mentoring advice. Perfect for learning fundamental concepts and building confidence.',
+      examples: [
+        'Explains basic concepts like "What is a fire rating?" before discussing specific requirements',
+        'Provides step-by-step compliance checklists with explanations for each step',
+        'Includes educational context: "This requirement exists because..." with safety rationale',
+        'Offers learning resources and suggests professional development pathways'
+      ]
+    },
+    { 
+      value: 'intermediate', 
+      label: 'Intermediate (3-7 years)',
+      icon: Target,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+      explanation: 'AI offers practical solutions with moderate detail, focuses on real-world applications, and provides tips for professional development and efficiency improvements.',
+      examples: [
+        'Provides practical solutions: "For this scenario, you could use Method A or B, here\'s when to choose each"',
+        'Focuses on real-world applications and common challenges you\'ll face',
+        'Includes efficiency tips: "Pro tip: This calculation can be simplified by..."',
+        'Suggests when to consult specialists and what questions to ask them'
+      ]
+    },
+    { 
+      value: 'senior', 
+      label: 'Senior (8-15 years)',
+      icon: Crown,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200',
+      explanation: 'AI provides advanced technical insights, discusses complex scenarios, offers strategic perspectives, and focuses on leadership and decision-making aspects.',
+      examples: [
+        'Discusses complex scenarios: "When dealing with conflicting code requirements, consider..."',
+        'Offers strategic perspectives on project risks and mitigation strategies',
+        'Focuses on leadership aspects: "When presenting this to stakeholders, emphasize..."',
+        'Provides advanced technical insights and alternative design approaches'
+      ]
+    },
+    { 
+      value: 'expert', 
+      label: 'Expert / Principal (15+ years)',
+      icon: Brain,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      borderColor: 'border-orange-200',
+      explanation: 'AI delivers concise, high-level insights, focuses on innovation and cutting-edge practices, discusses industry trends, and provides expert-to-expert technical discourse.',
+      examples: [
+        'Delivers concise, high-level insights without basic explanations',
+        'Discusses cutting-edge practices and emerging industry trends',
+        'Provides expert-to-expert technical discourse with advanced terminology',
+        'Focuses on innovation opportunities and industry leadership perspectives'
+      ]
+    }
   ];
 
   const companyTypes = [
