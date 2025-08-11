@@ -219,9 +219,8 @@ Relevant standards: {', '.join(specialized_context['specialized_knowledge'].get(
             
             ai_response = response.choices[0].message.content
             
-            # Add Standards Australia compliance footer if not already present
-            if "STANDARDS AUSTRALIA" not in ai_response.upper():
-                ai_response += f"\n\n**STANDARDS AUSTRALIA COMPLIANCE**: This response references Australian Standards by number and title only, without reproducing copyrighted technical specifications. Professional engineering advice should be sought for complex projects."
+            # Standards Australia compliance is now handled contextually in the system prompt
+            # No automatic footer added unless specifically needed
             
             return {
                 "response": ai_response,
