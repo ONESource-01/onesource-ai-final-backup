@@ -21,7 +21,7 @@ const HelpCenter = () => {
   const [botLoading, setBotLoading] = useState(false);
 
   useEffect(() => {
-    document.title = 'Help Center | ONESource-ai';
+    document.title = 'Help Centre | ONESource-ai';
   }, []);
 
   // Preloaded questions about ONESource-ai fundamentals
