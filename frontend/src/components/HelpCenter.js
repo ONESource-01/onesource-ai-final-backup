@@ -382,7 +382,10 @@ Selecting the correct experience level ensures you receive responses that match 
     { id: 'copyright', name: 'Copyright & IP', icon: Copyright },
     { id: 'standards', name: 'Building Standards', icon: FileText },
     { id: 'fire-safety', name: 'Fire Safety', icon: Lightbulb },
-    { id: 'mechanical', name: 'Mechanical Services', icon: MessageCircle }
+    { id: 'mechanical', name: 'Mechanical Services', icon: MessageCircle },
+    { id: 'personalization', name: 'AI Personalization', icon: Brain },
+    { id: 'accuracy', name: 'Accuracy & Quality', icon: CheckCircle },
+    { id: 'regulatory', name: 'Regulatory Use', icon: HelpCircle }
   ];
 
   const handleBotQuestion = async (question) => {
