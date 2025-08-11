@@ -271,9 +271,19 @@ const ChatInterface = () => {
       `;
     });
     
-    // Convert section headers with emoji - TIGHT spacing
+    // Convert section headers - Remove markdown and add proper emojis + bold
+    formatted = formatted.replace(/^###\s*Mentoring Insight[s]?:?$/gmi, 
+      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧐 <strong>Mentoring Insight</strong></h3></div>');
+    
+    formatted = formatted.replace(/^#\s*Next Steps:?$/gmi, 
+      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>');
+    
+    formatted = formatted.replace(/^##\s*Clarifying Questions?:?$/gmi, 
+      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>');
+    
+    // Convert section headers with emoji - existing ones
     formatted = formatted.replace(/^(🛠️|🧐|📋|🔗)\s*\*\*(.*?)\*\*:?$/gm, 
-      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-1">$1 $2</h3></div>');
+      '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-1">$1 <strong>$2</strong></h3></div>');
     
     // Convert numbered headers with tight spacing
     formatted = formatted.replace(/^##\s*(.*?)$/gm, 
