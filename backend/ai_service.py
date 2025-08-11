@@ -145,31 +145,49 @@ Based on your professional background, key considerations for high-rise fire saf
             else:
                 enhanced_system_prompt = enhanced_prompts["building_codes"]  # Default fallback
             
-            # Build context from user profile
+            # Build context from user profile for intelligent responses
             context = ""
             user_name = ""
+            user_expertise_areas = []
+            
             if user_profile:
                 # Get user's name for personalization
                 name = user_profile.get('name', '')
                 if name:
-                    # Use first name only for friendlier responses
                     first_name = name.split()[0] if name else ''
                     user_name = first_name
                     context += f"\nUser name: {first_name}"
                 
+                # Extract user expertise to avoid obvious recommendations
                 profession = user_profile.get('profession', '')
                 sector = user_profile.get('sector', '')
+                experience_level = user_profile.get('preferences', {}).get('experience_level', '')
+                company_type = user_profile.get('preferences', {}).get('company_type', '')
+                disciplines = user_profile.get('preferences', {}).get('disciplines', [])
+                
                 if profession:
                     context += f"\nUser profession: {profession}"
+                    user_expertise_areas.append(profession.lower())
                 if sector:
                     context += f"\nUser sector: {sector}"
+                if company_type:
+                    context += f"\nUser company type: {company_type}"
+                    user_expertise_areas.append(company_type.lower())
+                if disciplines:
+                    context += f"\nUser disciplines: {', '.join(disciplines)}"
+                    user_expertise_areas.extend([d.lower() for d in disciplines])
+                if experience_level:
+                    context += f"\nUser experience level: {experience_level}"
                 
-                # Add personalization instructions
-                context += f"\n\nPERSONALIZATION INSTRUCTIONS:"
-                context += f"\n- Address the user by their first name '{first_name}' naturally in responses"
-                context += f"\n- Use their name especially when giving mentoring advice or encouragement"
-                context += f"\n- Maintain professional but friendly tone appropriate for their profession"
-                context += f"\n- Reference their sector context when relevant"
+                # Add intelligent personalization instructions
+                context += f"\n\nINTELLIGENT PERSONALIZATION INSTRUCTIONS:"
+                context += f"\n- User expertise areas: {', '.join(user_expertise_areas) if user_expertise_areas else 'General construction'}"
+                context += f"\n- AVOID suggesting consultation in areas they already specialize in"
+                context += f"\n- Focus mentoring on areas outside their core expertise or common oversight areas"
+                context += f"\n- Consider their experience level when providing guidance"
+                context += f"\n- Only suggest external consultation when genuinely outside their professional scope"
+                if user_profile.get('has_uploaded_documents'):
+                    context += f"\n- User has uploaded their own reference documents - minimize boilerplate compliance statements"
             
             # Add AI Intelligence System context
             ai_context = f"""
