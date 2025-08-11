@@ -574,6 +574,19 @@ async def get_subscription_status(current_user: Dict[str, Any] = Depends(get_cur
     try:
         uid = current_user["uid"]
         subscription = await firebase_service.check_user_subscription(uid)
+        
+        # Add tier field for frontend compatibility
+        subscription["tier"] = subscription.get("subscription_tier", "starter")
+        
+        # Transform for frontend compatibility
+        if subscription.get("subscription_tier") == "starter":
+            subscription["is_trial"] = not subscription.get("subscription_active", False)
+            if subscription["is_trial"]:
+                subscription["trial_info"] = {
+                    "questions_remaining": max(0, 3 - subscription.get("trial_questions_used", 0)),
+                    "questions_used": subscription.get("trial_questions_used", 0)
+                }
+        
         return subscription
         
     except Exception as e:
