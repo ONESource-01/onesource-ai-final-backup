@@ -724,7 +724,14 @@ const KnowledgeVault = () => {
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={partnerLoading}>
+                    <Button 
+                      type="submit" 
+                      disabled={
+                        partnerLoading || 
+                        (!partnerForm.business_id.valid && !partnerForm.business_id.unverified)
+                      }
+                      className="bg-onesource-dark hover:bg-onesource-medium text-white"
+                    >
                       {partnerLoading ? 'Submitting...' : 'Submit Application'}
                     </Button>
                   </div>
