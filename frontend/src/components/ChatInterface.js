@@ -403,17 +403,30 @@ const ChatInterface = () => {
     if (!feedbackText.trim()) return;
 
     try {
-      await apiEndpoints.submitFeedback({
+      console.log('📝 Submitting feedback:', {
+        message_id: feedbackModal.messageId,
+        feedback_type: feedbackModal.type,
+        feedback_text: feedbackText,
+        session_id: sessionId
+      });
+
+      await apiEndpoints.submitChatFeedback({
         message_id: feedbackModal.messageId,
         feedback_type: feedbackModal.type,
         feedback_text: feedbackText,
         session_id: sessionId
       });
       
+      console.log('✅ Feedback submitted successfully');
       setFeedbackModal({ show: false, messageId: null, type: null });
       setFeedbackText('');
+      
+      // Show success message
+      alert('Thank you for your feedback! Your input helps improve ONESource-ai.');
+      
     } catch (error) {
-      console.error('Failed to submit feedback:', error);
+      console.error('❌ Failed to submit feedback:', error);
+      alert('Sorry, there was an issue submitting your feedback. Please try again.');
     }
   };
 
