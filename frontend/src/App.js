@@ -145,7 +145,7 @@ const LandingPage = () => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <img 
-                src="/onesource-primary-logo.svg" 
+                src="/onesource-primary-logo.png" 
                 alt="ONESource-ai" 
                 className="h-24 w-auto mr-3"
               />
