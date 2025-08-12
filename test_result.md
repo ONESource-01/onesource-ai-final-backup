@@ -521,11 +521,11 @@ backend:
 
   - task: "Enhanced Emoji Mapping Consistency Fix Verification"
     implemented: true
-    working: false
+    working: true
     file: "backend/ai_service.py"
     stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
@@ -548,6 +548,9 @@ backend:
       - working: false
         agent: "main"
         comment: "PRICING PAGE BANNER FIX APPLIED: Fixed the large banner sizing issue by reducing padding from px-6 py-3 to px-3 py-1, font size from text-base to text-xs, and positioning from -top-6 to -top-3. Banners now appear as small, neat labels above pricing cards instead of large obtrusive banners that obscured content below. Now investigating the Enhanced Emoji Mapping Consistency issue for regular chat endpoint - identified that the system prompt in get_construction_response (lines 381-411) should provide consistent emoji formatting but analysis suggests the issue may be in the actual OpenAI API response not following the prompt correctly or the mock response fallback logic."
+      - working: true
+        agent: "testing"
+        comment: "🎉 ENHANCED EMOJI MAPPING CONSISTENCY FIX SUCCESSFULLY VERIFIED! ✅ CRITICAL SUCCESS: The Enhanced Emoji Mapping consistency issue has been completely resolved. Both endpoints now correctly use identical Enhanced Emoji Mapping formatting. ✅ REGULAR CHAT ENDPOINT FIXED: POST /api/chat/ask now correctly returns responses with '🔧 **Technical Answer:**' and '🧠 **Mentoring Insight:**' section headers, matching the enhanced endpoint exactly. ✅ ENHANCED CHAT ENDPOINT CONFIRMED: POST /api/chat/ask-enhanced continues to work perfectly with complete Enhanced Emoji Mapping structure. ✅ CONSISTENCY ACHIEVED: Comprehensive testing with the exact fire safety question from the review request ('What are the fire safety requirements for a 3-story commercial building?') confirms both endpoints now provide identical Enhanced Emoji Mapping formatting. ✅ TECHNICAL FIXES APPLIED: Fixed AsyncOpenAI client initialization issues in both ai_service.py and server.py regular chat endpoint, updated system prompts to be more explicit about requiring both 🔧 and 🧠 sections, and ensured consistent emoji formatting across all chat responses. ✅ USER EXPERIENCE RESTORED: Users now experience consistent professional formatting between regular and enhanced chat responses, with both endpoints providing the same high-quality Enhanced Emoji Mapping structure. ✅ REVIEW REQUEST FULFILLED: The Enhanced Emoji Mapping Consistency fix requested in the review has been successfully implemented and verified. Both /api/chat/ask and /api/chat/ask-enhanced endpoints now return responses with consistent '🔧 **Technical Answer**' and '🧠 **Mentoring Insight**' section headers as requested."
 
 frontend:
   - task: "Setup Firebase authentication UI"
