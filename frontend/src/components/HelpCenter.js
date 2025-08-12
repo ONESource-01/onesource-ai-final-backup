@@ -807,12 +807,16 @@ Selecting the correct experience level ensures you receive responses that match 
                         {showBotResponse.answer.split('\n').map((paragraph, index) => (
                           <div key={index} className="mb-2">
                             {paragraph.startsWith('**') && paragraph.endsWith(':**') ? (
-                              <h4 className="font-semibold text-blue-800 mb-1">{paragraph.slice(2, -2)}</h4>
+                              <h4 className="font-semibold text-onesource-dark mb-1">{paragraph.slice(2, -2)}</h4>
                             ) : paragraph.startsWith('•') ? (
                               <div className="ml-4 mb-1">{paragraph}</div>
-                            ) : paragraph.trim() && (
-                              <p>{paragraph}</p>
-                            )}
+                            ) : paragraph.trim() ? (
+                              <p dangerouslySetInnerHTML={{
+                                __html: paragraph
+                                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                  .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                              }} />
+                            ) : null}
                           </div>
                         ))}
                       </div>
