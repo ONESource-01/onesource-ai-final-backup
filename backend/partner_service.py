@@ -169,6 +169,45 @@ class PartnerService:
         except Exception as e:
             print(f"Error registering partner: {e}")
             return {"success": False, "message": "Registration failed. Please try again."}
+
+    async def review_partner_application(self, partner_id: str, action: str, admin_notes: str = None, reviewed_by: str = None):
+        """Review partner application (approve/reject)"""
+        try:
+            if action not in ['approve', 'reject']:
+                raise ValueError("Action must be 'approve' or 'reject'")
+            
+            # Find the partner
+            partner = await self.db.partners.find_one({"partner_id": partner_id})
+            if not partner:
+                raise ValueError("Partner not found")
+            
+            # Update partner status
+            update_data = {
+                "status": "approved" if action == "approve" else "rejected",
+                "admin_notes": admin_notes or "",
+                "reviewed_by": reviewed_by or "admin",
+                "reviewed_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            }
+            
+            await self.db.partners.update_one(
+                {"partner_id": partner_id},
+                {"$set": update_data}
+            )
+            
+            # Send notification email
+            await self.send_partner_review_email(partner, action, admin_notes)
+            
+            return {
+                "success": True,
+                "partner_id": partner_id,
+                "action": action,
+                "message": f"Partner application {action}d successfully"
+            }
+            
+        except Exception as e:
+            print(f"Error reviewing partner application: {e}")
+            return {"success": False, "message": str(e)}
     
     async def get_partner_by_email(self, email: str) -> Optional[Dict[str, Any]]:
         """Get partner information by email"""
