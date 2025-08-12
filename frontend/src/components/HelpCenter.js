@@ -808,7 +808,7 @@ Selecting the correct experience level ensures you receive responses that match 
                   </CardContent>
                 </Card>
               ) : (
-                <div className="space-y-4">
+                <div key={selectedCategory} className="space-y-4">
                   {filteredArticles.map((article) => (
                     <Card key={article.id} className="hover:shadow-md transition-shadow">
                       <CardContent className="p-6">
