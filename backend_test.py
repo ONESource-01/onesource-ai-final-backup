@@ -272,16 +272,18 @@ class BackendTester:
                             f"Failed to get subscription status: {status}", data)
     
     async def test_enhanced_emoji_mapping_consistency(self):
-        """🚨 CRITICAL: Test Enhanced Emoji Mapping Consistency between regular and enhanced chat endpoints"""
+        """🚨 CRITICAL: Test Enhanced Emoji Mapping Consistency for water systems question from review request"""
         print("\n🚨 === ENHANCED EMOJI MAPPING CONSISTENCY TESTING ===")
         
         mock_headers = {"Authorization": "Bearer mock_dev_token"}
         
         # Use the EXACT question from the review request
-        test_question = "What are the fire safety requirements for a 3-story commercial building?"
+        test_question = "explain how i use this standard step by step for water systems"
         
         print(f"🔍 Testing question: '{test_question}'")
-        print("📋 Comparing response formats between regular and enhanced endpoints...")
+        print("📋 Verifying Enhanced Emoji Mapping format and water system content...")
+        print("🎯 Expected: 🔧 **Technical Answer:** and 🧠 **Mentoring Insight:** section headers")
+        print("🎯 Expected: AS/NZS 3500 plumbing standards content")
         
         # Test 1: Regular chat endpoint (/api/chat/ask)
         print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat)")
