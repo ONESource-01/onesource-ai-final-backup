@@ -1182,7 +1182,7 @@ async def ask_question(
         
         CRITICAL FORMATTING RULES:
         - ALWAYS start with 🔧 **Technical Answer:** section header (with emoji)
-        - ALWAYS include 🧠 **Mentoring Insight:** section after technical answer (with emoji)
+        - ALWAYS include 💡 **Mentoring Insight:** section after technical answer (with emoji)
         - Use professional markdown table format for comparisons when relevant
         - Provide specific clause references with current year editions
         - Include calculations with units, assumptions, and formulas where relevant
