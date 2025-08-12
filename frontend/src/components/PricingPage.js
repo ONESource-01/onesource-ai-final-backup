@@ -46,22 +46,40 @@ const PricingPage = () => {
     setError('');
 
     try {
+      // Add timeout to prevent indefinite spinning
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+      
       const originUrl = window.location.origin;
-      const response = await apiEndpoints.createCheckoutSession({
+      const checkoutPromise = apiEndpoints.createCheckoutSession({
         package_id: packageId,
         origin_url: originUrl
       });
 
+      const response = await Promise.race([checkoutPromise, timeoutPromise]);
+
       if (response.data.checkout_url) {
         window.location.href = response.data.checkout_url;
       } else {
-        setError('Failed to create checkout session');
+        setError('Failed to create checkout session. Please try again.');
+        setPurchaseLoading('');
       }
     } catch (err) {
       console.error('Purchase error:', err);
-      setError(err.response?.data?.detail || 'Failed to start checkout process');
-    } finally {
+      
+      // Clear loading state on error
       setPurchaseLoading('');
+      
+      if (err.message === 'Request timeout') {
+        setError('Request timed out. Please check your connection and try again.');
+      } else if (err.response?.status === 404) {
+        setError('Checkout service unavailable. Please try again later.');
+      } else if (err.response?.status === 401) {
+        setError('Please sign in to continue with your purchase.');
+      } else {
+        setError(err.response?.data?.detail || 'Failed to start checkout process. Please try again.');
+      }
     }
   };
 
