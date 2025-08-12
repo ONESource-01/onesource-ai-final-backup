@@ -838,7 +838,7 @@ Selecting the correct experience level ensures you receive responses that match 
                     <p className="text-sm text-gray-500 mb-4">
                       Would you like to suggest a source or topic to add to our knowledge base?
                     </p>
-                    <Button onClick={handleSuggestSource} className="bg-blue-600 hover:bg-blue-700">
+                    <Button onClick={handleSuggestSource} className="bg-onesource-dark hover:bg-onesource-medium text-white">
                       Suggest Knowledge Source
                     </Button>
                   </CardContent>
