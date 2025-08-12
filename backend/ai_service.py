@@ -272,16 +272,48 @@ ENHANCED AI INTELLIGENCE CONTEXT:"""
 - ⚡ Access advanced calculation templates and methodologies
 - ⚡ Get deep discipline-specific expertise and workflows"""
             
-            ai_context += f"""
+            # Build intelligent mentoring cross-reference based on user's selected expertise
+            mentoring_context = ""
+            if user_profile and user_profile.get('preferences'):
+                user_disciplines = user_profile.get('preferences', {}).get('disciplines', [])
+                user_sectors = user_profile.get('preferences', {}).get('industry_sectors', [])
+                
+                if user_disciplines or user_sectors:
+                    # Build personalized mentoring context
+                    discipline_text = "/".join([d.lower().replace(" ", "_") for d in user_disciplines]) if user_disciplines else "construction"
+                    sector_text = "/".join([s.lower().replace(" ", "_") for s in user_sectors]) if user_sectors else "general"
+                    
+                    if len(user_disciplines) > 1:
+                        discipline_display = f"{'/'.join(user_disciplines[:-1])} and {user_disciplines[-1]} specialist"
+                    elif len(user_disciplines) == 1:
+                        discipline_display = f"{user_disciplines[0]} specialist"
+                    else:
+                        discipline_display = "construction professional"
+                    
+                    if len(user_sectors) > 1:
+                        sector_display = f"{'/'.join(user_sectors[:-1])} and {user_sectors[-1]} sectors"
+                    elif len(user_sectors) == 1:
+                        sector_display = f"{user_sectors[0]} sector"
+                    else:
+                        sector_display = "various sectors"
+                    
+                    mentoring_context = f"""
 
-**RESPONSE STRUCTURE REQUIRED**:
-1. Technical Answer with specific standard references and detailed comparison tables
-2. Mentoring Insight with {"workflow recommendations" if phase2_available else "practical guidance"}  
-3. Next Steps with {"project-specific clarifying questions" if phase2_available else "general clarifications"}
-4. CREATE COMPARISON TABLES whenever comparing standards, codes, or jurisdictions
+INTELLIGENT MENTORING CROSS-REFERENCE:
+- User is a {discipline_display} working primarily in {sector_display}
+- When providing mentoring insights, translate guidance back to their expertise areas
+- For questions outside their selected disciplines/sectors, provide expert technical answers but personalize mentoring insights
+- Example: "As a structural/hydraulic engineer working in commercial/healthcare sectors, here's how these fire safety requirements will impact your [structural design considerations/services coordination]..."
+- Focus mentoring on professional development, workflow integration, and cross-discipline coordination relevant to their background"""
+                else:
+                    mentoring_context = f"""
 
-**TABLE CREATION MANDATE**: Always create professional comparison tables when requested. This is essential for construction professionals.
-4. Professional consultation recommendations where applicable"""
+GENERAL MENTORING CONTEXT:
+- User has not specified their professional disciplines or sectors
+- Provide general construction industry mentoring guidance
+- Encourage completing their professional profile for more personalized insights"""
+            
+            ai_context += mentoring_context
             
             # Build conversation history with enhanced system prompt
             messages = [{"role": "system", "content": enhanced_system_prompt + context + ai_context}]
