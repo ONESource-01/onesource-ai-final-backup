@@ -1305,7 +1305,7 @@ Professional construction delivery involves elevated compliance requirements. En
         else:
             # Real OpenAI API call with Enhanced Emoji Mapping system prompt
             import openai
-            openai_client = openai.OpenAI(api_key=api_key)
+            openai_client = openai.AsyncOpenAI(api_key=api_key)
             
             response = await openai_client.chat.completions.create(
                 model="gpt-4o-mini",
