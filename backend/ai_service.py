@@ -95,7 +95,7 @@ Here's a comprehensive analysis of {question}:
 • Professional certifications required for structural, fire, and accessibility elements
 • Environmental considerations including energy efficiency and water management
 
-🤓 **Mentoring Insight:**
+🧐 **Mentoring Insight:**
 
 **Professional Development Considerations:**
 Early engagement with specialist consultants (structural, fire safety, accessibility) is crucial for multi-story commercial projects. Consider the project's complexity matrix - three-story commercial buildings often trigger multiple compliance thresholds that require coordinated professional oversight.
