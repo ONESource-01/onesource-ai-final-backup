@@ -2110,11 +2110,11 @@ async def ask_question_enhanced(
         
         Provide structured response using the Enhanced Emoji Mapping:
         # 🔧 **Technical Answer** - with references to uploaded documents when relevant
-        # 🤓 **Mentoring Insight** - contextual guidance considering user's professional background
+        # 🧐 **Mentoring Insight** - contextual guidance considering user's professional background
         
         Use these exact section headers where applicable:
         - 🔧 Technical Answer
-        - 🤓 Mentoring Insight  
+        - 🧐 Mentoring Insight  
         - 📋 Next Steps
         - 📊 Code Requirements
         - ✅ Compliance Verification
