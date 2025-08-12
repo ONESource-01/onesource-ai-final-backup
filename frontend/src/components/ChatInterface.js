@@ -551,7 +551,7 @@ const ChatInterface = () => {
             <Button
               size="sm"
               onClick={startNewConversation}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-onesource-dark hover:bg-onesource-medium text-white"
             >
               <Plus className="h-4 w-4 mr-1" />
               New
