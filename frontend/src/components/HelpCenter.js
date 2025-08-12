@@ -791,7 +791,7 @@ Selecting the correct experience level ensures you receive responses that match 
             
             {/* Bot Response Area */}
             {showBotResponse && (
-              <Card className="border-2 border-blue-200 bg-blue-50">
+              <Card className="border-2 border-onesource-pale bg-onesource-white">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-onesource-dark">
                     <img src="/onesource-icon.png" alt="ONESource-ai" className="h-5 w-5" />
