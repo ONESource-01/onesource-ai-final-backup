@@ -272,18 +272,29 @@ class BackendTester:
                             f"Failed to get subscription status: {status}", data)
     
     async def test_enhanced_emoji_mapping_consistency(self):
-        """🚨 CRITICAL: Test Enhanced Emoji Mapping Consistency for water systems question from review request"""
-        print("\n🚨 === ENHANCED EMOJI MAPPING CONSISTENCY TESTING ===")
+        """🚨 CRITICAL: Test Enhanced Emoji Mapping Consistency Fix from Review Request"""
+        print("\n🚨 === ENHANCED EMOJI MAPPING CONSISTENCY FIX VERIFICATION ===")
+        print("Testing the DEFINITIVE Enhanced Emoji Mapping fix with professional formatting")
+        print("🎯 CRITICAL VERIFICATION: All responses should show 🤓 for Mentoring Insight (NOT 🧠 or 💡)")
         
         mock_headers = {"Authorization": "Bearer mock_dev_token"}
         
         # Use the EXACT question from the review request
-        test_question = "explain how i use this standard step by step for water systems"
+        test_question = "What are fire safety requirements?"
         
         print(f"🔍 Testing question: '{test_question}'")
-        print("📋 Verifying Enhanced Emoji Mapping format and water system content...")
-        print("🎯 Expected: 🔧 **Technical Answer:** and 🧠 **Mentoring Insight:** section headers")
-        print("🎯 Expected: AS/NZS 3500 plumbing standards content")
+        print("📋 Verifying Enhanced Emoji Mapping format...")
+        print("🎯 Expected Enhanced Emoji Mapping:")
+        print("   🔧 Technical Answer")
+        print("   🤓 Mentoring Insight (MUST be 🤓 nerd face, NOT 🧠 or 💡)")
+        print("   📋 Next Steps")
+        print("   📊 Code Requirements")
+        print("   ✅ Compliance Verification")
+        print("   🔄 Alternative Solutions")
+        print("   🏛️ Authority Requirements")
+        print("   📄 Documentation Needed")
+        print("   ⚙️ Workflow Recommendations")
+        print("   ❓ Clarifying Questions")
         
         # Test 1: Regular chat endpoint (/api/chat/ask) - MAIN FOCUS
         print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat) - MAIN FOCUS")
