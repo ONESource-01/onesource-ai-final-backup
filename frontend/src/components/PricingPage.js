@@ -39,6 +39,12 @@ const PricingPage = () => {
   const handlePurchase = async (packageId) => {
     console.log('🛒 Purchase attempted:', { packageId, user: !!user, userEmail: user?.email });
     
+    // Prevent double-clicks if already processing
+    if (purchaseLoading) {
+      console.log('⚠️ Purchase already in progress, ignoring click');
+      return;
+    }
+    
     // Handle free starter plan differently
     if (packageId === 'starter') {
       if (!user) {
