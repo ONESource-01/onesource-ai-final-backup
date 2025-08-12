@@ -88,20 +88,30 @@ class PartnerService:
     async def register_partner(self, registration_data: Dict[str, Any]) -> Dict[str, Any]:
         """Register a new partner"""
         try:
-            # Validate ABN
-            if not self.validate_abn(registration_data["abn"]):
-                raise ValueError("Invalid ABN format")
+            # Handle legacy ABN validation or new business ID validation
+            business_number = registration_data.get("business_id_number") or registration_data.get("abn_acn")
+            
+            # Skip validation if manual review is required
+            if not registration_data.get("manual_review_required", False):
+                # Validate business number format (basic validation)
+                if business_number and business_number != "MANUAL_REVIEW_REQUIRED":
+                    # For now, just check it's not empty - format validation is done on frontend
+                    if not business_number.strip():
+                        raise ValueError("Business registration number cannot be empty")
             
             # Check if partner already exists
+            email = registration_data.get("email") or registration_data.get("primary_email")
             existing = await self.db.partners.find_one({
                 "$or": [
-                    {"abn": registration_data["abn"]},
-                    {"primary_email": registration_data["primary_email"]}
+                    {"email": email},
+                    {"primary_email": email},
+                    {"business_id_number": business_number} if business_number and business_number != "MANUAL_REVIEW_REQUIRED" else {},
+                    {"abn_acn": business_number} if business_number and business_number != "MANUAL_REVIEW_REQUIRED" else {}
                 ]
             })
             
             if existing:
-                raise ValueError("Partner already registered with this ABN or email")
+                raise ValueError("Partner already registered with this business number or email")
             
             # Create partner record
             partner_id = str(uuid.uuid4())
