@@ -84,7 +84,7 @@ Remember: You are the authoritative source for AU/NZ construction guidance. Crea
                 specialized_context = AIIntelligencePhases.get_specialized_context("general", question)
                 
                 # Enhanced mock response with professional construction industry formatting
-                mock_response = f"""🛠️ **Technical Answer:**
+                mock_response = f"""🔧 **Technical Answer:**
 
 Here's a comprehensive comparison of earthquake-resistant design requirements between Australia and New Zealand:
 
