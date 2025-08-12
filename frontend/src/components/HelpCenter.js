@@ -666,9 +666,16 @@ Selecting the correct experience level ensures you receive responses that match 
 
   const filteredArticles = popularArticles.filter(article => {
     const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-    const matchesSearch = article.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         article.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Search in multiple fields including content/answer
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = searchQuery === '' || // Show all when search is empty
+                         article.title?.toLowerCase().includes(searchLower) ||
+                         article.question?.toLowerCase().includes(searchLower) ||
+                         article.excerpt?.toLowerCase().includes(searchLower) ||
+                         article.answer?.toLowerCase().includes(searchLower) ||
+                         article.content?.toLowerCase().includes(searchLower);
+    
     return matchesCategory && matchesSearch;
   });
 
