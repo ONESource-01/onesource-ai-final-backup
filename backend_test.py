@@ -597,24 +597,24 @@ class BackendTester:
             
             print(f"   📝 Response length: {len(enhanced_response_content)} characters")
             print(f"   🔧 Has '🔧 Technical Answer': {enhanced_has_tech_emoji}")
-            print(f"   🤓 Has '🤓 Mentoring Insight' (CORRECT): {enhanced_has_mentoring_emoji_correct}")
-            print(f"   🚨 Has wrong emoji (🧠 or 💡): {enhanced_has_mentoring_emoji_wrong}")
+            print(f"   🧐 Has '🧐 Mentoring Insight' (CORRECT): {enhanced_has_mentoring_emoji_correct}")
+            print(f"   🚨 Has wrong emoji (🤓 or 🧠): {enhanced_has_mentoring_emoji_wrong}")
             print(f"   🔥 Has fire safety content: {enhanced_has_fire_content}")
             
             # Show first 500 chars for analysis
             preview = enhanced_response_content[:500] + "..." if len(enhanced_response_content) > 500 else enhanced_response_content
             print(f"   📄 Response preview: {preview}")
             
-            # CRITICAL CHECK: Must use 🤓 emoji, NOT 🧠 or 💡
+            # CRITICAL CHECK: Must use 🧐 emoji, NOT 🤓 or 🧠
             if enhanced_has_mentoring_emoji_correct and not enhanced_has_mentoring_emoji_wrong:
-                self.log_test("✅ Enhanced Chat - CORRECT Mentoring Emoji (🤓)", True, "Uses 🤓 nerd face emoji as required")
+                self.log_test("✅ Enhanced Chat - CORRECT Mentoring Emoji (🧐)", True, "Uses 🧐 professor with monocle emoji as required")
             elif enhanced_has_mentoring_emoji_wrong:
                 wrong_emojis = []
+                if "🤓" in enhanced_response_content:
+                    wrong_emojis.append("🤓 nerd face")
                 if "🧠" in enhanced_response_content:
                     wrong_emojis.append("🧠 brain")
-                if "💡" in enhanced_response_content:
-                    wrong_emojis.append("💡 lightbulb")
-                self.log_test("❌ Enhanced Chat - WRONG Mentoring Emoji", False, f"Uses incorrect emoji(s): {', '.join(wrong_emojis)} instead of 🤓")
+                self.log_test("❌ Enhanced Chat - WRONG Mentoring Emoji", False, f"Uses incorrect emoji(s): {', '.join(wrong_emojis)} instead of 🧐")
             else:
                 self.log_test("❌ Enhanced Chat - Missing Mentoring Emoji", False, "No Mentoring Insight section found")
             
