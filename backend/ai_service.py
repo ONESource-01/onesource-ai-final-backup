@@ -176,7 +176,7 @@ Here's a comprehensive comparison of earthquake-resistant design requirements be
 • Detailed capacity design principles and ductility requirements
 • Specific provisions for different structural systems and materials
 
-💡 **Mentoring Insight:**
+🤓 **Mentoring Insight:**
 
 Critical considerations for your earthquake-resistant design project:
 
