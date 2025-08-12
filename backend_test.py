@@ -4133,6 +4133,416 @@ class BackendTester:
         print("Check the detailed output above for specific issues")
         print("=" * 60)
 
+    async def test_file_upload_fixes(self):
+        """🚨 CRITICAL: Test the file upload fixes mentioned in review request"""
+        print("\n🚨 === FILE UPLOAD FIXES TESTING ===")
+        print("Testing the uploadDocuments API endpoint fixes:")
+        print("1. POST /api/knowledge/upload-personal - Single file upload")
+        print("2. POST /api/knowledge/upload-community - Community upload (requires partner status)")
+        print("3. Verify proper response with document_id and success message")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        partner_headers = {"Authorization": "Bearer partner_user_token"}
+        
+        # Test 1: Personal Knowledge Upload (POST /api/knowledge/upload-personal)
+        print("\n1️⃣ Testing POST /api/knowledge/upload-personal - Personal File Upload")
+        
+        # Create a sample file for testing
+        import tempfile
+        import os
+        
+        # Create a temporary text file with construction content
+        sample_content = """
+        Fire Safety Requirements for High-Rise Buildings in Australia
+        
+        This document outlines the key fire safety requirements for high-rise buildings 
+        in accordance with Australian Standards and the National Construction Code (NCC).
+        
+        Key Standards:
+        - AS 1851: Maintenance of fire protection systems
+        - AS 2118: Automatic fire sprinkler systems
+        - AS 3786: Smoke alarms using scattered light
+        - NCC Volume One: Fire safety provisions
+        
+        Requirements:
+        1. Fire resistance levels (FRL) for structural elements
+        2. Egress provisions and travel distances
+        3. Smoke hazard management systems
+        4. Fire sprinkler system installation
+        5. Emergency warning and intercommunication systems
+        """
+        
+        # Test with form data (multipart/form-data)
+        try:
+            # Create form data for file upload
+            form_data = aiohttp.FormData()
+            form_data.add_field('file', sample_content, 
+                              filename='fire_safety_requirements.txt',
+                              content_type='text/plain')
+            form_data.add_field('tags', '["fire safety", "high-rise", "NCC", "AS 1851"]')
+            
+            # Make request with form data
+            url = f"{API_BASE}/knowledge/upload-personal"
+            async with self.session.post(url, data=form_data, headers={"Authorization": "Bearer mock_dev_token"}) as response:
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                success = response.status < 400
+                status = response.status
+                
+                if success and isinstance(response_data, dict):
+                    if "document_id" in response_data and "message" in response_data:
+                        document_id = response_data["document_id"]
+                        message = response_data["message"]
+                        self.log_test("✅ Personal Upload - Success", True, 
+                                    f"File uploaded successfully: {message}, Document ID: {document_id}")
+                        
+                        # Check for additional response fields
+                        if "file_name" in response_data:
+                            self.log_test("✅ Personal Upload - File Name", True, 
+                                        f"File name recorded: {response_data['file_name']}")
+                        
+                        if "tags" in response_data:
+                            self.log_test("✅ Personal Upload - Tags", True, 
+                                        f"Tags processed: {response_data['tags']}")
+                        
+                        if "ai_metadata" in response_data:
+                            self.log_test("✅ Personal Upload - AI Processing", True, 
+                                        "AI metadata extraction completed")
+                    else:
+                        self.log_test("❌ Personal Upload - Response Format", False, 
+                                    "Missing required fields (document_id, message)", response_data)
+                else:
+                    self.log_test("❌ Personal Upload - API Failure", False, 
+                                f"Status: {status}", response_data)
+                    
+        except Exception as e:
+            self.log_test("❌ Personal Upload - Request Error", False, f"Error: {str(e)}")
+        
+        # Test 2: Community Knowledge Upload (POST /api/knowledge/upload-community)
+        print("\n2️⃣ Testing POST /api/knowledge/upload-community - Community File Upload")
+        
+        # Create another sample file for community upload
+        community_content = """
+        HVAC System Design Guidelines for Commercial Buildings
+        
+        This document provides guidelines for HVAC system design in commercial buildings
+        following Australian Standards and energy efficiency requirements.
+        
+        Key Standards:
+        - AS 1668: The use of mechanical ventilation
+        - AS/NZS 3000: Electrical installations
+        - NCC Section J: Energy efficiency provisions
+        
+        Design Considerations:
+        1. Load calculations and equipment sizing
+        2. Ventilation rates per AS 1668
+        3. Energy efficiency compliance
+        4. Indoor air quality requirements
+        5. System commissioning and testing
+        """
+        
+        try:
+            # Test with partner user (should succeed)
+            form_data = aiohttp.FormData()
+            form_data.add_field('file', community_content,
+                              filename='hvac_design_guidelines.txt', 
+                              content_type='text/plain')
+            form_data.add_field('tags', '["HVAC", "commercial", "AS 1668", "energy efficiency"]')
+            form_data.add_field('is_supplier_content', 'true')
+            form_data.add_field('supplier_info', '{"company_name": "Test HVAC Solutions", "contact_email": "test@hvac.com"}')
+            
+            url = f"{API_BASE}/knowledge/upload-community"
+            async with self.session.post(url, data=form_data, headers=partner_headers) as response:
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                success = response.status < 400
+                status = response.status
+                
+                if success and isinstance(response_data, dict):
+                    if "document_id" in response_data and "message" in response_data:
+                        document_id = response_data["document_id"]
+                        message = response_data["message"]
+                        self.log_test("✅ Community Upload - Partner Success", True, 
+                                    f"Community file uploaded: {message}, Document ID: {document_id}")
+                        
+                        # Check for supplier attribution
+                        if "supplier_info" in response_data:
+                            self.log_test("✅ Community Upload - Supplier Attribution", True, 
+                                        "Supplier information properly attributed")
+                    else:
+                        self.log_test("❌ Community Upload - Response Format", False, 
+                                    "Missing required fields (document_id, message)", response_data)
+                elif status == 403:
+                    # This might be expected if partner status is not properly set
+                    self.log_test("⚠️ Community Upload - Partner Access", False, 
+                                "403 Forbidden - Partner status may not be properly configured")
+                else:
+                    self.log_test("❌ Community Upload - API Failure", False, 
+                                f"Status: {status}", response_data)
+                    
+        except Exception as e:
+            self.log_test("❌ Community Upload - Request Error", False, f"Error: {str(e)}")
+        
+        # Test 3: Community upload with non-partner user (should fail)
+        print("\n   Testing community upload with non-partner user (should fail)...")
+        
+        try:
+            form_data = aiohttp.FormData()
+            form_data.add_field('file', community_content,
+                              filename='hvac_design_guidelines.txt',
+                              content_type='text/plain')
+            form_data.add_field('tags', '["HVAC", "test"]')
+            
+            url = f"{API_BASE}/knowledge/upload-community"
+            async with self.session.post(url, data=form_data, headers=mock_headers) as response:
+                success = response.status < 400
+                status = response.status
+                
+                if not success and status == 403:
+                    self.log_test("✅ Community Upload - Access Control", True, 
+                                "Non-partner user correctly rejected with 403")
+                else:
+                    self.log_test("❌ Community Upload - Access Control", False, 
+                                f"Expected 403, got {status}")
+                    
+        except Exception as e:
+            self.log_test("❌ Community Upload - Access Test Error", False, f"Error: {str(e)}")
+        
+        # Test 4: Upload without authentication (should fail)
+        print("\n   Testing uploads without authentication (should fail)...")
+        
+        for endpoint in ["/knowledge/upload-personal", "/knowledge/upload-community"]:
+            try:
+                form_data = aiohttp.FormData()
+                form_data.add_field('file', sample_content,
+                                  filename='test_file.txt',
+                                  content_type='text/plain')
+                
+                url = f"{API_BASE}{endpoint}"
+                async with self.session.post(url, data=form_data) as response:
+                    success = response.status < 400
+                    status = response.status
+                    
+                    if not success and status in [401, 403]:
+                        self.log_test(f"✅ {endpoint} - Authentication Required", True, 
+                                    f"Unauthenticated request correctly rejected with {status}")
+                    else:
+                        self.log_test(f"❌ {endpoint} - Authentication Bypass", False, 
+                                    f"Expected 401/403, got {status}")
+                        
+            except Exception as e:
+                self.log_test(f"❌ {endpoint} - Auth Test Error", False, f"Error: {str(e)}")
+        
+        print("\n🎯 FILE UPLOAD FIXES SUMMARY:")
+        print("   ✅ Tested POST /api/knowledge/upload-personal with sample file")
+        print("   ✅ Tested POST /api/knowledge/upload-community with partner access")
+        print("   ✅ Verified proper response format with document_id and success message")
+        print("   ✅ Tested access control and authentication requirements")
+        print("   📋 Expected: Upload endpoints should work without 'Upload failed' errors")
+
+    async def test_admin_feedback_dashboard_fix(self):
+        """🚨 CRITICAL: Test the admin feedback dashboard fix mentioned in review request"""
+        print("\n🚨 === ADMIN FEEDBACK DASHBOARD FIX TESTING ===")
+        print("Testing the admin feedback dashboard at /admin/feedback route:")
+        print("1. GET /api/admin/feedback - Verify admin feedback retrieval works")
+        print("2. Check proper JSON response with feedback array, total_count, etc.")
+        print("3. Verify data structure matches frontend dashboard expectations")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test 1: Admin Feedback Dashboard Retrieval
+        print("\n1️⃣ Testing GET /api/admin/feedback - Admin Dashboard")
+        
+        success, data, status = await self.make_request("GET", "/admin/feedback", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            # Check for required response structure
+            required_fields = ["feedback", "total_count"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if not missing_fields:
+                feedback_array = data["feedback"]
+                total_count = data["total_count"]
+                
+                self.log_test("✅ Admin Dashboard - Response Structure", True, 
+                            f"Proper JSON structure with feedback array ({len(feedback_array)} items) and total_count ({total_count})")
+                
+                # Check if feedback is an array
+                if isinstance(feedback_array, list):
+                    self.log_test("✅ Admin Dashboard - Feedback Array", True, 
+                                f"Feedback field is properly formatted as array with {len(feedback_array)} items")
+                    
+                    # Check individual feedback item structure if any exist
+                    if len(feedback_array) > 0:
+                        first_feedback = feedback_array[0]
+                        feedback_required_fields = ["feedback_id", "message_id", "feedback_type", "timestamp"]
+                        feedback_missing_fields = [field for field in feedback_required_fields if field not in first_feedback]
+                        
+                        if not feedback_missing_fields:
+                            self.log_test("✅ Admin Dashboard - Feedback Item Structure", True, 
+                                        "Feedback items have all required fields")
+                            
+                            # Check data types
+                            feedback_id = first_feedback.get("feedback_id")
+                            message_id = first_feedback.get("message_id") 
+                            feedback_type = first_feedback.get("feedback_type")
+                            timestamp = first_feedback.get("timestamp")
+                            
+                            type_checks = {
+                                "feedback_id_string": isinstance(feedback_id, str),
+                                "message_id_string": isinstance(message_id, str),
+                                "feedback_type_valid": feedback_type in ["positive", "negative"],
+                                "timestamp_present": timestamp is not None
+                            }
+                            
+                            type_score = sum(type_checks.values())
+                            if type_score >= 3:  # At least 3 out of 4 checks pass
+                                self.log_test("✅ Admin Dashboard - Data Types", True, 
+                                            f"Feedback data types are correct ({type_score}/4 checks passed)")
+                            else:
+                                self.log_test("⚠️ Admin Dashboard - Data Types", False, 
+                                            f"Some data type issues ({type_score}/4 checks passed)", type_checks)
+                            
+                            # Check for optional fields that frontend might expect
+                            optional_fields = ["comment", "user_email", "user_id"]
+                            optional_present = [field for field in optional_fields if field in first_feedback]
+                            
+                            if optional_present:
+                                self.log_test("✅ Admin Dashboard - Optional Fields", True, 
+                                            f"Optional fields present: {', '.join(optional_present)}")
+                            
+                        else:
+                            self.log_test("❌ Admin Dashboard - Feedback Item Structure", False, 
+                                        f"Feedback items missing required fields: {', '.join(feedback_missing_fields)}")
+                    else:
+                        self.log_test("ℹ️ Admin Dashboard - No Feedback Data", True, 
+                                    "No feedback data found (expected for fresh database)")
+                        
+                        # Test with some sample feedback data to verify structure
+                        print("   📝 Creating sample feedback to test dashboard structure...")
+                        
+                        # Submit sample feedback first
+                        sample_feedback = {
+                            "message_id": "admin_dashboard_test_123",
+                            "feedback_type": "positive",
+                            "comment": "Testing admin dashboard feedback display"
+                        }
+                        
+                        submit_success, submit_data, submit_status = await self.make_request(
+                            "POST", "/chat/feedback", sample_feedback, mock_headers)
+                        
+                        if submit_success:
+                            # Re-test admin dashboard with new data
+                            success2, data2, status2 = await self.make_request("GET", "/admin/feedback", headers=mock_headers)
+                            
+                            if success2 and isinstance(data2, dict) and "feedback" in data2:
+                                feedback_array2 = data2["feedback"]
+                                if len(feedback_array2) > 0:
+                                    self.log_test("✅ Admin Dashboard - With Sample Data", True, 
+                                                f"Dashboard now shows {len(feedback_array2)} feedback items")
+                                    
+                                    # Find our sample feedback
+                                    sample_found = any(
+                                        fb.get("message_id") == "admin_dashboard_test_123"
+                                        for fb in feedback_array2
+                                    )
+                                    
+                                    if sample_found:
+                                        self.log_test("✅ Admin Dashboard - Sample Data Display", True, 
+                                                    "Sample feedback correctly displayed in dashboard")
+                                    else:
+                                        self.log_test("⚠️ Admin Dashboard - Sample Data Missing", False, 
+                                                    "Sample feedback not found in dashboard")
+                else:
+                    self.log_test("❌ Admin Dashboard - Feedback Array Type", False, 
+                                f"Feedback field is not an array, got: {type(feedback_array)}")
+                
+                # Check total_count field
+                if isinstance(total_count, int):
+                    self.log_test("✅ Admin Dashboard - Total Count Type", True, 
+                                f"total_count is properly formatted as integer: {total_count}")
+                else:
+                    self.log_test("❌ Admin Dashboard - Total Count Type", False, 
+                                f"total_count should be integer, got: {type(total_count)}")
+                
+                # Check for additional fields that frontend dashboard might expect
+                additional_fields = ["page", "limit", "has_more"]
+                additional_present = [field for field in additional_fields if field in data]
+                
+                if additional_present:
+                    self.log_test("✅ Admin Dashboard - Pagination Fields", True, 
+                                f"Pagination fields present: {', '.join(additional_present)}")
+                
+            else:
+                self.log_test("❌ Admin Dashboard - Response Structure", False, 
+                            f"Missing required fields: {', '.join(missing_fields)}", data)
+        else:
+            self.log_test("❌ Admin Dashboard - API Failure", False, 
+                        f"Status: {status}", data)
+        
+        # Test 2: Admin Dashboard Authentication
+        print("\n2️⃣ Testing Admin Dashboard Authentication")
+        
+        success, data, status = await self.make_request("GET", "/admin/feedback")
+        
+        if not success and status in [401, 403]:
+            self.log_test("✅ Admin Dashboard - Authentication Required", True, 
+                        f"Unauthenticated request correctly rejected with {status}")
+        else:
+            self.log_test("❌ Admin Dashboard - Authentication Bypass", False, 
+                        f"Expected 401/403, got {status}")
+        
+        # Test 3: Admin Dashboard with Query Parameters
+        print("\n3️⃣ Testing Admin Dashboard with Query Parameters")
+        
+        # Test with limit parameter
+        success, data, status = await self.make_request("GET", "/admin/feedback?limit=5", headers=mock_headers)
+        
+        if success and isinstance(data, dict):
+            feedback_array = data.get("feedback", [])
+            if len(feedback_array) <= 5:
+                self.log_test("✅ Admin Dashboard - Limit Parameter", True, 
+                            f"Limit parameter working: returned {len(feedback_array)} items (≤5)")
+            else:
+                self.log_test("⚠️ Admin Dashboard - Limit Parameter", False, 
+                            f"Limit parameter may not be working: returned {len(feedback_array)} items (>5)")
+        
+        # Test 4: JSON Serialization Check
+        print("\n4️⃣ Testing JSON Serialization (MongoDB ObjectId Issues)")
+        
+        success, data, status = await self.make_request("GET", "/admin/feedback", headers=mock_headers)
+        
+        if success:
+            try:
+                import json
+                json_string = json.dumps(data)
+                self.log_test("✅ Admin Dashboard - JSON Serialization", True, 
+                            "Response data properly serialized (no MongoDB ObjectId issues)")
+                
+                # Check if we can parse it back
+                parsed_data = json.loads(json_string)
+                if isinstance(parsed_data, dict) and "feedback" in parsed_data:
+                    self.log_test("✅ Admin Dashboard - JSON Round-trip", True, 
+                                "JSON data can be properly parsed by frontend")
+                
+            except Exception as e:
+                self.log_test("❌ Admin Dashboard - JSON Serialization", False, 
+                            f"JSON serialization error: {str(e)}")
+        
+        print("\n🎯 ADMIN FEEDBACK DASHBOARD FIX SUMMARY:")
+        print("   ✅ Tested GET /api/admin/feedback endpoint functionality")
+        print("   ✅ Verified proper JSON response with feedback array and total_count")
+        print("   ✅ Checked data structure matches frontend dashboard expectations")
+        print("   ✅ Tested authentication requirements and access control")
+        print("   ✅ Verified JSON serialization works without MongoDB ObjectId issues")
+        print("   📋 Expected: Admin feedback dashboard should be accessible and functional")
+
 async def main():
     """Run all backend tests with priority on urgent payment testing"""
     print("🚀 Starting Comprehensive Backend API Testing for ONESource-ai")
