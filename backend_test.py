@@ -4551,8 +4551,9 @@ async def main():
     print("=" * 80)
     
     async with BackendTester() as tester:
-        # 🚨 URGENT: Run payment/checkout testing first (as requested in review)
-        await tester.test_urgent_payment_checkout_functionality()
+        # 🚨 CRITICAL TESTS FROM REVIEW REQUEST - HIGHEST PRIORITY
+        await tester.test_file_upload_fixes()
+        await tester.test_admin_feedback_dashboard_fix()
         
         # Run other critical tests
         await tester.test_basic_api_health()
@@ -4561,27 +4562,21 @@ async def main():
         await tester.test_subscription_status_endpoint_fix()
         await tester.test_mock_firebase_service_starter_tier()
         await tester.test_enhanced_emoji_mapping_consistency()
-        await tester.test_critical_chat_functionality()
+        await tester.test_critical_subscription_fixes()
+        await tester.test_critical_subscription_system_diagnostic()
+        await tester.test_feedback_system_fix()
         await tester.test_ai_chat_system()
-        await tester.test_payment_system()  # Legacy payment test
-        await tester.test_webhook_endpoint()
-        await tester.test_chat_feedback_system()
-        await tester.test_knowledge_contribution_system()
-        await tester.test_chat_history_system()
-        await tester.test_admin_endpoints()
-        await tester.test_developer_access_system()
-        await tester.test_voucher_system()
+        await tester.test_payment_system()
         await tester.test_knowledge_vault_document_upload()
         await tester.test_knowledge_vault_mentor_notes()
         await tester.test_knowledge_vault_search()
-        await tester.test_enhanced_chat_with_knowledge()
-        await tester.test_booster_response_system()
-        await tester.test_weekly_reporting_system()
+        await tester.test_enhanced_chat_system()
+        await tester.test_admin_endpoints()
         await tester.test_partner_registration_system()
-        await tester.test_two_tier_knowledge_upload()
-        await tester.test_enhanced_knowledge_search()
-        await tester.test_enhanced_chat_two_tier_integration()
-        await tester.test_admin_partners_management()
+        await tester.test_voucher_system()
+        await tester.test_developer_access_system()
+        await tester.test_weekly_reporting_system()
+        await tester.test_booster_response_system()
         
         # Print summary
         print("\n" + "=" * 80)
