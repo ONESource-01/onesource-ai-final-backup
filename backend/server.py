@@ -683,18 +683,137 @@ class AIIntelligencePhases:
             }
         }
         
-        # Auto-detect discipline from question content
+        # Detect discipline from question content - ENHANCED DETECTION
         question_lower = question.lower()
-        if any(word in question_lower for word in ["beam", "column", "foundation", "load", "structural"]):
-            detected_discipline = "structural"
-        elif any(word in question_lower for word in ["fire", "smoke", "sprinkler", "detection", "egress"]):
-            detected_discipline = "fire_safety" 
-        elif any(word in question_lower for word in ["hvac", "ventilation", "heating", "cooling", "mechanical"]):
-            detected_discipline = "mechanical"
-        elif any(word in question_lower for word in ["plumbing", "drainage", "water", "sewer", "hydraulic"]):
-            detected_discipline = "hydraulic"
-        else:
-            detected_discipline = discipline
+        detected_discipline = "building_codes"  # Default
+        
+        # MECHANICAL & BUILDING SERVICES
+        if any(word in question_lower for word in ["hydraulic", "plumbing", "water supply", "drainage", "sewer", "pipes"]):
+            detected_discipline = "hydraulic_engineering"
+        elif any(word in question_lower for word in ["hvac", "mechanical", "ventilation", "heating", "cooling", "air conditioning"]):
+            detected_discipline = "mechanical_services"
+        elif any(word in question_lower for word in ["sprinkler", "fire pump", "suppression", "wet system", "dry system"]):
+            detected_discipline = "fire_protection_wet_dry"
+        elif any(word in question_lower for word in ["fire engineering", "performance based", "fire model", "egress"]):
+            detected_discipline = "fire_engineering"
+        elif any(word in question_lower for word in ["electrical", "power", "lighting", "switchboard", "cable"]):
+            detected_discipline = "electrical_engineering"
+        elif any(word in question_lower for word in ["communications", "ict", "data", "telecommunications", "network"]):
+            detected_discipline = "communications_ict"
+        elif any(word in question_lower for word in ["security", "access control", "cctv", "alarm"]):
+            detected_discipline = "security_systems"
+        elif any(word in question_lower for word in ["lift", "elevator", "escalator", "vertical transport"]):
+            detected_discipline = "vertical_transportation"
+        elif any(word in question_lower for word in ["bms", "building automation", "control system", "smart building"]):
+            detected_discipline = "building_automation"
+        elif any(word in question_lower for word in ["acoustic", "noise", "sound", "vibration"]):
+            detected_discipline = "acoustic_engineering"
+        elif any(word in question_lower for word in ["lighting design", "illumination", "daylight"]):
+            detected_discipline = "lighting_design"
+            
+        # STRUCTURAL & CIVIL
+        elif any(word in question_lower for word in ["structural", "beam", "column", "foundation", "load", "concrete", "steel"]):
+            detected_discipline = "structural_engineering"
+        elif any(word in question_lower for word in ["civil", "site development", "earthworks", "pavement", "infrastructure"]):
+            detected_discipline = "civil_engineering"
+        elif any(word in question_lower for word in ["geotechnical", "soil", "foundation", "pile", "bearing capacity"]):
+            detected_discipline = "geotechnical_engineering"
+        elif any(word in question_lower for word in ["seismic", "earthquake", "dynamic", "ductility"]):
+            detected_discipline = "seismic_engineering"
+            
+        # ARCHITECTURE & DESIGN
+        elif any(word in question_lower for word in ["architecture", "design", "space planning", "layout"]):
+            detected_discipline = "architecture"
+        elif any(word in question_lower for word in ["interior design", "fitout", "furniture", "finishes"]):
+            detected_discipline = "interior_design"
+        elif any(word in question_lower for word in ["landscape", "outdoor", "garden", "plaza"]):
+            detected_discipline = "landscape_architecture"
+        elif any(word in question_lower for word in ["urban planning", "town planning", "zoning"]):
+            detected_discipline = "urban_design"
+            
+        # SUSTAINABILITY & ENVIRONMENTAL
+        elif any(word in question_lower for word in ["sustainability", "green building", "environmental", "carbon"]):
+            detected_discipline = "sustainability"
+        elif any(word in question_lower for word in ["energy modelling", "energy efficiency", "thermal performance"]):
+            detected_discipline = "energy_modelling"
+            
+        # BUILDING ENVELOPE
+        elif any(word in question_lower for word in ["facade", "curtain wall", "glazing", "window"]):
+            detected_discipline = "facade_engineering"
+        elif any(word in question_lower for word in ["waterproofing", "membrane", "sealant", "water ingress"]):
+            detected_discipline = "waterproofing_design"
+        elif any(word in question_lower for word in ["roofing", "roof", "membrane", "tiles"]):
+            detected_discipline = "roofing_systems"
+        elif any(word in question_lower for word in ["cladding", "external wall", "panels"]):
+            detected_discipline = "cladding_systems"
+        elif any(word in question_lower for word in ["green star", "nabers", "well", "certification"]):
+            detected_discipline = "green_building_certification"
+            
+        # PROJECT MANAGEMENT & COMMERCIAL
+        elif any(word in question_lower for word in ["project management", "program", "schedule", "coordination"]):
+            detected_discipline = "project_management"
+        elif any(word in question_lower for word in ["cost", "quantity surveying", "estimate", "budget"]):
+            detected_discipline = "cost_planning"
+        elif any(word in question_lower for word in ["contract", "legal", "procurement", "tender"]):
+            detected_discipline = "contract_administration"
+        elif any(word in question_lower for word in ["design management", "coordination", "BIM"]):
+            detected_discipline = "design_management"
+        elif any(word in question_lower for word in ["risk", "safety", "hazard"]):
+            detected_discipline = "risk_management"
+            
+        # SPECIALIST DISCIPLINES
+        elif any(word in question_lower for word in ["heritage", "conservation", "restoration"]):
+            detected_discipline = "heritage_conservation"
+        elif any(word in question_lower for word in ["modular", "prefab", "offsite"]):
+            detected_discipline = "modular_prefabrication"
+        elif any(word in question_lower for word in ["industrial", "process", "manufacturing", "plant"]):
+            detected_discipline = "industrial_process"
+        elif any(word in question_lower for word in ["asbestos", "lead", "hazardous materials"]):
+            detected_discipline = "hazardous_materials"
+        elif any(word in question_lower for word in ["environmental engineering", "contamination", "remediation"]):
+            detected_discipline = "environmental_engineering"
+        elif any(word in question_lower for word in ["traffic", "transport", "parking", "roads"]):
+            detected_discipline = "traffic_transport"
+        elif any(word in question_lower for word in ["health planning", "medical", "hospital", "healthcare"]):
+            detected_discipline = "health_planning"
+        elif any(word in question_lower for word in ["wayfinding", "signage", "navigation"]):
+            detected_discipline = "wayfinding_signage"
+        elif any(word in question_lower for word in ["waste", "recycling", "garbage"]):
+            detected_discipline = "waste_management"
+        
+        # Detect sector from question content
+        detected_sector = "others"  # Default
+        
+        if any(word in question_lower for word in ["office", "commercial", "retail", "mixed use"]):
+            detected_sector = "commercial"
+        elif any(word in question_lower for word in ["warehouse", "industrial", "manufacturing", "factory"]):
+            detected_sector = "industrial"
+        elif any(word in question_lower for word in ["mining", "mine", "resources", "camp"]):
+            detected_sector = "mining_resources"  
+        elif any(word in question_lower for word in ["hospital", "medical", "health", "aged care", "clinic"]):
+            detected_sector = "health"
+        elif any(word in question_lower for word in ["data centre", "server", "data center"]):
+            detected_sector = "data_centres"
+        elif any(word in question_lower for word in ["residential", "apartment", "house", "townhouse"]):
+            detected_sector = "residential"
+        elif any(word in question_lower for word in ["hotel", "hospitality", "resort", "accommodation"]):
+            detected_sector = "hotels_hospitality"
+        elif any(word in question_lower for word in ["school", "university", "education", "classroom"]):
+            detected_sector = "education"
+        elif any(word in question_lower for word in ["airport", "rail", "transport", "infrastructure", "bridge"]):
+            detected_sector = "transport_infrastructure"
+        elif any(word in question_lower for word in ["power plant", "utility", "energy", "water treatment"]):
+            detected_sector = "energy_utilities"
+        elif any(word in question_lower for word in ["government", "civic", "courthouse", "defence"]):
+            detected_sector = "government_civic"
+        elif any(word in question_lower for word in ["shopping", "cinema", "stadium", "entertainment"]):
+            detected_sector = "retail_entertainment"
+        elif any(word in question_lower for word in ["food processing", "abattoir", "cold storage"]):
+            detected_sector = "agriculture_food"
+        elif any(word in question_lower for word in ["sports", "recreation", "gym", "aquatic"]):
+            detected_sector = "sports_recreation"
+        elif any(word in question_lower for word in ["laboratory", "cleanroom", "security facility"]):
+            detected_sector = "specialist_facilities"
             
         return {
             "detected_discipline": detected_discipline,
