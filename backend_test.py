@@ -501,6 +501,200 @@ class BackendTester:
             print("   Regular chat endpoint failed to respond")
             print("🚨 CONCLUSION: Backend API failure - investigate server issues")
 
+    async def test_critical_subscription_fixes(self):
+        """🚨 CRITICAL: Test the specific subscription system fixes mentioned in review request"""
+        print("\n🚨 === CRITICAL SUBSCRIPTION SYSTEM FIXES TESTING ===")
+        print("Testing the exact fixes mentioned in the review request:")
+        print("1. Pro User Subscription Status Fix")
+        print("2. Boost Daily Limit Fix") 
+        print("3. Authentication Security Fix")
+        
+        # Test 1: Pro User Subscription Status Fix
+        print("\n1️⃣ === PRO USER SUBSCRIPTION STATUS FIX ===")
+        print("Testing GET /api/user/subscription with 'pro_user_token_12345'")
+        print("Expected: subscription_tier='pro', subscription_active=true, is_trial=false, NO trial_info section")
+        
+        pro_headers = {"Authorization": "Bearer pro_user_token_12345"}
+        success, data, status = await self.make_request("GET", "/user/subscription", headers=pro_headers)
+        
+        if success and isinstance(data, dict):
+            subscription_tier = data.get("subscription_tier")
+            subscription_active = data.get("subscription_active")
+            is_trial = data.get("is_trial")
+            has_trial_info = "trial_info" in data
+            
+            print(f"   📊 Pro User Subscription Response:")
+            print(f"      - subscription_tier: {subscription_tier}")
+            print(f"      - subscription_active: {subscription_active}")
+            print(f"      - is_trial: {is_trial}")
+            print(f"      - has_trial_info: {has_trial_info}")
+            
+            # Check Pro user subscription status
+            if subscription_tier == "pro":
+                self.log_test("✅ Pro User - Subscription Tier", True, "Pro user correctly shows subscription_tier='pro'")
+            else:
+                self.log_test("❌ Pro User - Subscription Tier", False, f"Expected 'pro', got '{subscription_tier}'")
+            
+            if subscription_active:
+                self.log_test("✅ Pro User - Subscription Active", True, "Pro user correctly shows subscription_active=true")
+            else:
+                self.log_test("❌ Pro User - Subscription Active", False, f"Expected true, got {subscription_active}")
+            
+            if not is_trial:
+                self.log_test("✅ Pro User - Trial Status", True, "Pro user correctly shows is_trial=false")
+            else:
+                self.log_test("❌ Pro User - Trial Status", False, f"Expected false, got {is_trial}")
+            
+            if not has_trial_info:
+                self.log_test("✅ Pro User - No Trial Info", True, "Pro user correctly has NO trial_info section")
+            else:
+                trial_info = data.get("trial_info", {})
+                questions_remaining = trial_info.get("questions_remaining", 0)
+                self.log_test("❌ Pro User - Trial Info Present", False, f"Pro user incorrectly shows trial_info with {questions_remaining} questions remaining")
+            
+            # Overall Pro user status check
+            pro_status_correct = (
+                subscription_tier == "pro" and 
+                subscription_active and 
+                not is_trial and 
+                not has_trial_info
+            )
+            
+            if pro_status_correct:
+                self.log_test("🎯 Pro User Subscription Fix", True, "✅ Pro users no longer show 'Free Trial - 3 questions remaining'")
+            else:
+                self.log_test("🎯 Pro User Subscription Fix", False, "❌ Pro users still show incorrect trial status")
+        else:
+            self.log_test("❌ Pro User Subscription API", False, f"Status: {status}", data)
+        
+        # Test 2: Boost Daily Limit Fix
+        print("\n2️⃣ === BOOST DAILY LIMIT FIX ===")
+        print("Testing POST /api/chat/boost-response with 'pro_user_token_12345'")
+        print("Expected: Pro users get 10 boosts/day instead of 1")
+        
+        boost_data = {
+            "question": "What are fire safety requirements for high-rise buildings in Australia?",
+            "target_tier": "pro"
+        }
+        
+        success, data, status = await self.make_request("POST", "/chat/boost-response", boost_data, pro_headers)
+        
+        if success and isinstance(data, dict):
+            if "boosted_response" in data:
+                response_length = len(str(data["boosted_response"]))
+                self.log_test("✅ Pro User - Boost Function Working", True, f"Pro user can use boost function ({response_length} chars)")
+                
+                # Check if booster usage tracking shows higher limit
+                if "booster_used" in data and data["booster_used"]:
+                    self.log_test("✅ Pro User - Boost Usage Tracking", True, "Boost usage correctly tracked")
+            else:
+                self.log_test("❌ Pro User - Boost Response Format", False, "Missing 'boosted_response' field", data)
+        elif status == 429:
+            error_message = data.get("detail", "Unknown error") if isinstance(data, dict) else str(data)
+            # Check if error message indicates daily limit
+            if "daily" in error_message.lower() and "limit" in error_message.lower():
+                # Extract current usage from error message if available
+                if "(" in error_message and "/" in error_message:
+                    usage_part = error_message.split("(")[1].split(")")[0] if "(" in error_message else ""
+                    if "/" in usage_part:
+                        current, total = usage_part.split("/")
+                        if total.strip() == "10":
+                            self.log_test("✅ Pro User - Daily Limit (10 boosts)", True, f"Pro user has 10 boost daily limit: {error_message}")
+                        elif total.strip() == "1":
+                            self.log_test("❌ Pro User - Daily Limit Still 1", False, f"Pro user still has 1 boost limit: {error_message}")
+                        else:
+                            self.log_test("⚠️ Pro User - Daily Limit Unknown", False, f"Unexpected limit: {error_message}")
+                    else:
+                        self.log_test("⚠️ Pro User - Daily Limit Format", False, f"Cannot parse limit from: {error_message}")
+                else:
+                    self.log_test("❌ Pro User - Boost Daily Limit", False, f"Pro user gets 429 error: {error_message}")
+            else:
+                self.log_test("❌ Pro User - Boost Error", False, f"Unexpected 429 error: {error_message}")
+        else:
+            self.log_test("❌ Pro User - Boost API Failure", False, f"Status: {status}", data)
+        
+        # Test fresh user boost functionality
+        print("\n   Testing fresh user boost functionality...")
+        print("   Testing with 'fresh_user_boost_test' token to verify fresh users can now use boost")
+        
+        fresh_headers = {"Authorization": "Bearer fresh_user_boost_test"}
+        success, data, status = await self.make_request("POST", "/chat/boost-response", boost_data, fresh_headers)
+        
+        if success and isinstance(data, dict):
+            if "boosted_response" in data:
+                self.log_test("✅ Fresh User - Boost Function Working", True, "Fresh user can now use boost function")
+            else:
+                self.log_test("❌ Fresh User - Boost Response Format", False, "Missing 'boosted_response' field", data)
+        elif status == 429:
+            error_message = data.get("detail", "Unknown error") if isinstance(data, dict) else str(data)
+            self.log_test("❌ Fresh User - Boost Still Blocked", False, f"Fresh user still gets 429: {error_message}")
+        else:
+            self.log_test("❌ Fresh User - Boost API Failure", False, f"Status: {status}", data)
+        
+        # Test 3: Authentication Security Fix
+        print("\n3️⃣ === AUTHENTICATION SECURITY FIX ===")
+        print("Testing with different token types to verify proper token differentiation")
+        
+        test_tokens = [
+            {"token": "pro_user_token_12345", "name": "Pro User Token", "expected_valid": True},
+            {"token": "starter_user_token", "name": "Starter User Token", "expected_valid": True},
+            {"token": "invalid_token_123", "name": "Invalid Token", "expected_valid": False}
+        ]
+        
+        for token_test in test_tokens:
+            print(f"\n   Testing {token_test['name']}: {token_test['token']}")
+            headers = {"Authorization": f"Bearer {token_test['token']}"}
+            
+            success, data, status = await self.make_request("GET", "/user/subscription", headers=headers)
+            
+            if token_test["expected_valid"]:
+                if success and isinstance(data, dict):
+                    subscription_tier = data.get("subscription_tier", "unknown")
+                    self.log_test(f"✅ {token_test['name']} - Valid Authentication", True, f"Token accepted, tier: {subscription_tier}")
+                else:
+                    self.log_test(f"❌ {token_test['name']} - Authentication Failed", False, f"Valid token rejected with status {status}")
+            else:
+                if not success and status in [401, 403]:
+                    self.log_test(f"✅ {token_test['name']} - Invalid Token Rejected", True, f"Invalid token correctly rejected with {status}")
+                else:
+                    self.log_test(f"❌ {token_test['name']} - Security Bypass", False, f"Invalid token accepted with status {status}")
+        
+        # Test 4: Verify different user types are properly recognized
+        print("\n4️⃣ === USER TYPE RECOGNITION ===")
+        print("Verifying different user types are properly recognized by the system")
+        
+        user_types = [
+            {"token": "pro_user_token_12345", "expected_tier": "pro", "expected_active": True},
+            {"token": "starter_user_token", "expected_tier": "starter", "expected_active": False}
+        ]
+        
+        for user_type in user_types:
+            headers = {"Authorization": f"Bearer {user_type['token']}"}
+            success, data, status = await self.make_request("GET", "/user/subscription", headers=headers)
+            
+            if success and isinstance(data, dict):
+                subscription_tier = data.get("subscription_tier")
+                subscription_active = data.get("subscription_active")
+                
+                tier_correct = subscription_tier == user_type["expected_tier"]
+                active_correct = subscription_active == user_type["expected_active"]
+                
+                if tier_correct and active_correct:
+                    self.log_test(f"✅ User Type Recognition - {user_type['token']}", True, 
+                                f"Correctly identified as tier='{subscription_tier}', active={subscription_active}")
+                else:
+                    self.log_test(f"❌ User Type Recognition - {user_type['token']}", False, 
+                                f"Expected tier='{user_type['expected_tier']}', active={user_type['expected_active']}, got tier='{subscription_tier}', active={subscription_active}")
+            else:
+                self.log_test(f"❌ User Type Recognition - {user_type['token']}", False, f"API failure: {status}")
+        
+        print("\n🎯 CRITICAL SUBSCRIPTION FIXES SUMMARY:")
+        print("   1. ✅ Tested Pro User Subscription Status (should show pro/active/not trial)")
+        print("   2. ✅ Tested Boost Daily Limit (Pro users should get 10 boosts/day)")
+        print("   3. ✅ Tested Fresh User Boost Access (should work now)")
+        print("   4. ✅ Tested Authentication Security (proper token differentiation)")
+        print("   5. ✅ Tested User Type Recognition (different tiers properly identified)")
+
     async def test_critical_subscription_system_diagnostic(self):
         """🚨 CRITICAL SUBSCRIPTION SYSTEM DIAGNOSTIC - Test subscription status and boost functionality"""
         print("\n🚨 === CRITICAL SUBSCRIPTION SYSTEM DIAGNOSTIC ===")
