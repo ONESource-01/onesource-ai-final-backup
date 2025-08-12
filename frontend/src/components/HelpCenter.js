@@ -581,6 +581,10 @@ Selecting the correct experience level ensures you receive responses that match 
     const matchesSearch = article.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          article.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          article.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Debug logging to help troubleshoot
+    console.log(`Article ${article.id}: category="${article.category}", selectedCategory="${selectedCategory}", matches=${matchesCategory}`);
+    
     return matchesCategory && matchesSearch;
   });
 
