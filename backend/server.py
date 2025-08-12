@@ -1229,12 +1229,11 @@ Water system compliance for AU/NZ construction follows the AS/NZS 3500 series an
 
 **Step-by-Step Implementation:**
 
-• **Design Phase:** Engage licensed plumber for system design and hydraulic calculations
-• **Material Selection:** Use approved materials compliant with AS/NZS 3500.1 Table 4.1
-• **Installation:** Licensed plumber installation with proper fall requirements (1:40 minimum)
-• **Testing:** Pressure testing to AS/NZS 3500.1 Section 7 requirements
-• **Commissioning:** System commissioning and water quality verification
-• **Certification:** Form 16 compliance certificate from licensed plumber
+1. **Design Phase:** Hydraulic consultant engagement for comprehensive system design
+2. **Authority Coordination:** Water authority approvals and connection applications
+3. **Material Selection:** AS/NZS 3500 series compliant fixtures and fittings
+4. **Installation Oversight:** Licensed plumber supervision and testing protocols
+5. **Commissioning:** Performance verification and compliance documentation
 
 🧐 **Mentoring Insight:**
 
