@@ -281,17 +281,6 @@ const ChatInterface = () => {
       // Default
       return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>' + cleanTitle + '</strong></h3></div>';
     });
-      }
-      if (lowerTitle.includes('authority')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🏛️ <strong>Authority Requirements</strong></h3></div>';
-      }
-      if (lowerTitle.includes('documentation')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📄 <strong>Documentation Needed</strong></h3></div>';
-      }
-      
-      // Default
-      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>' + cleanTitle + '</strong></h3></div>';
-    });
     
     // Handle ## patterns - Sub-sections (ENHANCED to catch all variations)
     formatted = formatted.replace(/^##\s*(\d+\.?\s*)?(.*?)$/gmi, (match, number, title) => {
