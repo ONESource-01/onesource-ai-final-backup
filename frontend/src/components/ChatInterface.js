@@ -320,18 +320,30 @@ const ChatInterface = () => {
       return '<div class="mt-2 mb-1"><h5 class="text-sm font-medium text-gray-700 flex items-center gap-2">▪️ <strong>' + cleanTitle + '</strong></h5></div>';
     });
     
-    // STEP 2: Handle plain **text:** patterns and convert to Enhanced Emoji Mapping
-    // This handles cases where the AI sends plain bold headers without emojis
-    formatted = formatted.replace(/\*\*Technical Answer:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔧 <strong>Technical Answer</strong></h3></div>');
-    formatted = formatted.replace(/\*\*Technical Answer\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔧 <strong>Technical Answer</strong></h3></div>');
-    formatted = formatted.replace(/\*\*Mentoring Insight:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧠 <strong>Mentoring Insight</strong></h3></div>');
-    formatted = formatted.replace(/\*\*Mentoring Insight\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧠 <strong>Mentoring Insight</strong></h3></div>');
-    formatted = formatted.replace(/\*\*Next Steps:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>');
-    formatted = formatted.replace(/\*\*Next Steps\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>');
-    formatted = formatted.replace(/\*\*Code Requirements:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📊 <strong>Code Requirements</strong></h3></div>');
-    formatted = formatted.replace(/\*\*Code Requirements\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📊 <strong>Code Requirements</strong></h3></div>');
+    // STEP 2: Handle plain **text:** patterns and convert to Enhanced Emoji Mapping with PROFESSIONAL STYLING
+    // Enhanced emoji mapping with proper professional formatting
+    formatted = formatted.replace(/\*\*Technical Answer:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔧 <span class="text-onesource-dark">Technical Answer</span></h2></div>');
+    formatted = formatted.replace(/\*\*Technical Answer\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔧 <span class="text-onesource-dark">Technical Answer</span></h2></div>');
+    formatted = formatted.replace(/\*\*Mentoring Insight:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🤓 <span class="text-onesource-dark">Mentoring Insight</span></h2></div>');
+    formatted = formatted.replace(/\*\*Mentoring Insight\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🤓 <span class="text-onesource-dark">Mentoring Insight</span></h2></div>');
+    formatted = formatted.replace(/\*\*Next Steps:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📋 <span class="text-onesource-dark">Next Steps</span></h2></div>');
+    formatted = formatted.replace(/\*\*Next Steps\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📋 <span class="text-onesource-dark">Next Steps</span></h2></div>');
+    formatted = formatted.replace(/\*\*Code Requirements:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📊 <span class="text-onesource-dark">Code Requirements</span></h2></div>');
+    formatted = formatted.replace(/\*\*Code Requirements\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📊 <span class="text-onesource-dark">Code Requirements</span></h2></div>');
+    formatted = formatted.replace(/\*\*Compliance Verification:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">✅ <span class="text-onesource-dark">Compliance Verification</span></h2></div>');
+    formatted = formatted.replace(/\*\*Compliance Verification\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">✅ <span class="text-onesource-dark">Compliance Verification</span></h2></div>');
+    formatted = formatted.replace(/\*\*Alternative Solutions:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔄 <span class="text-onesource-dark">Alternative Solutions</span></h2></div>');
+    formatted = formatted.replace(/\*\*Alternative Solutions\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔄 <span class="text-onesource-dark">Alternative Solutions</span></h2></div>');
+    formatted = formatted.replace(/\*\*Authority Requirements:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🏛️ <span class="text-onesource-dark">Authority Requirements</span></h2></div>');
+    formatted = formatted.replace(/\*\*Authority Requirements\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🏛️ <span class="text-onesource-dark">Authority Requirements</span></h2></div>');
+    formatted = formatted.replace(/\*\*Documentation Needed:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📄 <span class="text-onesource-dark">Documentation Needed</span></h2></div>');
+    formatted = formatted.replace(/\*\*Documentation Needed\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📄 <span class="text-onesource-dark">Documentation Needed</span></h2></div>');
+    formatted = formatted.replace(/\*\*Workflow Recommendations:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">⚙️ <span class="text-onesource-dark">Workflow Recommendations</span></h2></div>');
+    formatted = formatted.replace(/\*\*Workflow Recommendations\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">⚙️ <span class="text-onesource-dark">Workflow Recommendations</span></h2></div>');
+    formatted = formatted.replace(/\*\*Clarifying Questions:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">❓ <span class="text-onesource-dark">Clarifying Questions</span></h2></div>');
+    formatted = formatted.replace(/\*\*Clarifying Questions\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">❓ <span class="text-onesource-dark">Clarifying Questions</span></h2></div>');
     
-    // STEP 3: Convert remaining **bold** to proper HTML bold
+    // STEP 3: Convert remaining **bold** to proper HTML bold with professional styling
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
     
     // STEP 3: Handle markdown tables
