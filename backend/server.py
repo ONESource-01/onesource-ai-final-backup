@@ -1060,14 +1060,24 @@ async def get_subscription_status(current_user: Dict[str, Any] = Depends(get_cur
         # Add tier field for frontend compatibility
         subscription["tier"] = subscription.get("subscription_tier", "starter")
         
-        # Transform for frontend compatibility
-        if subscription.get("subscription_tier") == "starter":
-            subscription["is_trial"] = not subscription.get("subscription_active", False)
+        # CRITICAL FIX: Transform for frontend compatibility - Pro users should NOT be in trial mode
+        subscription_tier = subscription.get("subscription_tier", "starter")
+        subscription_active = subscription.get("subscription_active", False)
+        
+        if subscription_tier == "starter":
+            # Only starter users can be in trial mode
+            subscription["is_trial"] = not subscription_active
             if subscription["is_trial"]:
                 subscription["trial_info"] = {
                     "questions_remaining": max(0, 3 - subscription.get("trial_questions_used", 0)),
                     "questions_used": subscription.get("trial_questions_used", 0)
                 }
+        else:
+            # Pro, Pro-Plus, and other paid tiers are NEVER in trial mode
+            subscription["is_trial"] = False
+            # Remove trial_info for paid users
+            if "trial_info" in subscription:
+                del subscription["trial_info"]
         
         return subscription
         
