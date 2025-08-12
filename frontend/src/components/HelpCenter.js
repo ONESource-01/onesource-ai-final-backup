@@ -588,7 +588,10 @@ Selecting the correct experience level ensures you receive responses that match 
                 <Button
                   key={category.id}
                   variant={selectedCategory === category.id ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => {
+                    setSelectedCategory(category.id);
+                    setShowBotResponse(null); // Clear AI response when switching categories
+                  }}
                   className="flex items-center gap-2"
                 >
                   <IconComponent className="h-4 w-4" />
