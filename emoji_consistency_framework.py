@@ -504,13 +504,13 @@ class EmojiConsistencyFramework:
             # Requests
             req_path = output_dir / f"requests_{endpoint}_{timestamp}.jsonl"
             with open(req_path, 'w', encoding='utf-8') as f:
-                for req in self.raw_requests[endpoint.replace("regular", "ask").replace("enhanced", "ask-enhanced")]:
+                for req in self.raw_requests[endpoint]:
                     f.write(json.dumps(req, ensure_ascii=False) + '\n')
             
             # Responses
             resp_path = output_dir / f"responses_{endpoint}_{timestamp}.jsonl"
             with open(resp_path, 'w', encoding='utf-8') as f:
-                for resp in self.raw_responses[endpoint.replace("regular", "ask").replace("enhanced", "ask-enhanced")]:
+                for resp in self.raw_responses[endpoint]:
                     f.write(json.dumps(resp, ensure_ascii=False) + '\n')
             
             print(f"✅ {endpoint.title()} Requests: {req_path}")
