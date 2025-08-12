@@ -801,8 +801,8 @@ Selecting the correct experience level ensures you receive responses that match 
                 <CardContent>
                   {botLoading ? (
                     <div className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-blue-700">Thinking...</span>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-onesource-dark"></div>
+                      <span className="text-onesource-medium">Thinking...</span>
                     </div>
                   ) : (
                     <div className="space-y-3">
