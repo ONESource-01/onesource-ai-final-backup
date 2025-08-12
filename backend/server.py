@@ -2235,6 +2235,41 @@ async def submit_feedback(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error submitting feedback: {str(e)}")
 
+@api_router.get("/admin/feedback")
+async def get_all_feedback(
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    limit: int = 50,
+    feedback_type: Optional[str] = None
+):
+    """Get all feedback for admin review"""
+    try:
+        # TODO: Add admin permission check
+        # For now, allow any authenticated user to see feedback
+        
+        # Build query filter
+        query_filter = {}
+        if feedback_type and feedback_type in ["positive", "negative"]:
+            query_filter["feedback_type"] = feedback_type
+        
+        # Get feedback from database
+        cursor = db.chat_feedback.find(query_filter).sort("timestamp", -1).limit(limit)
+        feedback_list = await cursor.to_list(length=limit)
+        
+        # Clean up MongoDB ObjectId fields
+        cleaned_feedback = []
+        for feedback in feedback_list:
+            feedback.pop("_id", None)  # Remove MongoDB ObjectId
+            cleaned_feedback.append(feedback)
+        
+        return {
+            "feedback": cleaned_feedback,
+            "total_count": len(cleaned_feedback),
+            "filter_applied": feedback_type or "all"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving feedback: {str(e)}")
+
 @api_router.post("/chat/contribution")
 async def submit_contribution(
     contribution_data: KnowledgeContribution,
