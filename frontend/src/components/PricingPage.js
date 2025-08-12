@@ -379,7 +379,13 @@ const PricingPage = () => {
                   <Button
                     onClick={() => handlePurchase(plan.id)}
                     disabled={plan.disabled || purchaseLoading === plan.id}
-                    className={`w-full ${plan.highlighted ? 'bg-onesource-dark hover:bg-onesource-medium text-white' : ''}`}
+                    className={`w-full ${
+                      plan.mostPopular 
+                        ? 'bg-onesource-dark hover:bg-onesource-medium text-white border-2 border-onesource-pale shadow-lg text-lg py-4' 
+                        : plan.highlighted 
+                        ? 'bg-onesource-dark hover:bg-onesource-medium text-white' 
+                        : 'hover:bg-onesource-pale hover:border-onesource-medium'
+                    }`}
                     variant={plan.highlighted ? 'default' : 'outline'}
                   >
                     {purchaseLoading === plan.id ? (
