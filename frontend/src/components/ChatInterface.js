@@ -242,22 +242,45 @@ const ChatInterface = () => {
     
     // STEP 1: Handle markdown headers FIRST (before line breaks are removed)
     
-    // Handle # patterns - Main sections
+    // Handle # patterns - Main sections (ENHANCED EMOJI MAPPING)
     formatted = formatted.replace(/^#\s*(\d+\.?\s*)?(.*?)$/gmi, (match, number, title) => {
       const cleanTitle = title.trim();
       const lowerTitle = cleanTitle.toLowerCase();
       
       if (lowerTitle.includes('technical answer') || lowerTitle.includes('technical')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🛠️ <strong>Technical Answer</strong></h3></div>';
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔧 <strong>Technical Answer</strong></h3></div>';
       }
       if (lowerTitle.includes('mentoring') || lowerTitle.includes('insight')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧐 <strong>Mentoring Insight</strong></h3></div>';
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧠 <strong>Mentoring Insight</strong></h3></div>';
       }
       if (lowerTitle.includes('next steps') || lowerTitle.includes('clarifying')) {
         return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>';
       }
+      if (lowerTitle.includes('code requirements') || lowerTitle.includes('requirements')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📊 <strong>Code Requirements</strong></h3></div>';
+      }
+      if (lowerTitle.includes('compliance')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">✅ <strong>Compliance Verification</strong></h3></div>';
+      }
       if (lowerTitle.includes('alternative')) {
         return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔄 <strong>Alternative Solutions</strong></h3></div>';
+      }
+      if (lowerTitle.includes('authority')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🏛️ <strong>Authority Requirements</strong></h3></div>';
+      }
+      if (lowerTitle.includes('documentation')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📄 <strong>Documentation Needed</strong></h3></div>';
+      }
+      if (lowerTitle.includes('workflow') || lowerTitle.includes('recommendations')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">⚙️ <strong>Workflow Recommendations</strong></h3></div>';
+      }
+      if (lowerTitle.includes('questions') || lowerTitle.includes('clarify')) {
+        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>';
+      }
+      
+      // Default
+      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>' + cleanTitle + '</strong></h3></div>';
+    });
       }
       if (lowerTitle.includes('authority')) {
         return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🏛️ <strong>Authority Requirements</strong></h3></div>';
