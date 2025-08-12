@@ -831,13 +831,16 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Emoji Mapping Inconsistency - Regular chat (/api/chat/ask) does not use Enhanced Emoji Mapping while enhanced chat (/api/chat/ask-enhanced) does"
+    - "Fix Pro User Subscription Status Display Issue"
+    - "Fix Boost Daily Limit Enforcement Issue"
+    - "Fix Payment Completion Subscription Update"
+    - "Fix Subscription Endpoint Authentication Bypass"
   stuck_tasks: 
-    - "Firebase authentication configuration - API key issues preventing full auth flow (non-critical - demo auth working)"
-    - "SendGrid API key configuration - needs valid API key for email functionality in production (non-critical for core functionality)"
-    - "Enhanced Emoji Mapping Inconsistency - Regular chat (/api/chat/ask) does not use Enhanced Emoji Mapping while enhanced chat (/api/chat/ask-enhanced) does"
+    - "Fix Pro User Subscription Status Display Issue - Pro users incorrectly show trial status instead of active subscription"
+    - "Fix Boost Daily Limit Enforcement Issue - All users get 429 errors even for new users"
+    - "Fix Payment Completion Subscription Update - Payment completion not updating subscription status"
   test_all: false
-  test_priority: "enhanced_emoji_mapping_consistency_fix"
+  test_priority: "critical_subscription_fixes"
 
 agent_communication:
   - agent: "main"
