@@ -770,7 +770,11 @@ Selecting the correct experience level ensures you receive responses that match 
                     setSelectedCategory(category.id);
                     setShowBotResponse(null); // Clear AI response when switching categories
                   }}
-                  className="flex items-center gap-2"
+                  className={`flex items-center gap-2 ${
+                    selectedCategory === category.id 
+                      ? 'bg-onesource-medium text-white hover:bg-onesource-dark' 
+                      : 'bg-onesource-light text-white hover:bg-onesource-medium border-onesource-light'
+                  }`}
                 >
                   <IconComponent className="h-4 w-4" />
                   {category.name}
