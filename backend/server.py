@@ -2132,46 +2132,51 @@ async def boost_response(
         # Get AI response with enhanced prompting
         api_key = os.environ.get('OPENAI_API_KEY', '')
         if not api_key or len(api_key) < 10:
-            # Enhanced mock response for booster
+            # Enhanced mock response for booster using Enhanced Emoji Mapping
             boosted_response = f"""
-            **🚀 Enhanced {target_tier.upper().replace('_', '-')} Analysis**
+# 🔧 **Technical Answer**
 
-            **Technical Assessment:**
-            • Comprehensive code compliance analysis
-            • Multi-standard cross-referencing (AS/NZS series)
-            • Advanced risk assessment protocols
-            • Professional implementation guidelines
+**Comprehensive code compliance analysis for your {question}:**
 
-            **Key Compliance Requirements:**
-            ✅ Primary structural requirements verified
-            ✅ Fire safety protocols aligned with BCA
-            ✅ Accessibility standards (DDA) compliance
-            ⚠️ Site-specific considerations required
+## 📊 **Code Requirements**
+• Multi-standard cross-referencing (AS/NZS series)
+• Primary structural requirements verified
+• Fire safety protocols aligned with BCA
+• Accessibility standards (DDA) compliance
 
-            **Professional Recommendations:**
-            🏗️ **Best Practice Implementation:**
-            • Staged construction approach recommended
-            • Quality control checkpoints established
-            • Professional certification pathways outlined
+## ✅ **Compliance Verification**
+• Advanced risk assessment protocols completed
+• Professional implementation guidelines established
+• Site-specific considerations identified
 
-            🔧 **Technical Specifications:**
-            • Detailed material specifications provided
-            • Installation methodology guidelines
-            • Testing and verification protocols
+# 🧠 **Mentoring Insight**
 
-            **Risk Management:**
-            ⚠️ **Critical Considerations:**
-            • Environmental impact assessment
-            • Regulatory approval timeline
-            • Professional liability considerations
+**Professional expertise considerations for this project:**
 
-            **💡 Implementation Roadmap:**
-            1. **Phase 1:** Initial compliance verification
-            2. **Phase 2:** Detailed design development  
-            3. **Phase 3:** Professional review and approval
+## ⚙️ **Workflow Recommendations**
+• Staged construction approach recommended
+• Quality control checkpoints established
+• Professional certification pathways outlined
 
-            ---
-            *This enhanced analysis demonstrates the comprehensive expertise available with {target_tier.upper().replace('_', '-')} membership.*
+## 📄 **Documentation Needed**
+• Detailed material specifications provided
+• Installation methodology guidelines
+• Testing and verification protocols
+
+# 📋 **Next Steps**
+
+## 🏛️ **Authority Requirements**
+1. **Phase 1:** Initial compliance verification
+2. **Phase 2:** Detailed design development  
+3. **Phase 3:** Professional review and approval
+
+## 🔄 **Alternative Solutions**
+• Environmental impact assessment options
+• Regulatory approval timeline variations
+• Professional liability considerations
+
+---
+*This enhanced analysis demonstrates the comprehensive expertise available with {target_tier.upper().replace('_', '-')} membership.*
             """
         else:
             try:
