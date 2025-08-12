@@ -144,11 +144,13 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <img 
-                src="/onesource-primary-logo.png" 
-                alt="ONESource-ai" 
-                className="h-24 w-auto mr-3"
-              />
+              <a href="/" className="cursor-pointer">
+                <img 
+                  src="/onesource-primary-logo.png" 
+                  alt="ONESource-ai" 
+                  className="h-24 w-auto mr-3"
+                />
+              </a>
             </div>
             <nav className="flex items-center space-x-6">
               <a href="#features" className="hover:opacity-75 transition-opacity" style={{ color: '#4b6b8b' }}>Features</a>
