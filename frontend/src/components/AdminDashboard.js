@@ -125,7 +125,7 @@ const AdminDashboard = () => {
       
       // Refresh partners list
       await fetchPartners();
-      await fetchStats(); // Refresh stats
+      await loadStats(); // Refresh stats
     } catch (error) {
       console.error('Partner action failed:', error);
       alert('Failed to ' + action + ' partner: ' + (error.response?.data?.detail || error.message));
