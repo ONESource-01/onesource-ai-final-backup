@@ -1084,7 +1084,7 @@ const ChatInterface = () => {
                 </Button>
                 <Button
                   onClick={submitFeedback}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-onesource-dark hover:bg-onesource-medium text-white"
                 >
                   Submit Feedback
                 </Button>
