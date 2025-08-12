@@ -406,15 +406,13 @@ const ChatInterface = () => {
       console.log('📝 Submitting feedback:', {
         message_id: feedbackModal.messageId,
         feedback_type: feedbackModal.type,
-        feedback_text: feedbackText,
-        session_id: sessionId
+        comment: feedbackText
       });
 
       await apiEndpoints.submitChatFeedback({
         message_id: feedbackModal.messageId,
         feedback_type: feedbackModal.type,
-        feedback_text: feedbackText,
-        session_id: sessionId
+        comment: feedbackText  // Changed from feedback_text to comment
       });
       
       console.log('✅ Feedback submitted successfully');
@@ -422,7 +420,7 @@ const ChatInterface = () => {
       setFeedbackText('');
       
       // Show success message
-      alert('Thank you for your feedback! Your input helps improve ONESource-ai.');
+      alert('Thank you for your feedback! Your input helps improve ONESource-ai and is stored for our development team review.');
       
     } catch (error) {
       console.error('❌ Failed to submit feedback:', error);
