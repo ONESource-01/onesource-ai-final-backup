@@ -387,7 +387,7 @@ Provide structured response using the Enhanced Emoji Mapping:
 
 Use these exact section headers where applicable:
 - 🔧 Technical Answer
-- 🤓 Mentoring Insight  
+- 🧐 Mentoring Insight  
 - 📋 Next Steps
 - 📊 Code Requirements
 - ✅ Compliance Verification
