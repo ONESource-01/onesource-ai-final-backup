@@ -294,7 +294,8 @@ class EmojiConsistencyFramework:
                 "prompt_id": prompt_id,
                 "error": error_msg
             }
-            self.raw_responses[endpoint].append(error_log)
+            endpoint_key = "regular" if endpoint == "ask" else "enhanced"
+            self.raw_responses[endpoint_key].append(error_log)
             
             return False, {"error": error_msg}, 0, error_msg
     
