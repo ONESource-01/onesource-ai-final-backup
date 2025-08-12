@@ -756,13 +756,14 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Emoji Mapping Consistency Fix Verification"
+    - "Pricing Page Icon Logo Fix"
+    - "Pricing Page Purchase Button Spinning Issue Fix"
   stuck_tasks: 
     - "Firebase authentication configuration - API key issues preventing full auth flow (non-critical - demo auth working)"
     - "SendGrid API key configuration - needs valid API key for email functionality in production (non-critical for core functionality)"
     - "Enhanced Emoji Mapping Inconsistency - Regular chat (/api/chat/ask) does not use Enhanced Emoji Mapping while enhanced chat (/api/chat/ask-enhanced) does"
   test_all: false
-  test_priority: "emoji_mapping_consistency_verification"
+  test_priority: "pricing_page_fixes_verification"
 
 agent_communication:
   - agent: "main"
