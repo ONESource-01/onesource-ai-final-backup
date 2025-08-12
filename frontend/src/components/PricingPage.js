@@ -321,7 +321,7 @@ const PricingPage = () => {
                   <Button
                     onClick={() => handlePurchase(plan.id)}
                     disabled={plan.disabled || purchaseLoading === plan.id}
-                    className={`w-full ${plan.highlighted ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+                    className={`w-full ${plan.highlighted ? 'bg-onesource-dark hover:bg-onesource-medium text-white' : ''}`}
                     variant={plan.highlighted ? 'default' : 'outline'}
                   >
                     {purchaseLoading === plan.id ? (
