@@ -5007,7 +5007,10 @@ async def main():
         # Run basic health check first
         await tester.test_basic_api_health()
         
-        # 🚨 MAIN FOCUS: Enhanced Emoji Mapping Consistency Fix
+        # 🚨 MAIN FOCUS: Enhanced Emoji Mapping Water System Fix
+        await tester.test_enhanced_emoji_mapping_water_system_fix()
+        
+        # 🚨 ADDITIONAL: Enhanced Emoji Mapping Consistency Fix
         await tester.test_enhanced_emoji_mapping_consistency_fix()
         
         # Print summary
