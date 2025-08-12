@@ -685,6 +685,18 @@ frontend:
         agent: "testing"
         comment: "🎉 ALL THREE HELP CENTER IMPROVEMENTS SUCCESSFULLY VERIFIED! ✅ BOLD TEXT FORMATTING FIX: Comprehensive testing confirms **bold** text now displays as proper HTML bold formatting instead of showing ** symbols. Found 0 '**' symbols in AI response and 4/4 expected bold sections properly formatted ('Comprehensive Standards Coverage', 'All Construction Disciplines', 'All Construction Sectors', 'Dynamic Standards Integration'). The dangerouslySetInnerHTML regex replacement .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') is working perfectly. ✅ ASSISTANT ICON FIX: ONESource-ai Assistant header now correctly displays the ONESource circular teal icon (onesource-icon.png) instead of bot emoji. Found 1 ONESource icon in AI response and 0 bot emojis, confirming the fix is working. ✅ BUTTON COLOR CONTRAST: Category buttons now use the correct color scheme with proper visual hierarchy. Building Standards button successfully clicked and color changes verified. Unselected buttons use Gull Grey (#95a6b7) and selected buttons use Bismark (#4b6b8b) as specified in the Tailwind config. All three requested improvements are working correctly and provide better user experience with professional formatting, proper branding, and improved visual contrast."
 
+  - task: "Enhanced Emoji Mapping Consistency Across Response Types"
+    implemented: false
+    working: false
+    file: "backend/ai_service.py, backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL INCONSISTENCY FOUND: Enhanced Emoji Mapping is NOT consistent across response types. ✅ ENHANCED CHAT SYSTEM: POST /api/chat/ask-enhanced correctly uses Enhanced Emoji Mapping (🔧 Technical Answer, 🧠 Mentoring Insight, 📋 Next Steps, 📊 Code Requirements, ✅ Compliance Verification, 🔄 Alternative Solutions, 🏛️ Authority Requirements, 📄 Documentation Needed, ⚙️ Workflow Recommendations, ❓ Clarifying Questions). ❌ REGULAR CHAT SYSTEM: POST /api/chat/ask still uses OLD emoji mapping (🛠️ Technical Answer, 🧐 Mentoring Insight) instead of Enhanced Emoji Mapping. ❌ BOOSTER SYSTEM: POST /api/chat/boost-response uses Enhanced Emoji Mapping in mock responses but inconsistency exists between regular and enhanced endpoints. 🔍 ROOT CAUSE: The ai_service.py system_prompt (lines 31-37) still contains old emoji mapping (🛠️, 🧐) while the enhanced chat system in server.py (lines 1907-1908) correctly uses Enhanced Emoji Mapping (🔧, 🧠). 🚨 IMPACT: Users experience inconsistent formatting between regular chat responses and enhanced/boosted responses, breaking the professional user experience. ⚠️ FRONTEND ISSUE: Chat interface may not be sending messages properly - responses not appearing in UI despite backend working correctly. 🎯 REQUIRED FIX: Update ai_service.py system_prompt to use Enhanced Emoji Mapping consistently across all response types."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
