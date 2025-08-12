@@ -161,9 +161,6 @@ const KnowledgeVault = () => {
         industry_sector: '',
         description: ''
       });
-        industry_sector: '',
-        description: ''
-      });
     } catch (error) {
       console.error('Partner registration failed:', error);
       setPartnerResult({
