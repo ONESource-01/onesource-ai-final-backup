@@ -157,6 +157,24 @@ export const AuthProvider = ({ children }) => {
     return null;
   };
 
+  // Simulate Pro upgrade for testing
+  const simulateProUpgrade = () => {
+    const proUser = {
+      uid: 'pro_user_12345',
+      email: 'pro.user@onesource.ai',
+      displayName: 'Pro User (Upgraded)',
+      emailVerified: true
+    };
+    
+    setUser(proUser);
+    setIdToken('pro_user_token_12345');
+    localStorage.setItem('demo_user', JSON.stringify(proUser));
+    console.log('✅ Upgraded to Pro user for testing');
+    
+    // Reload to refresh subscription status
+    window.location.reload();
+  };
+
   const value = {
     user,
     idToken,
@@ -166,7 +184,8 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
     logout,
     resetPassword,
-    getIdToken
+    getIdToken,
+    simulateProUpgrade  // Add this for testing
   };
 
   return (
