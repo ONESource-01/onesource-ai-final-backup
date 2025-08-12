@@ -648,17 +648,18 @@ metadata:
 
 test_plan:
   current_focus:
-    - "✅ SUBSCRIPTION STATUS ENDPOINT FIXES TESTING COMPLETED SUCCESSFULLY"
-    - "Both 'subscription_tier' and 'tier' fields now present and correctly set to 'starter'"
-    - "New users correctly get 'starter' tier by default (5/5 fresh users tested)"
-    - "Mock Firebase service working consistently for new user experience"
-    - "Backend health confirmed - all services running correctly after changes"
-    - "Trial system functional with proper question limits and tracking"
+    - "✅ HELP CENTRE SEARCH FUNCTIONALITY TESTING COMPLETED SUCCESSFULLY"
+    - "Search functionality working correctly after recent fix"
+    - "Shows all articles when search is empty (searchQuery === '')"
+    - "Searches across title, question, excerpt, answer, and content fields"
+    - "Case-insensitive matching working properly"
+    - "Category filtering combined with search operational"
+    - "All requested search terms return appropriate results"
   stuck_tasks: 
     - "Firebase authentication configuration - API key issues preventing full auth flow (non-critical - demo auth working)"
     - "SendGrid API key configuration - needs valid API key for email functionality in production (non-critical for core functionality)"
   test_all: false
-  test_priority: "subscription_fixes_verification_complete"
+  test_priority: "help_centre_search_verification_complete"
 
 agent_communication:
   - agent: "main"
