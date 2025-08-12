@@ -520,8 +520,8 @@ INTELLIGENT GUIDANCE PRINCIPLES:
         """Split AI response into Technical and Mentoring sections"""
         try:
             # Look for the section markers using Enhanced Emoji Mapping
-            if "🔧" in response and "🧠" in response:
-                parts = response.split("🧠")
+            if "🔧" in response and "🤓" in response:
+                parts = response.split("🤓")
                 technical = parts[0].replace("🔧", "").strip()
                 mentoring = parts[1].strip()
                 
