@@ -23,8 +23,20 @@ export const AuthProvider = ({ children }) => {
       const userData = JSON.parse(mockUser);
       setUser(userData);
       setIdToken('mock_demo_token_' + userData.uid);
+    } else {
+      // Auto-create a demo user for better UX if none exists
+      const autoDemoUser = {
+        uid: 'demo_user_auto_' + Date.now(),
+        email: 'demo@onesource.ai',
+        displayName: 'Demo User',
+        emailVerified: true
+      };
+      
+      setUser(autoDemoUser);
+      setIdToken('mock_demo_token_' + autoDemoUser.uid);
+      localStorage.setItem('demo_user', JSON.stringify(autoDemoUser));
+      console.log('Auto-created demo user for testing purchases');
     }
-    // Removed auto-demo user creation to test real user experience
   }, []);
 
   // Sign up with email and password (MOCK)
