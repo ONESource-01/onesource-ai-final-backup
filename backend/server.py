@@ -1337,12 +1337,14 @@ Professional construction delivery involves elevated compliance requirements. En
                 # If completely missing, append with proper section
                 ai_response_text += f"\n\n🧐 **Mentoring Insight:**\n\nKey project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes."
         
-        # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency
-        # Replace any incorrect emojis with the correct 🤓 emoji
-        ai_response_text = ai_response_text.replace("🧠 **Mentoring Insight**", "🤓 **Mentoring Insight**")
-        ai_response_text = ai_response_text.replace("💡 **Mentoring Insight**", "🤓 **Mentoring Insight**")
-        ai_response_text = ai_response_text.replace("🧠 Mentoring Insight", "🤓 Mentoring Insight")
-        ai_response_text = ai_response_text.replace("💡 Mentoring Insight", "🤓 Mentoring Insight")
+        # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency - Use correct 🧐 professor emoji
+        # Replace any incorrect emojis with the correct 🧐 emoji (professor with monocle)
+        ai_response_text = ai_response_text.replace("🧠 **Mentoring Insight**", "🧐 **Mentoring Insight**")
+        ai_response_text = ai_response_text.replace("💡 **Mentoring Insight**", "🧐 **Mentoring Insight**")
+        ai_response_text = ai_response_text.replace("🤓 **Mentoring Insight**", "🧐 **Mentoring Insight**")
+        ai_response_text = ai_response_text.replace("🧠 Mentoring Insight", "🧐 Mentoring Insight")
+        ai_response_text = ai_response_text.replace("💡 Mentoring Insight", "🧐 Mentoring Insight")
+        ai_response_text = ai_response_text.replace("🤓 Mentoring Insight", "🧐 Mentoring Insight")
         
         # Create ai_response structure for backward compatibility
         ai_response = {
