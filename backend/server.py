@@ -1929,14 +1929,14 @@ async def ask_question_enhanced(
         api_key = os.environ.get('OPENAI_API_KEY', '')
         if not api_key or len(api_key) < 10:
             # Mock AI response for testing
-            ai_response = f"""🛠️ **Technical Answer:**
+            ai_response = f"""# 🔧 **Technical Answer:**
             Based on the knowledge base search for "{question_data.question}", here are the key technical considerations:
             
             {knowledge_context[0] if knowledge_context else "No specific knowledge base content found for this query."}
             
             Refer to current AS/NZS standards and NCC requirements for your project's approval date.
             
-            🧐 **Mentoring Insight:**
+            # 🧠 **Mentoring Insight:**
             Key project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes.
             """
         else:
