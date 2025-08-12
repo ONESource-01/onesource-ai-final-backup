@@ -640,11 +640,13 @@ const UserProfile = ({ onClose, onPreferencesUpdate }) => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <div className="flex items-center">
-                <img 
-                  src="/onesource-primary-logo.png" 
-                  alt="ONESource-ai" 
-                  className="h-4 w-auto"
-                />
+                <a href="/" className="cursor-pointer">
+                  <img 
+                    src="/onesource-primary-logo.png" 
+                    alt="ONESource-ai" 
+                    className="h-4 w-auto"
+                  />
+                </a>
               </div>
             </div>
             
