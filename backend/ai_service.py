@@ -315,8 +315,18 @@ GENERAL MENTORING CONTEXT:
             
             ai_context += mentoring_context
             
-            # Build conversation history with enhanced system prompt
-            messages = [{"role": "system", "content": enhanced_system_prompt + context + ai_context}]
+            # Build conversation history with enhanced system prompt that includes Enhanced Emoji Mapping
+            # Combine the discipline-specific prompt with the Enhanced Emoji Mapping structure
+            combined_system_prompt = f"""
+{enhanced_system_prompt}
+
+{self.system_prompt}
+
+{context}
+
+{ai_context}
+"""
+            messages = [{"role": "system", "content": combined_system_prompt}]
             
             if conversation_history:
                 for msg in conversation_history[-10:]:  # Last 10 messages for context
