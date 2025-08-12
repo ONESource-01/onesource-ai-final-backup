@@ -1166,7 +1166,7 @@ async def ask_question(
         
         MANDATORY DUAL-LAYER STRUCTURE - YOU MUST INCLUDE BOTH SECTIONS:
         1. 🔧 **Technical Answer:** - comprehensive technical guidance
-        2. 🧠 **Mentoring Insight:** - contextual guidance considering user's professional background
+        2. 💡 **Mentoring Insight:** - contextual guidance considering user's professional background
         
         EXACT SECTION HEADERS TO USE (MUST include emojis):
         - 🔧 **Technical Answer:** (REQUIRED - MUST BE INCLUDED)
