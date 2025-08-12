@@ -37,6 +37,16 @@ const PricingPage = () => {
   };
 
   const handlePurchase = async (packageId) => {
+    // Handle free starter plan differently
+    if (packageId === 'starter') {
+      if (!user) {
+        window.location.href = '/auth';
+      } else {
+        window.location.href = '/chat';
+      }
+      return;
+    }
+
     if (!user) {
       window.location.href = '/auth';
       return;
@@ -77,6 +87,8 @@ const PricingPage = () => {
         setError('Checkout service unavailable. Please try again later.');
       } else if (err.response?.status === 401) {
         setError('Please sign in to continue with your purchase.');
+      } else if (err.response?.status === 400) {
+        setError('Invalid package selected. Please try a different plan.');
       } else {
         setError(err.response?.data?.detail || 'Failed to start checkout process. Please try again.');
       }
