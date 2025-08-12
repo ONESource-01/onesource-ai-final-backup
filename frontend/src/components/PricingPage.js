@@ -182,12 +182,13 @@ const PricingPage = () => {
         'Admin dashboard access'
       ],
       limitations: [],
-      highlighted: false,
+      highlighted: true, // Made Pro-Plus highlighted
       cta: 'Start Pro-Plus Trial',
       disabled: false,
       promotion: '5 weeks free to new users',
       badge: 'Best Value',
-      popular: true
+      popular: true, // This will show "MOST POPULAR"
+      mostPopular: true // Added for extra prominence
     },
     {
       id: 'day_pass',
