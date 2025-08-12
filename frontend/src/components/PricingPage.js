@@ -189,7 +189,7 @@ const PricingPage = () => {
       <header className="bg-white/80 backdrop-blur-sm border-b border-blue-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link to="/" className="flex items-center text-blue-600 hover:text-blue-800">
+            <Link to="/" className="flex items-center text-onesource-dark hover:text-onesource-medium">
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back to Home
             </Link>
