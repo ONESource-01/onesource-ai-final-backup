@@ -742,11 +742,15 @@ Selecting the correct experience level ensures you receive responses that match 
             <CardContent className="p-6">
               <div className="relative max-w-2xl mx-auto">
                 <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                <Input
+                <input
+                  type="text"
                   placeholder="Search help articles, FAQ, and system information..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-3 text-lg"
+                  onChange={(e) => {
+                    console.log('Search input changed:', e.target.value);
+                    setSearchQuery(e.target.value);
+                  }}
+                  className="flex h-9 w-full rounded-md border border-gray-300 bg-transparent pl-10 pr-4 py-3 text-lg shadow-sm transition-colors placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             </CardContent>
