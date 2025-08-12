@@ -320,7 +320,18 @@ const ChatInterface = () => {
       return '<div class="mt-2 mb-1"><h5 class="text-sm font-medium text-gray-700 flex items-center gap-2">▪️ <strong>' + cleanTitle + '</strong></h5></div>';
     });
     
-    // STEP 2: Convert **bold** to proper HTML bold
+    // STEP 2: Handle plain **text:** patterns and convert to Enhanced Emoji Mapping
+    // This handles cases where the AI sends plain bold headers without emojis
+    formatted = formatted.replace(/\*\*Technical Answer:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔧 <strong>Technical Answer</strong></h3></div>');
+    formatted = formatted.replace(/\*\*Technical Answer\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔧 <strong>Technical Answer</strong></h3></div>');
+    formatted = formatted.replace(/\*\*Mentoring Insight:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧠 <strong>Mentoring Insight</strong></h3></div>');
+    formatted = formatted.replace(/\*\*Mentoring Insight\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧠 <strong>Mentoring Insight</strong></h3></div>');
+    formatted = formatted.replace(/\*\*Next Steps:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>');
+    formatted = formatted.replace(/\*\*Next Steps\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>');
+    formatted = formatted.replace(/\*\*Code Requirements:\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📊 <strong>Code Requirements</strong></h3></div>');
+    formatted = formatted.replace(/\*\*Code Requirements\*\*/gi, '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📊 <strong>Code Requirements</strong></h3></div>');
+    
+    // STEP 3: Convert remaining **bold** to proper HTML bold
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
     
     // STEP 3: Handle markdown tables
