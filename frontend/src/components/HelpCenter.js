@@ -298,35 +298,37 @@ When you ask about disciplines outside your expertise, ONESource-ai provides exp
       id: 4,
       question: "What construction standards does ONESource-ai cover?",
       category: "standards",
-      answer: `ONESource-ai covers comprehensive AU/NZ construction standards:
+      answer: `ONESource-ai considers **all relevant AU/NZ standards that are available to the AI agent across all disciplines and sectors of the construction industry**.
 
-**Australian Standards:**
-• National Construction Code (NCC) 2025 updates
-• AS 1851-2012 (Fire protection systems) - latest 2025 amendments
-• AS 1668.2:2024 (Mechanical ventilation in buildings)
-• AS 3600 (Concrete structures)
-• AS 4100 (Steel structures)
-• AS 1530 (Fire tests on building materials)
+**Comprehensive Standards Coverage:**
+ONESource-ai has access to and considers the full spectrum of Australian and New Zealand construction standards, codes, and regulations that are publicly available and relevant to your specific query, including:
 
-**New Zealand Standards:**
-• New Zealand Building Code (NZBC)
-• NZS 3604:2011 (Light timber frame building)
-• Building Product Specifications for overseas products
-• NZS 4203 (Wind loads)
-• NZS 1170 (Structural design actions)
+**All Construction Disciplines:**
+• Architecture and building design standards
+• Structural engineering (concrete, steel, timber, masonry)
+• Fire safety and protection systems
+• HVAC, mechanical, and hydraulic services
+• Electrical engineering and systems
+• Civil engineering and infrastructure
+• Geotechnical and foundation standards
+• Environmental and sustainability requirements
+• Accessibility and universal design codes
 
-**Specialized Coverage:**
-• Fire safety standards (wet & dry systems)
-• HVAC and mechanical services standards
-• Electrical engineering requirements
-• Structural and seismic design codes
-• Environmental and sustainability standards (NABERS, Green Star)
+**All Construction Sectors:**
+• Residential construction (single dwelling to high-rise)
+• Commercial and office buildings
+• Industrial and manufacturing facilities
+• Healthcare and aged care facilities
+• Educational institutions
+• Retail and hospitality venues
+• Infrastructure and civil works
+• Specialized facilities (data centers, laboratories, etc.)
 
-**Regular Updates:**
-• Standards are updated as new versions are released
-• Alert system for major code changes
-• Historical version access for reference
-• Cross-referencing between related standards`
+**Dynamic Standards Integration:**
+Rather than being limited to a fixed list, ONESource-ai intelligently identifies and applies the most current and relevant AU/NZ standards based on your specific question, project type, and context. This includes Australian Standards (AS/NZS), National Construction Code (NCC), New Zealand Building Code (NZBC), and industry-specific codes and guidelines.
+
+**Key Advantage:**
+Our AI doesn't just reference standards - it understands how they interconnect across disciplines and applies the most relevant combination for your specific construction challenge, ensuring comprehensive compliance guidance across the entire AU/NZ construction industry.`
     },
     {
       id: 5,
