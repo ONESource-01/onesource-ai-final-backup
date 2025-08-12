@@ -621,9 +621,196 @@ class BackendTester:
         else:
             self.log_test("AI Chat (Authenticated User)", False, f"Status: {status}", data)
     
+    async def test_urgent_payment_checkout_functionality(self):
+        """🚨 URGENT: Test payment/checkout functionality causing spinning buttons on pricing page"""
+        print("\n🚨 === URGENT PAYMENT/CHECKOUT TESTING ===")
+        print("Testing the exact payment flow that users experience when clicking upgrade plans")
+        
+        # Test 1: POST /api/pricing to verify pricing packages are loading correctly
+        print("\n1️⃣ Testing POST /api/pricing endpoint...")
+        success, data, status = await self.make_request("POST", "/pricing")
+        
+        if success and isinstance(data, dict):
+            if "packages" in data and isinstance(data["packages"], dict):
+                packages = data["packages"]
+                expected_packages = ["pro", "consultant", "day_pass"]
+                if all(pkg in packages for pkg in expected_packages):
+                    self.log_test("✅ POST /api/pricing - Package Loading", True, f"Found {len(packages)} packages: {list(packages.keys())}")
+                    
+                    # Check pricing details
+                    for pkg_id, pkg_info in packages.items():
+                        if isinstance(pkg_info, dict) and "price" in pkg_info:
+                            self.log_test(f"✅ Package {pkg_id} - Price Info", True, f"Price: {pkg_info.get('price', 'N/A')}")
+                        else:
+                            self.log_test(f"❌ Package {pkg_id} - Price Info", False, "Missing price information", pkg_info)
+                else:
+                    missing = [pkg for pkg in expected_packages if pkg not in packages]
+                    self.log_test("❌ POST /api/pricing - Missing Packages", False, f"Missing packages: {missing}", data)
+            else:
+                self.log_test("❌ POST /api/pricing - Invalid Format", False, "Invalid packages format", data)
+        else:
+            self.log_test("❌ POST /api/pricing - API Failure", False, f"Status: {status}", data)
+        
+        # Test 2: POST /api/payment/checkout with different package IDs (unauthenticated)
+        print("\n2️⃣ Testing POST /api/payment/checkout (Unauthenticated Users)...")
+        
+        test_packages = [
+            {"package_id": "pro", "name": "Pro Plan"},
+            {"package_id": "consultant", "name": "Pro-Plus Plan (Consultant)"},
+            {"package_id": "day_pass", "name": "Day Pass"}
+        ]
+        
+        for package in test_packages:
+            print(f"\n   Testing {package['name']} (package_id: {package['package_id']})")
+            
+            checkout_data = {
+                "package_id": package["package_id"],
+                "origin_url": "https://onesource-ai.preview.emergentagent.com"
+            }
+            
+            success, data, status = await self.make_request("POST", "/payment/checkout", checkout_data)
+            
+            if success and isinstance(data, dict):
+                if "checkout_url" in data and "session_id" in data:
+                    session_id = data["session_id"]
+                    checkout_url = data["checkout_url"]
+                    self.log_test(f"✅ {package['name']} - Checkout Creation", True, 
+                                f"Session: {session_id[:20]}..., URL: {checkout_url[:50]}...")
+                    
+                    # Verify it's a valid Stripe URL
+                    if "stripe.com" in checkout_url or "checkout.stripe.com" in checkout_url:
+                        self.log_test(f"✅ {package['name']} - Stripe URL Valid", True, "Valid Stripe checkout URL")
+                    else:
+                        self.log_test(f"⚠️ {package['name']} - Stripe URL Format", False, f"Unexpected URL format: {checkout_url}")
+                        
+                else:
+                    self.log_test(f"❌ {package['name']} - Missing Fields", False, "Missing checkout_url or session_id", data)
+            else:
+                self.log_test(f"❌ {package['name']} - Checkout Failed", False, f"Status: {status}", data)
+                
+                # Check for specific error messages that might cause spinning
+                if isinstance(data, dict) and "detail" in data:
+                    error_detail = data["detail"]
+                    if "timeout" in error_detail.lower():
+                        self.log_test(f"🚨 {package['name']} - TIMEOUT ERROR", False, f"Timeout detected: {error_detail}")
+                    elif "invalid" in error_detail.lower():
+                        self.log_test(f"🚨 {package['name']} - INVALID PACKAGE", False, f"Invalid package error: {error_detail}")
+        
+        # Test 3: POST /api/payment/checkout with authenticated user
+        print("\n3️⃣ Testing POST /api/payment/checkout (Authenticated Users)...")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        for package in test_packages:
+            print(f"\n   Testing {package['name']} with authentication")
+            
+            checkout_data = {
+                "package_id": package["package_id"],
+                "origin_url": "https://onesource-ai.preview.emergentagent.com"
+            }
+            
+            success, data, status = await self.make_request("POST", "/payment/checkout", checkout_data, mock_headers)
+            
+            if success and isinstance(data, dict):
+                if "checkout_url" in data and "session_id" in data:
+                    session_id = data["session_id"]
+                    self.log_test(f"✅ {package['name']} - Auth Checkout", True, f"Session: {session_id[:20]}...")
+                else:
+                    self.log_test(f"❌ {package['name']} - Auth Missing Fields", False, "Missing required fields", data)
+            else:
+                self.log_test(f"❌ {package['name']} - Auth Checkout Failed", False, f"Status: {status}", data)
+        
+        # Test 4: Check for errors or timeouts in payment creation process
+        print("\n4️⃣ Testing Error Handling and Timeout Scenarios...")
+        
+        # Test invalid package (should cause error, not spinning)
+        invalid_checkout_data = {
+            "package_id": "invalid_package",
+            "origin_url": "https://onesource-ai.preview.emergentagent.com"
+        }
+        
+        success, data, status = await self.make_request("POST", "/payment/checkout", invalid_checkout_data)
+        
+        if not success and status == 400:
+            self.log_test("✅ Invalid Package Rejection", True, "Correctly rejected invalid package with 400 status")
+        else:
+            self.log_test("❌ Invalid Package Handling", False, f"Expected 400, got {status}", data)
+        
+        # Test missing required fields
+        incomplete_data = {"package_id": "pro"}  # Missing origin_url
+        
+        success, data, status = await self.make_request("POST", "/payment/checkout", incomplete_data)
+        
+        if not success and status in [400, 422]:
+            self.log_test("✅ Incomplete Data Rejection", True, f"Correctly rejected incomplete data with {status} status")
+        else:
+            self.log_test("❌ Incomplete Data Handling", False, f"Expected 400/422, got {status}", data)
+        
+        # Test 5: Verify Stripe integration is working and returning proper checkout URLs
+        print("\n5️⃣ Testing Stripe Integration Health...")
+        
+        # Test a simple checkout to verify Stripe is responding
+        simple_checkout = {
+            "package_id": "pro",
+            "origin_url": "https://onesource-ai.preview.emergentagent.com"
+        }
+        
+        success, data, status = await self.make_request("POST", "/payment/checkout", simple_checkout)
+        
+        if success and isinstance(data, dict):
+            checkout_url = data.get("checkout_url", "")
+            session_id = data.get("session_id", "")
+            
+            # Verify Stripe integration health
+            stripe_indicators = [
+                "stripe.com" in checkout_url,
+                "checkout.stripe.com" in checkout_url,
+                session_id.startswith("cs_") if session_id else False,  # Stripe session IDs start with cs_
+                len(session_id) > 20 if session_id else False  # Stripe session IDs are long
+            ]
+            
+            if any(stripe_indicators):
+                self.log_test("✅ Stripe Integration Health", True, "Stripe integration appears to be working")
+            else:
+                self.log_test("⚠️ Stripe Integration Health", False, f"Unexpected response format - URL: {checkout_url}, Session: {session_id}")
+        else:
+            self.log_test("❌ Stripe Integration Health", False, f"Stripe integration may be failing - Status: {status}", data)
+        
+        # Test 6: Test payment status endpoint
+        print("\n6️⃣ Testing Payment Status Checking...")
+        
+        # First create a checkout session to get a session ID
+        success, data, status = await self.make_request("POST", "/payment/checkout", simple_checkout)
+        
+        if success and isinstance(data, dict) and "session_id" in data:
+            session_id = data["session_id"]
+            
+            # Test payment status check
+            success_status, status_data, status_code = await self.make_request("GET", f"/payment/status/{session_id}")
+            
+            if success_status and isinstance(status_data, dict):
+                if "status" in status_data and "payment_status" in status_data:
+                    self.log_test("✅ Payment Status Check", True, 
+                                f"Status: {status_data['status']}, Payment: {status_data['payment_status']}")
+                else:
+                    self.log_test("❌ Payment Status Check", False, "Missing status fields", status_data)
+            else:
+                self.log_test("❌ Payment Status Check", False, f"Status: {status_code}", status_data)
+        else:
+            self.log_test("❌ Payment Status Check", False, "Could not create session for status testing")
+        
+        print("\n🎯 PAYMENT CHECKOUT TESTING SUMMARY:")
+        print("   - Tested POST /api/pricing for package loading")
+        print("   - Tested POST /api/payment/checkout with all package IDs (pro, consultant, day_pass)")
+        print("   - Tested both authenticated and unauthenticated users")
+        print("   - Verified Stripe integration and checkout URL generation")
+        print("   - Tested error handling for invalid packages and incomplete data")
+        print("   - Checked payment status endpoint functionality")
+        print("   - Identified any errors or timeouts that could cause spinning buttons")
+
     async def test_payment_system(self):
-        """Test payment system endpoints"""
-        print("\n=== Testing Payment System ===")
+        """Test payment system endpoints (legacy test - keeping for compatibility)"""
+        print("\n=== Testing Payment System (Legacy) ===")
         
         # Test pricing packages retrieval
         success, data, status = await self.make_request("GET", "/pricing")
