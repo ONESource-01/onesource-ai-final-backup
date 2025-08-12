@@ -1149,8 +1149,18 @@ async def ask_question(
             []  # TODO: Add conversation history
         )
         
-        # Format response
+        # Format response to match enhanced chat structure
         formatted_response = construction_ai.format_dual_response(ai_response["response"])
+        
+        # Ensure consistent structure with enhanced chat
+        response_structure = {
+            "technical": formatted_response.get("technical", ai_response["response"]),
+            "mentoring": formatted_response.get("mentoring", "Key project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes."),
+            "format": formatted_response.get("format", "dual"),
+            "knowledge_sources": 0,
+            "partner_sources": [],
+            "knowledge_used": False
+        }
         
         # Store conversation in database
         conversation_data = {
