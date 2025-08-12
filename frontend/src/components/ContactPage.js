@@ -193,7 +193,7 @@ const ContactPage = () => {
                     <p className="font-medium text-gray-900">Email Support</p>
                     <a 
                       href="mailto:support@onesource-ai.com" 
-                      className="text-blue-600 hover:underline text-sm"
+                      className="text-onesource-dark hover:underline text-sm"
                     >
                       support@onesource-ai.com
                     </a>
