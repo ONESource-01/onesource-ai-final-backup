@@ -37,6 +37,8 @@ const PricingPage = () => {
   };
 
   const handlePurchase = async (packageId) => {
+    console.log('🛒 Purchase attempted:', { packageId, user: !!user, userEmail: user?.email });
+    
     // Handle free starter plan differently
     if (packageId === 'starter') {
       if (!user) {
@@ -48,10 +50,12 @@ const PricingPage = () => {
     }
 
     if (!user) {
+      console.log('❌ No user found, redirecting to auth');
       window.location.href = '/auth';
       return;
     }
 
+    console.log('✅ User authenticated, starting purchase process...');
     setPurchaseLoading(packageId);
     setError('');
 
@@ -62,21 +66,26 @@ const PricingPage = () => {
       );
       
       const originUrl = window.location.origin;
+      console.log('📡 Making checkout request:', { packageId, originUrl });
+      
       const checkoutPromise = apiEndpoints.createCheckoutSession({
         package_id: packageId,
         origin_url: originUrl
       });
 
       const response = await Promise.race([checkoutPromise, timeoutPromise]);
+      console.log('📦 Checkout response received:', response);
 
       if (response.data.checkout_url) {
+        console.log('🎉 Redirecting to Stripe:', response.data.checkout_url);
         window.location.href = response.data.checkout_url;
       } else {
+        console.log('❌ No checkout_url in response:', response.data);
         setError('Failed to create checkout session. Please try again.');
         setPurchaseLoading('');
       }
     } catch (err) {
-      console.error('Purchase error:', err);
+      console.error('💥 Purchase error:', err);
       
       // Clear loading state on error
       setPurchaseLoading('');
