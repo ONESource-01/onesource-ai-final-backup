@@ -784,14 +784,14 @@ class BackendTester:
         if total_working > 0:
             if correct_emoji_count == total_working and wrong_emoji_count == 0:
                 print("✅ Enhanced Emoji Mapping Fix: SUCCESSFUL")
-                print(f"   All {total_working} working endpoints correctly use 🤓 for Mentoring Insight")
-                print("   ✅ NO instances of incorrect 🧠 or 💡 emojis found")
-                print("🎉 CONCLUSION: The DEFINITIVE Enhanced Emoji Mapping fix is working correctly")
-                print("   Backend is sending responses with correct 🤓 emoji as required")
+                print(f"   All {total_working} working endpoints correctly use 🧐 for Mentoring Insight")
+                print("   ✅ NO instances of incorrect 🤓 or 🧠 emojis found")
+                print("🎉 CONCLUSION: The Enhanced Emoji Mapping consistency fix is working correctly")
+                print("   Backend is sending responses with correct 🧐 professor with monocle emoji as required")
             elif wrong_emoji_count > 0:
                 print("❌ Enhanced Emoji Mapping Fix: FAILED")
-                print(f"   {wrong_emoji_count}/{total_working} endpoints still use incorrect emojis (🧠 or 💡)")
-                print("   🚨 CRITICAL: Some endpoints not updated with correct 🤓 emoji")
+                print(f"   {wrong_emoji_count}/{total_working} endpoints still use incorrect emojis (🤓 or 🧠)")
+                print("   🚨 CRITICAL: Some endpoints not updated with correct 🧐 emoji")
                 print("🚨 CONCLUSION: Backend still has emoji mapping inconsistency - fix incomplete")
             else:
                 print("⚠️ Enhanced Emoji Mapping Fix: PARTIAL")
