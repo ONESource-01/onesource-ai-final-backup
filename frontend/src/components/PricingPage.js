@@ -137,7 +137,7 @@ const PricingPage = () => {
     {
       id: 'pro',
       name: 'Pro',
-      price: pricing?.pro?.amount || 9.00,
+      price: 17.9,
       currency: 'AUD',
       period: 'per month',
       description: 'Professional Construction Intelligence',
