@@ -1,0 +1,98 @@
+<analysis>
+The previous AI engineer’s work has significantly evolved the ONESource AI application. Initially, critical UI/UX bugs were addressed, including fixing missing buttons and refining error message placements. A major focus was enhancing the chat interface for professional AI response formatting, incorporating specific emoji mappings, and addressing issues where AI responses were not displayed or formatted correctly. This involved extensive debugging across  and  on the frontend, and  and  on the backend, particularly around inconsistent system prompts and mock response handling.
+
+Subsequently, the engineer undertook a comprehensive branding update, replacing logos, implementing a new color palette via Tailwind, and ensuring correct linking. Help Center functionality received attention, with FAQ rewrites for standards coverage and a significant fix for the search bar, which was resolved by addressing an overlapping UI element (). This also involved improving markdown rendering, assistant icons, and button contrast.
+
+A major feature addition was the implementation of a Phase 1 Global Business Identifier system for partner registration. This involved creating new React components (, ), updating  and  on the frontend, and modifying  and  on the backend to support multi-country, format-only validation, and a manual review workflow.
+
+The most recent work focused on the pricing page, adding the ONESource-ai icon, fixing spinning purchase buttons (due to package ID mismatches and lack of error handling for Stripe API calls), updating pricing values, and enhancing the visual prominence of the Pro-Plus plan. While most issues were resolved, the Enhanced Emoji Mapping Consistency for the regular chat endpoint remained a persistent, unresolved bug, where  and  emojis were still missing from technical and mentoring insights despite multiple attempts to align backend prompts and frontend rendering.
+</analysis>
+
+<product_requirements>
+The ONESource AI application aims to be an AI mentor and single point of truth for the AU/NZ construction industry. Key functionalities include Firebase authentication, Stripe payments, and OpenAI integration within a branded UI. Previous efforts focused on backend stability, UI/UX (e.g., ChatGPT-like AI formatting), and deployment. Core features include a Knowledge Vault (evolving into Community and Personal knowledge banks, requiring partner self-registration and content policies), and user personalization via comprehensive profiles and onboarding. The user's primary focus is resolving critical navigation, functionality bugs, and UI issues from beta testing (V1, V2, V3), enhancing user feedback, and refining UI elements like logo placement and dynamic content to achieve a polished, professional, and intelligently responsive AI platform. Recent requirements include expanding partner registration globally with a Global Business Identifier (GBI) selector and validator (initially for English-speaking countries with format-only validation) and enhancing the pricing page's branding, functionality, and prominence of specific plans.
+</product_requirements>
+
+<key_technical_concepts>
+-   **Full-stack Architecture**: React.js (frontend), FastAPI (backend), MongoDB (database).
+-   **Service Management**: backend                          RUNNING   pid 48, uptime 0:00:04
+code-server                      RUNNING   pid 50, uptime 0:00:04
+frontend                         STOPPING  
+mongodb                          RUNNING   pid 56, uptime 0:00:04
+supervisor>  for process control.
+-   **Third-party Integrations**: Firebase (Auth), Stripe (Payments), OpenAI (AI).
+-   **AI/Data Engineering**: Retrieval-Augmented Generation (RAG), 3-Phase AI Intelligence, contextual prompting.
+-   **UI/UX Frameworks**: Tailwind CSS, Shadcn/UI, React components, Markdown rendering, regex.
+</key_technical_concepts>
+
+<code_architecture>
+The application follows a standard full-stack structure with a  and  directory.
+
+
+
+-   ****: The core FastAPI backend.
+    -   **Summary**: Manages all API endpoints. Responsible for user authentication, AI response generation, payments, and partner management.
+    -   **Changes**: Updated to handle new partner admin endpoints (, ). Modified AI chat endpoints (, ) to aim for consistent Enhanced Emoji Mapping, though full consistency for regular chat remains elusive. Adjusted response structures for frontend compatibility.
+-   ****: Core AI logic for generating responses.
+    -   **Summary**: Contains system prompts and orchestrates AI response generation based on subscription tiers and user preferences.
+    -   **Changes**: Extensively modified system prompts and mock responses to incorporate the Enhanced Emoji Mapping (🔧, 🧠, 📋, etc.) and ensure structured output. Attempted to align regular chat responses with enhanced responses by modifying the prompt and mock logic, and making sure the actual OpenAI call uses the mock response if the key is missing.
+-   ****: Handles Stripe checkout sessions.
+    -   **Summary**: Manages payment processing for subscription plans.
+    -   **Changes**: Updated hardcoded package prices (, , ) to match new pricing structure.
+-   ****: Manages partner registration and review.
+    -   **Summary**: Handles partner data storage and status updates.
+    -   **Changes**: Modified  dataclass to support global business ID structure (country, scheme, number, validation status). Added new functions for , , and  to support the admin review workflow.
+-   ****: Main React component and router.
+    -   **Summary**: Defines application routes and global state.
+    -   **Changes**: Updated logo references to new PNG/SVG assets and ensured they link back to the home page.
+-   ****: The main chat UI.
+    -   **Summary**: Displays chat history, handles user input, and AI responses.
+    -   **Changes**: Refined  to implement the Enhanced Emoji Mapping for section headers (🔧, 🧠, etc.) and handle markdown bolding. Replaced the generic bot emoji with the ONESource-ai icon.
+-   ****: Support component for self-service.
+    -   **Summary**: Provides FAQs and an AI assistant.
+    -   **Changes**: Rewrote What construction standards... FAQ for comprehensive AU/NZ coverage. Fixed the search bar functionality by adding  to the overlapping search icon and expanding search fields. Improved UI by fixing bold text rendering, replacing the assistant icon, and enhancing category button contrast (Gull Grey for unselected, Bismark for selected).
+-   ****: Admin dashboard for managing users and content.
+    -   **Summary**: Provides an interface for administrators.
+    -   **Changes**: Added a new Partners tab with UI to view and review partner applications, including approve/reject functionality and associated notes.
+-   ****: Component for managing partner content and registration.
+    -   **Summary**: Handles partner self-registration for content contribution.
+    -   **Changes**: Integrated the new  component, replacing the old ABN/ACN input. Updated form state and submission logic to support multi-country business ID validation and trigger manual review.
+-   ****: Displays subscription plans and handles purchase initiation.
+    -   **Summary**: Presents different pricing tiers to users.
+    -   **Changes**: Added ONESource-ai icon logo to the header. Fixed spinning purchase buttons by adding timeout and better error handling for Stripe checkout sessions. Updated displayed prices for Pro, Pro-Plus, and Day Pass plans. Made the Pro-Plus plan visually more prominent with a taller panel, MOST POPULAR badge, and Botticelli colored border. Replaced PNG icon with SVG.
+-   ****: Centralized API endpoints for frontend.
+    -   **Summary**: Defines all frontend-to-backend API calls.
+    -   **Changes**: Added new API endpoints for partner management: , .
+-   ****: **NEW FILE**
+    -   **Summary**: Contains client-side validation logic for various global business identifiers, including regex patterns and checksum algorithms (e.g., ABN, NZBN).
+-   ****: **NEW FILE**
+    -   **Summary**: Reusable React component that provides country and business ID type dropdowns, an input field with live format validation, and status indicators for global partner registration.
+-   ****: Tailwind CSS configuration.
+    -   **Summary**: Configures Tailwind for the frontend application.
+    -   **Changes**: Extended the color palette to include new ONESource brand colors (, , , , ) for consistent branding.
+</code_architecture>
+
+<pending_tasks>
+-   Finalize legal document details (confirm real business address).
+-   Refine the content review process for individual user uploads to the Personal Knowledge Bank.
+-   Make suggested chat questions dynamic/rotating.
+-   System prompts to demonstrate clear competitive advantage would be tackled in a separate instruction.
+-   **Enhanced Emoji Mapping Consistency (Regular Chat Endpoint)**: The regular chat endpoint () is still missing the 🔧 and 🧠 emojis in its section headers, despite the enhanced endpoint working correctly.
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the AI engineer was working on refining the pricing page's visual prominence based on user feedback from Beta Testing V4. The specific request was to make the Pro-Plus plan the MOST POPULAR and visually distinct.
+
+The engineer's last actions involved:
+1.  Modifying  to adjust the visual styling of the pricing cards.
+2.  Specifically, the Pro-Plus plan was given a  transformation, an  class, a MOST POPULAR badge in  blue, and a border in  (Botticelli) color.
+3.  The previous prominence (border) was removed from the Pro plan.
+4.  The button styling for the Pro-Plus plan was also enhanced to align with its prominent status.
+5.  Restarting the frontend service to apply these CSS changes.
+6.  Taking a final screenshot of the  page to verify the visual changes.
+
+The user's last feedback after this work was ok that looks good, indicating satisfaction with the pricing page's visual prominence update.
+</current_work>
+
+<optional_next_step>
+The immediate next step is to investigate and resolve the Enhanced Emoji Mapping Consistency bug for the regular chat endpoint.
+</optional_next_step>
