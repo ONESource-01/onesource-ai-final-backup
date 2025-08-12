@@ -3057,6 +3057,56 @@ async def get_all_partners(current_user: Dict[str, Any] = Depends(get_current_us
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error getting partners: {str(e)}")
 
+@api_router.get("/admin/partners")
+async def get_partner_applications(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get all partner applications for admin review"""
+    try:
+        # Basic admin check - in production, implement proper role checking
+        partners = await partner_service.get_all_partners()
+        
+        return {
+            "partners": partners,
+            "total_count": len(partners),
+            "pending_count": len([p for p in partners if p.get("status") == "pending"]),
+            "approved_count": len([p for p in partners if p.get("status") == "approved"]),
+            "rejected_count": len([p for p in partners if p.get("status") == "rejected"])
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting partner applications: {str(e)}")
+
+class PartnerReviewRequest(BaseModel):
+    partner_id: str
+    action: str  # 'approve' or 'reject'
+    admin_notes: Optional[str] = None
+
+@api_router.post("/admin/partners/review")
+async def review_partner_application(
+    review_data: PartnerReviewRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Review partner application (approve/reject)"""
+    try:
+        # Basic admin check - in production, implement proper role checking
+        admin_email = current_user.get('email', '')
+        
+        result = await partner_service.review_partner_application(
+            partner_id=review_data.partner_id,
+            action=review_data.action,
+            admin_notes=review_data.admin_notes,
+            reviewed_by=admin_email
+        )
+        
+        return {
+            "success": True,
+            "message": f"Partner application {review_data.action}d successfully",
+            "partner_id": review_data.partner_id,
+            "action": review_data.action
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reviewing partner application: {str(e)}")
+
 # Include the router in the main app
 app.include_router(api_router)
 
