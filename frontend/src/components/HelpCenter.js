@@ -870,7 +870,7 @@ Selecting the correct experience level ensures you receive responses that match 
                               variant="outline"
                               size="sm"
                               onClick={() => article.question ? handleBotQuestion(article) : null}
-                              className="text-blue-600 hover:text-blue-700"
+                              className="text-onesource-dark hover:text-onesource-medium"
                             >
                               {article.question ? 'Ask AI Assistant' : 'Read Article'}
                               <ArrowRight className="h-3 w-3 ml-1" />
