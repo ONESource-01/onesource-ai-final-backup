@@ -1232,8 +1232,8 @@ Multi-story commercial construction involves elevated compliance requirements. E
             model_used = "mock-gpt-4o"
         else:
             # Real OpenAI API call with Enhanced Emoji Mapping system prompt
-            import openai
-            openai_client = openai.OpenAI(api_key=api_key)
+            from openai import AsyncOpenAI
+            openai_client = AsyncOpenAI(api_key=api_key)
             
             response = await openai_client.chat.completions.create(
                 model="gpt-4o-mini",
