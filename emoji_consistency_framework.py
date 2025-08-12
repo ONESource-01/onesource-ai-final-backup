@@ -261,7 +261,8 @@ class EmojiConsistencyFramework:
                 "headers": headers,
                 "data": data
             }
-            self.raw_requests[endpoint].append(request_log)
+            endpoint_key = "regular" if endpoint == "ask" else "enhanced"
+            self.raw_requests[endpoint_key].append(request_log)
             
             async with self.session.post(url, json=data, headers=headers) as response:
                 try:
