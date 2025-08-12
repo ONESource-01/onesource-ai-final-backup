@@ -1,5 +1,311 @@
 #!/usr/bin/env python3
 """
+Critical Subscription System Diagnostic Test
+Tests the specific issues reported: Pro plan user still shows "Free Trial - 3 questions remaining" and boost button gives 429 error
+"""
+
+import asyncio
+import aiohttp
+import json
+import os
+import sys
+from datetime import datetime
+from typing import Dict, Any, Optional
+
+# Get backend URL from frontend .env file
+def get_backend_url():
+    try:
+        with open('/app/frontend/.env', 'r') as f:
+            for line in f:
+                if line.startswith('REACT_APP_BACKEND_URL='):
+                    return line.split('=', 1)[1].strip()
+    except Exception as e:
+        print(f"Error reading frontend .env: {e}")
+    return "http://localhost:8001"
+
+BACKEND_URL = get_backend_url()
+API_BASE = f"{BACKEND_URL}/api"
+
+class SubscriptionTester:
+    def __init__(self):
+        self.session = None
+        self.test_results = []
+        
+    async def __aenter__(self):
+        self.session = aiohttp.ClientSession()
+        return self
+        
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if self.session:
+            await self.session.close()
+    
+    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        if response_data and not success:
+            print(f"   Response: {response_data}")
+        
+        self.test_results.append({
+            "test": test_name,
+            "success": success,
+            "details": details,
+            "timestamp": datetime.now().isoformat()
+        })
+    
+    async def make_request(self, method: str, endpoint: str, data: Dict = None, headers: Dict = None) -> tuple:
+        """Make HTTP request and return (success, response_data, status_code)"""
+        try:
+            url = f"{API_BASE}{endpoint}"
+            request_headers = {"Content-Type": "application/json"}
+            if headers:
+                request_headers.update(headers)
+            
+            kwargs = {"headers": request_headers}
+            if data:
+                kwargs["json"] = data
+            
+            async with self.session.request(method, url, **kwargs) as response:
+                try:
+                    response_data = await response.json()
+                except:
+                    response_data = await response.text()
+                
+                return response.status < 400, response_data, response.status
+                
+        except Exception as e:
+            return False, str(e), 0
+
+    async def test_critical_subscription_system_diagnostic(self):
+        """🚨 CRITICAL SUBSCRIPTION SYSTEM DIAGNOSTIC - Test subscription status and boost functionality"""
+        print("\n🚨 === CRITICAL SUBSCRIPTION SYSTEM DIAGNOSTIC ===")
+        print("Testing the exact issues reported: Pro plan user still shows 'Free Trial - 3 questions remaining' and boost button gives 429 error")
+        
+        # Test different user scenarios
+        test_users = [
+            {"token": "mock_dev_token", "name": "Mock Dev User", "expected_tier": "starter"},
+            {"token": "pro_user_token", "name": "Pro Plan User", "expected_tier": "pro"},
+            {"token": "fresh_user_token", "name": "Fresh User", "expected_tier": "starter"},
+        ]
+        
+        for user in test_users:
+            print(f"\n🔍 Testing user: {user['name']}")
+            headers = {"Authorization": f"Bearer {user['token']}"}
+            
+            # Test 1: GET /api/user/subscription to check subscription status
+            print(f"   1️⃣ Testing GET /api/user/subscription for {user['name']}")
+            success, data, status = await self.make_request("GET", "/user/subscription", headers=headers)
+            
+            if success and isinstance(data, dict):
+                subscription_tier = data.get("subscription_tier", "unknown")
+                tier = data.get("tier", "unknown")
+                subscription_active = data.get("subscription_active", False)
+                trial_questions_used = data.get("trial_questions_used", 0)
+                is_trial = data.get("is_trial", False)
+                
+                print(f"      📊 Subscription Status:")
+                print(f"         - subscription_tier: {subscription_tier}")
+                print(f"         - tier: {tier}")
+                print(f"         - subscription_active: {subscription_active}")
+                print(f"         - trial_questions_used: {trial_questions_used}")
+                print(f"         - is_trial: {is_trial}")
+                
+                # Check for trial info
+                if "trial_info" in data:
+                    trial_info = data["trial_info"]
+                    questions_remaining = trial_info.get("questions_remaining", 0)
+                    questions_used = trial_info.get("questions_used", 0)
+                    print(f"         - trial_questions_remaining: {questions_remaining}")
+                    print(f"         - trial_questions_used_from_info: {questions_used}")
+                    
+                    # CRITICAL CHECK: Pro users should not see trial info
+                    if user["expected_tier"] == "pro" and is_trial:
+                        self.log_test(f"❌ {user['name']} - Pro User Trial Status", False, 
+                                    f"Pro user incorrectly shows is_trial=True with {questions_remaining} questions remaining")
+                    elif user["expected_tier"] == "pro" and not is_trial:
+                        self.log_test(f"✅ {user['name']} - Pro User Trial Status", True, 
+                                    "Pro user correctly shows is_trial=False")
+                    elif user["expected_tier"] == "starter" and is_trial:
+                        self.log_test(f"✅ {user['name']} - Starter User Trial Status", True, 
+                                    f"Starter user correctly shows is_trial=True with {questions_remaining} questions remaining")
+                
+                # Check subscription tier consistency
+                if subscription_tier == tier:
+                    self.log_test(f"✅ {user['name']} - Tier Consistency", True, 
+                                f"subscription_tier and tier both show '{subscription_tier}'")
+                else:
+                    self.log_test(f"❌ {user['name']} - Tier Consistency", False, 
+                                f"Mismatch: subscription_tier='{subscription_tier}', tier='{tier}'")
+                
+                # Check if Pro user has correct subscription status
+                if user["expected_tier"] == "pro":
+                    if subscription_tier == "pro" and subscription_active:
+                        self.log_test(f"✅ {user['name']} - Pro Subscription Status", True, 
+                                    "Pro user correctly shows active pro subscription")
+                    else:
+                        self.log_test(f"❌ {user['name']} - Pro Subscription Status", False, 
+                                    f"Pro user shows tier='{subscription_tier}', active={subscription_active}")
+                
+                self.log_test(f"✅ {user['name']} - Subscription API Response", True, 
+                            f"Received subscription data for {user['name']}")
+            else:
+                self.log_test(f"❌ {user['name']} - Subscription API Response", False, 
+                            f"Status: {status}", data)
+            
+            # Test 2: Test POST /api/chat/boost-response for 429 error investigation
+            print(f"   2️⃣ Testing POST /api/chat/boost-response for {user['name']}")
+            boost_data = {
+                "question": "What are fire safety requirements for high-rise buildings in Australia?",
+                "target_tier": "pro"
+            }
+            
+            success, data, status = await self.make_request("POST", "/chat/boost-response", boost_data, headers)
+            
+            if success and isinstance(data, dict):
+                if "boosted_response" in data:
+                    response_length = len(str(data["boosted_response"]))
+                    self.log_test(f"✅ {user['name']} - Boost Response Success", True, 
+                                f"Received boosted response ({response_length} chars)")
+                    
+                    # Check for booster usage tracking
+                    if "booster_used" in data and data["booster_used"]:
+                        self.log_test(f"✅ {user['name']} - Booster Usage Tracking", True, 
+                                    "Booster usage correctly tracked")
+                else:
+                    self.log_test(f"❌ {user['name']} - Boost Response Format", False, 
+                                "Missing 'boosted_response' field", data)
+            elif status == 429:
+                # This is the critical error mentioned in the review
+                error_message = data.get("detail", "Unknown error") if isinstance(data, dict) else str(data)
+                self.log_test(f"🚨 {user['name']} - Boost 429 Error (CRITICAL)", False, 
+                            f"429 Too Many Requests: {error_message}")
+                print(f"      🚨 CRITICAL ISSUE: Boost button returns 429 error for {user['name']}")
+                print(f"         Error details: {error_message}")
+                
+                # Check if this is a daily limit issue
+                if "daily" in error_message.lower() or "limit" in error_message.lower():
+                    print(f"         🔍 Analysis: Appears to be daily limit enforcement")
+                    self.log_test(f"🔍 {user['name']} - Daily Limit Analysis", True, 
+                                "429 error appears to be daily limit enforcement")
+                else:
+                    print(f"         🔍 Analysis: May be rate limiting or other issue")
+                    self.log_test(f"🔍 {user['name']} - Rate Limiting Analysis", False, 
+                                "429 error may indicate rate limiting problem")
+            elif status == 403:
+                self.log_test(f"⚠️ {user['name']} - Boost Authentication", False, 
+                            "403 Forbidden - Authentication issue")
+            else:
+                self.log_test(f"❌ {user['name']} - Boost Response Failure", False, 
+                            f"Status: {status}", data)
+        
+        # Test 3: Test subscription update simulation (mock payment completion)
+        print(f"\n3️⃣ Testing Subscription Update After Payment Completion")
+        
+        # Simulate a user who just completed Pro payment
+        payment_completed_headers = {"Authorization": "Bearer payment_completed_user"}
+        
+        # Check subscription status before and after payment simulation
+        print("   Testing subscription status for user who just completed payment...")
+        success, data, status = await self.make_request("GET", "/user/subscription", headers=payment_completed_headers)
+        
+        if success and isinstance(data, dict):
+            subscription_tier = data.get("subscription_tier", "unknown")
+            subscription_active = data.get("subscription_active", False)
+            is_trial = data.get("is_trial", False)
+            
+            print(f"      📊 Post-Payment Subscription Status:")
+            print(f"         - subscription_tier: {subscription_tier}")
+            print(f"         - subscription_active: {subscription_active}")
+            print(f"         - is_trial: {is_trial}")
+            
+            # For a user who completed payment, they should not be in trial mode
+            if subscription_tier == "pro" and subscription_active and not is_trial:
+                self.log_test("✅ Post-Payment Subscription Update", True, 
+                            "User who completed payment shows correct Pro status")
+            elif subscription_tier == "starter" and is_trial:
+                self.log_test("⚠️ Post-Payment Subscription Update", False, 
+                            "User who completed payment still shows starter/trial status - payment update may not be working")
+            else:
+                self.log_test("❌ Post-Payment Subscription Update", False, 
+                            f"Unexpected status: tier={subscription_tier}, active={subscription_active}, trial={is_trial}")
+        
+        # Test 4: Test authentication issues affecting subscription checking
+        print(f"\n4️⃣ Testing Authentication Issues")
+        
+        # Test with invalid token
+        invalid_headers = {"Authorization": "Bearer invalid_token_123"}
+        success, data, status = await self.make_request("GET", "/user/subscription", headers=invalid_headers)
+        
+        if not success and status in [401, 403]:
+            self.log_test("✅ Invalid Token Rejection", True, 
+                        f"Invalid token correctly rejected with {status} status")
+        else:
+            self.log_test("❌ Invalid Token Handling", False, 
+                        f"Expected 401/403, got {status}", data)
+        
+        # Test without authorization header
+        success, data, status = await self.make_request("GET", "/user/subscription")
+        
+        if not success and status in [401, 403]:
+            self.log_test("✅ Missing Auth Rejection", True, 
+                        f"Missing auth correctly rejected with {status} status")
+        else:
+            self.log_test("❌ Missing Auth Handling", False, 
+                        f"Expected 401/403, got {status}", data)
+        
+        print(f"\n🎯 CRITICAL SUBSCRIPTION DIAGNOSTIC SUMMARY:")
+        print("   ✅ Tested GET /api/user/subscription for different user types")
+        print("   🚨 Tested POST /api/chat/boost-response for 429 error investigation")
+        print("   ⚠️ Tested subscription update after payment completion")
+        print("   🔐 Tested authentication issues affecting subscription checking")
+        print("   📊 Verified subscription_tier field consistency")
+        print("\n🔍 KEY FINDINGS:")
+        print("   - Check if Pro users still show trial status (is_trial=True)")
+        print("   - Investigate 429 errors on boost endpoint")
+        print("   - Verify payment completion updates subscription correctly")
+        print("   - Confirm authentication is working for subscription checks")
+
+    async def run_test(self):
+        """Run the critical subscription diagnostic test"""
+        print("🚀 Starting Critical Subscription System Diagnostic")
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"API Base: {API_BASE}")
+        print("=" * 80)
+        
+        await self.test_critical_subscription_system_diagnostic()
+        
+        # Print summary
+        print("\n" + "=" * 80)
+        print("🎯 SUBSCRIPTION DIAGNOSTIC SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        
+        if failed_tests > 0:
+            print(f"\n❌ Failed Tests:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"   - {result['test']}: {result['details']}")
+        
+        print("\n🎉 Subscription diagnostic completed!")
+        return passed_tests, failed_tests
+
+async def main():
+    async with SubscriptionTester() as tester:
+        await tester.run_test()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+"""
 Focused test for subscription status endpoint fixes
 """
 
