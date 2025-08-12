@@ -159,6 +159,14 @@ export const apiEndpoints = {
   // Partner management endpoints
   getPartnerApplications: () => api.get('/admin/partners'),
   reviewPartnerApplication: (data) => api.post('/admin/partners/review', data),
+  
+  // Knowledge endpoints
+  getPersonalDocuments: () => api.get('/knowledge/personal-documents'),
+  getCommunityDocuments: () => api.get('/knowledge/community-documents'),
+  searchKnowledge: (query) => api.post('/knowledge/search', { query }),
+
+  // General
+  getStatus: () => api.get('/status'),
 };
 
 export default api;
