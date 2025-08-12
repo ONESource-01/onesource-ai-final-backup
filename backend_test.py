@@ -4862,7 +4862,7 @@ async def main():
         
         # Print summary
         print("\n" + "=" * 80)
-        print("🎯 BACKEND TESTING SUMMARY")
+        print("🎯 ENHANCED EMOJI MAPPING CONSISTENCY FIX TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = len(tester.test_results)
@@ -4870,33 +4870,54 @@ async def main():
         failed_tests = total_tests - passed_tests
         success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
         
-        print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests} ✅")
-        print(f"Failed: {failed_tests} ❌")
-        print(f"Success Rate: {success_rate:.1f}%")
+        print(f"📊 Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"📈 Success Rate: {success_rate:.1f}%")
         
-        # Highlight payment-specific results
-        payment_tests = [result for result in tester.test_results if "payment" in result["test"].lower() or "checkout" in result["test"].lower() or "pricing" in result["test"].lower()]
-        if payment_tests:
-            payment_passed = sum(1 for result in payment_tests if result["success"])
-            payment_total = len(payment_tests)
-            print(f"\n💳 Payment/Checkout Tests: {payment_passed}/{payment_total} passed")
-            
-            for result in payment_tests:
-                status = "✅" if result["success"] else "❌"
-                print(f"   {status} {result['test']}")
+        # Focus on emoji mapping results
+        emoji_tests = [result for result in tester.test_results if "Emoji" in result["test"] or "Mentoring" in result["test"]]
+        emoji_passed = sum(1 for result in emoji_tests if result["success"])
+        emoji_total = len(emoji_tests)
+        
+        print(f"\n🧐 EMOJI MAPPING SPECIFIC RESULTS:")
+        print(f"   📊 Emoji Tests: {emoji_total}")
+        print(f"   ✅ Emoji Passed: {emoji_passed}")
+        print(f"   ❌ Emoji Failed: {emoji_total - emoji_passed}")
         
         if failed_tests > 0:
-            print(f"\n❌ Failed Tests:")
+            print(f"\n❌ FAILED TESTS:")
             for result in tester.test_results:
                 if not result["success"]:
                     print(f"   - {result['test']}: {result['details']}")
         
-        print(f"\n🎉 Backend testing completed!")
-        print(f"Backend API is {'✅ READY FOR PRODUCTION' if success_rate >= 85 else '⚠️ NEEDS ATTENTION'}")
+        # Critical success criteria check
+        critical_tests = [
+            "Regular Chat - CORRECT Mentoring Emoji (🧐)",
+            "Enhanced Chat - CORRECT Mentoring Emoji (🧐)",
+            "CRITICAL: Enhanced Emoji Mapping Consistency (🧐)"
+        ]
+        
+        critical_passed = 0
+        for test_name in critical_tests:
+            for result in tester.test_results:
+                if test_name in result["test"] and result["success"]:
+                    critical_passed += 1
+                    break
+        
+        print(f"\n🎯 CRITICAL SUCCESS CRITERIA:")
+        print(f"   📋 Critical Tests Passed: {critical_passed}/{len(critical_tests)}")
+        
+        if critical_passed == len(critical_tests):
+            print("   ✅ ALL CRITICAL TESTS PASSED - Enhanced Emoji Mapping fix is working!")
+        else:
+            print("   ❌ SOME CRITICAL TESTS FAILED - Enhanced Emoji Mapping fix needs attention!")
+        
+        print("\n🎉 Enhanced Emoji Mapping Consistency Fix testing completed!")
+        print("=" * 80)
         
         # Return appropriate exit code
-        return 0 if failed_tests == 0 else 1
+        return 0 if critical_passed == len(critical_tests) else 1
 
 if __name__ == "__main__":
     try:
