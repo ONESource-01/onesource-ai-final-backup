@@ -5000,14 +5000,17 @@ async def main():
     print("🚀 Starting Enhanced Emoji Mapping Consistency Fix Testing for ONESource-ai")
     print(f"Backend URL: {BACKEND_URL}")
     print(f"API Base: {API_BASE}")
-    print("🎯 FOCUS: Testing the CRITICAL Enhanced Emoji Mapping fix from review request")
+    print("🎯 FOCUS: Testing the CRITICAL Enhanced Emoji Mapping Structural Fix from review request")
     print("=" * 80)
     
     async with BackendTester() as tester:
         # Run basic health check first
         await tester.test_basic_api_health()
         
-        # 🚨 MAIN FOCUS: Enhanced Emoji Mapping Water System Fix
+        # 🚨 MAIN FOCUS: Enhanced Emoji Mapping Structural Fix - PRIORITY TEST
+        await tester.test_enhanced_emoji_mapping_structural_fix()
+        
+        # 🚨 ADDITIONAL: Enhanced Emoji Mapping Water System Fix
         await tester.test_enhanced_emoji_mapping_water_system_fix()
         
         # 🚨 ADDITIONAL: Enhanced Emoji Mapping Consistency Fix
