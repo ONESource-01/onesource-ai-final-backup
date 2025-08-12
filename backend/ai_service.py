@@ -17,8 +17,8 @@ class ConstructionAIService:
             self.client = None
         else:
             try:
-                self.client = openai.OpenAI(api_key=api_key)
-                print("OpenAI client initialized successfully")
+                self.client = AsyncOpenAI(api_key=api_key)
+                print("OpenAI async client initialized successfully")
             except Exception as e:
                 print(f"Error initializing OpenAI client: {e}")
                 self.client = None
