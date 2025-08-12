@@ -1168,7 +1168,7 @@ async def ask_question(
             "user_id": current_user["uid"] if current_user else None,
             "question": chat_data.question,
             "response": ai_response["response"],
-            "formatted_response": formatted_response,
+            "formatted_response": response_structure,
             "tokens_used": ai_response.get("tokens_used", 0),
             "model": ai_response.get("model", "gpt-4o"),
             "timestamp": datetime.utcnow()
