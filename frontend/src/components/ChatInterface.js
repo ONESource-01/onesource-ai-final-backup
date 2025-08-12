@@ -238,13 +238,23 @@ const ChatInterface = () => {
   const formatAIResponse = (text) => {
     let formatted = text;
     
+    console.log('🧐 FORMATTING DEBUG - Input text:', text.substring(0, 200) + '...');
+    
     // 🚨 PHASE 0: CRITICAL EMOJI FAILSAFE - Force 🧐 (professor with monocle) for Mentoring Insight
+    // Handle all possible incorrect emoji patterns
     formatted = formatted.replace(/🤓\s*\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
     formatted = formatted.replace(/🧠\s*\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
     formatted = formatted.replace(/💡\s*\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
     formatted = formatted.replace(/🤓 Mentoring Insight/gi, '🧐 Mentoring Insight');
     formatted = formatted.replace(/🧠 Mentoring Insight/gi, '🧐 Mentoring Insight');
     formatted = formatted.replace(/💡 Mentoring Insight/gi, '🧐 Mentoring Insight');
+    
+    // Additional patterns for edge cases
+    formatted = formatted.replace(/🤓\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
+    formatted = formatted.replace(/🧠\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
+    formatted = formatted.replace(/💡\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
+    
+    console.log('🧐 FORMATTING DEBUG - After emoji replacement:', formatted.substring(0, 200) + '...');
     
     // PHASE 1: MASTER ENHANCED EMOJI MAPPING with PROFESSIONAL TYPOGRAPHY HIERARCHY
     const emojiMappings = [
@@ -292,7 +302,12 @@ const ChatInterface = () => {
     
     // Apply all emoji mappings
     emojiMappings.forEach(mapping => {
+      const beforeCount = (formatted.match(mapping.pattern) || []).length;
       formatted = formatted.replace(mapping.pattern, mapping.replacement);
+      const afterCount = (formatted.match(new RegExp(mapping.replacement.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')) || []).length;
+      if (beforeCount > 0) {
+        console.log(`🔄 Applied mapping for ${mapping.pattern.source}: ${beforeCount} replacements`);
+      }
     });
     
     // PHASE 2: PROFESSIONAL CONTENT FORMATTING
@@ -326,6 +341,8 @@ const ChatInterface = () => {
     // Add responsive classes for mobile optimization
     formatted = formatted.replace(/class="text-xl/g, 'class="text-lg md:text-xl');
     formatted = formatted.replace(/class="text-2xl/g, 'class="text-xl md:text-2xl');
+    
+    console.log('🧐 FORMATTING DEBUG - Final output:', formatted.substring(0, 300) + '...');
     
     return formatted;
   };
