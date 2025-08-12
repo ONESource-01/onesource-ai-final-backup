@@ -151,7 +151,7 @@ const PricingPage = () => {
       badge: 'Most Popular'
     },
     {
-      id: 'pro-plus',
+      id: 'consultant', // Fixed: backend expects 'consultant' not 'pro-plus'
       name: 'Pro-Plus',
       price: pricing?.consultant?.amount || 29.00,
       currency: 'AUD',
