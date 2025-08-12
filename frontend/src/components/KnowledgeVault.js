@@ -112,11 +112,35 @@ const KnowledgeVault = () => {
 
   const handlePartnerRegistration = async (e) => {
     e.preventDefault();
+    
+    // Validate business ID if not unverified
+    if (!partnerForm.business_id.unverified && !partnerForm.business_id.valid) {
+      setPartnerResult({
+        success: false,
+        message: 'Please enter a valid business identifier or check "I don\'t have a business registration number"'
+      });
+      return;
+    }
+    
     setPartnerLoading(true);
     setPartnerResult(null);
 
     try {
-      const response = await apiEndpoints.registerPartner(partnerForm);
+      // Prepare form data with new business_id structure
+      const formData = {
+        ...partnerForm,
+        // Convert business_id to legacy format for backend compatibility
+        abn_acn: partnerForm.business_id.unverified 
+          ? 'MANUAL_REVIEW_REQUIRED' 
+          : `${partnerForm.business_id.scheme}:${partnerForm.business_id.number}`,
+        country: partnerForm.business_id.country,
+        business_id_scheme: partnerForm.business_id.scheme,
+        business_id_number: partnerForm.business_id.number,
+        business_id_valid: partnerForm.business_id.valid,
+        manual_review_required: partnerForm.business_id.unverified || false
+      };
+      
+      const response = await apiEndpoints.registerPartner(formData);
       setPartnerResult({
         success: true,
         message: response.data.message
@@ -124,10 +148,19 @@ const KnowledgeVault = () => {
       setShowPartnerForm(false);
       setPartnerForm({
         company_name: '',
-        abn_acn: '',
+        business_id: {
+          country: 'AU',
+          scheme: 'ABN',
+          number: '',
+          valid: false,
+          message: ''
+        },
         contact_person: '',
         email: '',
         phone: '',
+        industry_sector: '',
+        description: ''
+      });
         industry_sector: '',
         description: ''
       });
