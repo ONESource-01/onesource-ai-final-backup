@@ -69,18 +69,18 @@ const AdminDashboard = () => {
   }, [user]);
 
   // Load dashboard stats
-  useEffect(() => {
-    const loadStats = async () => {
-      if (!isAdmin) return;
-      
-      try {
-        const response = await apiEndpoints.getAdminStats();
-        setStats(response.data);
-      } catch (error) {
-        console.error('Failed to load admin stats:', error);
-      }
-    };
+  const loadStats = async () => {
+    if (!isAdmin) return;
+    
+    try {
+      const response = await apiEndpoints.getAdminStats();
+      setStats(response.data);
+    } catch (error) {
+      console.error('Failed to load admin stats:', error);
+    }
+  };
 
+  useEffect(() => {
     if (isAdmin) {
       loadStats();
     }
