@@ -263,7 +263,7 @@ const KnowledgeVault = () => {
                 <Button 
                   onClick={handleSearch} 
                   disabled={searchLoading || !searchQuery.trim()}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-onesource-dark hover:bg-onesource-medium text-white"
                 >
                   {searchLoading ? (
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
