@@ -72,6 +72,10 @@ export const apiEndpoints = {
   createMentorNote: (data) => api.post('/knowledge/mentor-note', data),
   searchKnowledgeBase: (query, limit = 10, includeMentorNotes = true) => 
     api.get('/knowledge/search', { params: { query, limit, include_mentor_notes: includeMentorNotes } }),
+  
+  // Partner management endpoints
+  getPartnerApplications: () => api.get('/admin/partners'),
+  reviewPartnerApplication: (data) => api.post('/admin/partners/review', data),
 };
 
 export default api;
