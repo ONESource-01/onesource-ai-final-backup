@@ -13,6 +13,14 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			// ONESource Brand Colors
+  			'onesource': {
+  				'dark': '#0f2f57',      // Blue Zodiac - Primary actions, accent text
+  				'medium': '#4b6b8b',    // Bismark - Secondary elements, hover states  
+  				'light': '#95a6b7',     // Gull Gray - Muted content
+  				'pale': '#c9d6e4',      // Botticelli - Light backgrounds
+  				'white': '#f8fafc'      // Catskill White - Main backgrounds
+  			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
