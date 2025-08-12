@@ -2457,6 +2457,13 @@ async def boost_response(
                 
                 boosted_response = response.choices[0].message.content
                 
+                # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency
+                # Replace any incorrect emojis with the correct 🤓 emoji
+                boosted_response = boosted_response.replace("🧠 **Mentoring Insight**", "🤓 **Mentoring Insight**")
+                boosted_response = boosted_response.replace("💡 **Mentoring Insight**", "🤓 **Mentoring Insight**")
+                boosted_response = boosted_response.replace("🧠 Mentoring Insight", "🤓 Mentoring Insight")
+                boosted_response = boosted_response.replace("💡 Mentoring Insight", "🤓 Mentoring Insight")
+                
             except Exception as e:
                 print(f"OpenAI API error in booster: {e}")
                 # Fallback to enhanced mock
