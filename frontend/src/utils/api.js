@@ -45,8 +45,91 @@ export const apiEndpoints = {
   getPaymentStatus: (sessionId) => api.get(`/payment/status/${sessionId}`),
   getPricing: () => api.get('/pricing'),
 
-  // General
-  getStatus: () => api.get('/status'),
+  // Knowledge Bank
+  uploadDocuments: async (formData) => {
+    const files = formData.getAll('files');
+    const uploadType = formData.get('upload_type') || 'personal';
+    
+    if (files.length === 0) {
+      throw new Error('No files selected');
+    }
+    
+    const results = [];
+    const errors = [];
+    
+    // Upload files one by one since backend accepts single file uploads
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const singleFileFormData = new FormData();
+      singleFileFormData.append('file', file);
+      singleFileFormData.append('tags', ''); // Default empty tags
+      
+      try {
+        let response;
+        if (uploadType === 'personal') {
+          response = await api.post('/knowledge/upload-personal', singleFileFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        } else if (uploadType === 'community') {
+          response = await api.post('/knowledge/upload-community', singleFileFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        } else {
+          // Fallback to legacy endpoint
+          response = await api.post('/knowledge/upload-document', singleFileFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        }
+        
+        results.push({
+          filename: file.name,
+          success: true,
+          document_id: response.data.document_id,
+          message: response.data.message
+        });
+        
+      } catch (error) {
+        console.error(`Failed to upload ${file.name}:`, error);
+        errors.push({
+          filename: file.name,
+          success: false,
+          error: error.response?.data?.detail || error.message || 'Upload failed'
+        });
+      }
+    }
+    
+    // Return combined results
+    if (errors.length === 0) {
+      return {
+        data: {
+          message: `Successfully uploaded ${results.length} file(s)`,
+          results: results,
+          success_count: results.length,
+          error_count: 0
+        }
+      };
+    } else if (results.length === 0) {
+      // All failed
+      throw new Error(`Upload failed: ${errors.map(e => `${e.filename}: ${e.error}`).join(', ')}`);
+    } else {
+      // Partial success
+      return {
+        data: {
+          message: `Uploaded ${results.length} file(s), ${errors.length} failed`,
+          results: results,
+          errors: errors,
+          success_count: results.length,
+          error_count: errors.length
+        }
+      };
+    }
+  },
 
   // Admin/Developer endpoints
   getAdminFeedback: () => api.get('/admin/feedback'),
