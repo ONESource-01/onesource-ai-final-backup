@@ -504,6 +504,54 @@ backend:
         agent: "testing"
         comment: "✅ ADMIN PARTNERS MANAGEMENT WORKING CORRECTLY: Admin partners endpoint properly requires authentication (correctly rejects unauthenticated requests with 401/403). Returns proper JSON structure with partners array, total_count, and active_count fields. Partner count consistency verified (reported and actual counts match: 0). Active partner count accuracy confirmed. Currently no partners registered (empty list) which is expected for test environment. All admin functionality for partner management operational with proper access control and data structure."
 
+  - task: "Fix Pro User Subscription Status Display Issue"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL ISSUE CONFIRMED: Pro Plan User incorrectly shows is_trial=True with 3 questions remaining instead of active pro subscription. User with 'pro_user_token' returns subscription_tier='starter', subscription_active=False, is_trial=True - this is the exact issue reported where Pro users still see 'Free Trial - 3 questions remaining'. The subscription system is not properly recognizing Pro users and updating their subscription status after payment completion."
+
+  - task: "Fix Boost Daily Limit Enforcement Issue"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL ISSUE CONFIRMED: All users (Mock Dev, Pro Plan, Fresh User) receive 429 'Daily booster limit reached. Try again tomorrow!' error when testing boost functionality. This confirms the reported issue where boost button gives 429 error even for new users. The daily limit enforcement appears to be too restrictive or incorrectly implemented, preventing legitimate booster usage."
+
+  - task: "Fix Payment Completion Subscription Update"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL ISSUE CONFIRMED: User who completed payment still shows starter/trial status (subscription_tier='starter', subscription_active=False, is_trial=True) indicating payment completion is not properly updating subscription status. The webhook or payment processing logic is not correctly updating user subscription tiers after successful payment."
+
+  - task: "Fix Subscription Endpoint Authentication Bypass"
+    implemented: true
+    working: false
+    file: "backend/server.py"
+    stuck_count: 1
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ SECURITY ISSUE IDENTIFIED: Invalid tokens return 200 OK with subscription data instead of 401/403, indicating potential security issue with subscription endpoint authentication. The GET /api/user/subscription endpoint should properly validate authentication tokens and reject invalid requests."
+
   - task: "Implement Booster Response System (POST /api/chat/boost-response)"
     implemented: true
     working: true
