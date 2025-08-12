@@ -282,14 +282,14 @@ const ChatInterface = () => {
       return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>' + cleanTitle + '</strong></h3></div>';
     });
     
-    // Handle ## patterns - Sub-sections (ENHANCED to catch all variations)
+    // Handle ## patterns - Sub-sections (ENHANCED EMOJI MAPPING)
     formatted = formatted.replace(/^##\s*(\d+\.?\s*)?(.*?)$/gmi, (match, number, title) => {
       const cleanTitle = title ? title.trim() : '';
       const lowerTitle = cleanTitle.toLowerCase();
       const fullTitle = (number || '') + cleanTitle;
       
       if (lowerTitle.includes('code requirements') || lowerTitle.includes('requirements')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📝 <strong>' + fullTitle + '</strong></h4></div>';
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📊 <strong>' + fullTitle + '</strong></h4></div>';
       }
       if (lowerTitle.includes('compliance')) {
         return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">✅ <strong>' + fullTitle + '</strong></h4></div>';
@@ -299,6 +299,9 @@ const ChatInterface = () => {
       }
       if (lowerTitle.includes('authority')) {
         return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🏛️ <strong>' + fullTitle + '</strong></h4></div>';
+      }
+      if (lowerTitle.includes('documentation')) {
+        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📄 <strong>' + fullTitle + '</strong></h4></div>';
       }
       if (lowerTitle.includes('workflow') || lowerTitle.includes('recommendations')) {
         return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">⚙️ <strong>' + fullTitle + '</strong></h4></div>';
