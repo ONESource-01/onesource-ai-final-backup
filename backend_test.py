@@ -3382,70 +3382,82 @@ class BackendTester:
         print("=" * 60)
 
 async def main():
-    """Run all backend tests"""
-    print("Starting ONESource-ai Backend API Tests")
-    print(f"Testing backend at: {BACKEND_URL}")
-    print("="*60)
+    """Run all backend tests with priority on urgent payment testing"""
+    print("🚀 Starting Comprehensive Backend API Testing for ONESource-ai")
+    print(f"Backend URL: {BACKEND_URL}")
+    print(f"API Base: {API_BASE}")
+    print("=" * 80)
     
     async with BackendTester() as tester:
-        # URGENT: Run chat response debugging first
-        await tester.test_chat_response_debugging()
+        # 🚨 URGENT: Run payment/checkout testing first (as requested in review)
+        await tester.test_urgent_payment_checkout_functionality()
         
-        # Run all test suites
+        # Run other critical tests
         await tester.test_basic_api_health()
-        
-        # PRIORITY: Test OpenAI API Integration with new key
-        await tester.test_openai_api_integration()
-        
         await tester.test_user_management_unauthenticated()
         await tester.test_user_management_with_mock_auth()
-        
-        # NEW: Test the specific subscription fixes mentioned in review request
         await tester.test_subscription_status_endpoint_fix()
         await tester.test_mock_firebase_service_starter_tier()
-        
+        await tester.test_enhanced_emoji_mapping_consistency()
+        await tester.test_critical_chat_functionality()
         await tester.test_ai_chat_system()
+        await tester.test_payment_system()  # Legacy payment test
+        await tester.test_webhook_endpoint()
         await tester.test_chat_feedback_system()
         await tester.test_knowledge_contribution_system()
         await tester.test_chat_history_system()
         await tester.test_admin_endpoints()
         await tester.test_developer_access_system()
         await tester.test_voucher_system()
-        await tester.test_payment_system()
-        await tester.test_webhook_endpoint()
-        
-        # Test new Knowledge Vault RAG system
         await tester.test_knowledge_vault_document_upload()
         await tester.test_knowledge_vault_mentor_notes()
         await tester.test_knowledge_vault_search()
-        await tester.test_enhanced_chat_system()
-        
-        # NEW: Test ABN Validation Fix and Partner Registration System
-        await tester.test_abn_validation_fix()
+        await tester.test_enhanced_chat_with_knowledge()
+        await tester.test_booster_response_system()
+        await tester.test_weekly_reporting_system()
         await tester.test_partner_registration_system()
-        await tester.test_community_knowledge_bank_upload_access()
-        await tester.test_complete_partner_workflow()
-        await tester.test_two_tier_knowledge_bank_upload()
-        await tester.test_enhanced_knowledge_search_system()
-        await tester.test_enhanced_chat_with_two_tier_knowledge()
+        await tester.test_two_tier_knowledge_upload()
+        await tester.test_enhanced_knowledge_search()
+        await tester.test_enhanced_chat_two_tier_integration()
         await tester.test_admin_partners_management()
         
-        # Test 3-Phase AI Intelligence System
-        await tester.test_3_phase_ai_intelligence_system()
-        
-        # Test Weekly Business Intelligence Reporting System
-        await tester.test_weekly_reporting_system()
-        
-        # NEW: Test Booster Response System
-        await tester.test_booster_response_system()
-        
-        await tester.test_error_handling()
-        
         # Print summary
-        passed, failed = tester.print_summary()
+        print("\n" + "=" * 80)
+        print("🎯 BACKEND TESTING SUMMARY")
+        print("=" * 80)
+        
+        total_tests = len(tester.test_results)
+        passed_tests = sum(1 for result in tester.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {passed_tests} ✅")
+        print(f"Failed: {failed_tests} ❌")
+        print(f"Success Rate: {success_rate:.1f}%")
+        
+        # Highlight payment-specific results
+        payment_tests = [result for result in tester.test_results if "payment" in result["test"].lower() or "checkout" in result["test"].lower() or "pricing" in result["test"].lower()]
+        if payment_tests:
+            payment_passed = sum(1 for result in payment_tests if result["success"])
+            payment_total = len(payment_tests)
+            print(f"\n💳 Payment/Checkout Tests: {payment_passed}/{payment_total} passed")
+            
+            for result in payment_tests:
+                status = "✅" if result["success"] else "❌"
+                print(f"   {status} {result['test']}")
+        
+        if failed_tests > 0:
+            print(f"\n❌ Failed Tests:")
+            for result in tester.test_results:
+                if not result["success"]:
+                    print(f"   - {result['test']}: {result['details']}")
+        
+        print(f"\n🎉 Backend testing completed!")
+        print(f"Backend API is {'✅ READY FOR PRODUCTION' if success_rate >= 85 else '⚠️ NEEDS ATTENTION'}")
         
         # Return appropriate exit code
-        return 0 if failed == 0 else 1
+        return 0 if failed_tests == 0 else 1
 
 if __name__ == "__main__":
     try:
