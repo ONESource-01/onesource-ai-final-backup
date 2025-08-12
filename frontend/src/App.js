@@ -11,6 +11,7 @@ import AuthPage from "./components/AuthPage";
 import PricingPage from "./components/PricingPage";
 import PaymentSuccess from "./components/PaymentSuccess";
 import AdminDashboard from "./components/AdminDashboard";
+import AdminFeedbackDashboard from "./components/AdminFeedbackDashboard";
 import KnowledgeVault from "./components/KnowledgeVault";
 import TermsOfService from "./components/TermsOfService";
 import PrivacyPolicy from "./components/PrivacyPolicy";
