@@ -46,12 +46,40 @@ class FirebaseService:
         """Verify Firebase ID token and return user info"""
         try:
             if not self.db:
-                # Mock implementation for development
-                return {
-                    "uid": "dev_user_123",
-                    "email": "dev@example.com",
-                    "name": "Development User"
-                }
+                # CRITICAL FIX: Mock implementation that creates different users based on token
+                # This allows testing different subscription tiers
+                
+                if "pro_user" in id_token.lower():
+                    return {
+                        "uid": "pro_user_12345",
+                        "email": "pro.user@onesource.ai",
+                        "name": "Pro User (Testing)"
+                    }
+                elif "consultant" in id_token.lower() or "pro_plus" in id_token.lower():
+                    return {
+                        "uid": "consultant_user_12345", 
+                        "email": "consultant@onesource.ai",
+                        "name": "Pro-Plus User (Testing)"
+                    }
+                elif "starter" in id_token.lower():
+                    return {
+                        "uid": "starter_user_12345",
+                        "email": "starter@onesource.ai", 
+                        "name": "Starter User (Testing)"
+                    }
+                elif "fresh" in id_token.lower():
+                    return {
+                        "uid": "fresh_user_12345",
+                        "email": "fresh@onesource.ai",
+                        "name": "Fresh User (Testing)"
+                    }
+                else:
+                    # Default demo user (auto-created by frontend)
+                    return {
+                        "uid": f"demo_user_auto_{id_token.split('_')[-1] if '_' in id_token else '123'}",
+                        "email": "demo@onesource.ai",
+                        "name": "Demo User"
+                    }
             
             decoded_token = auth.verify_id_token(id_token)
             return decoded_token
