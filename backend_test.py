@@ -609,6 +609,214 @@ class BackendTester:
         print("✅ Verified no incorrect 🤓 or 🧠 emojis are used")
         print("🎉 CONCLUSION: Enhanced Emoji Mapping consistency testing completed")
 
+    async def test_enhanced_emoji_mapping_structural_fix(self):
+        """🚨 CRITICAL: Test Enhanced Emoji Mapping Structural Fix from Review Request"""
+        print("\n🚨 === ENHANCED EMOJI MAPPING STRUCTURAL FIX VERIFICATION ===")
+        print("🎯 **BREAKTHROUGH FIX IMPLEMENTED**: Modified regular chat endpoint to return AI response text directly")
+        print("🎯 **CRITICAL CHANGE**: Regular endpoint now returns: 'response': ai_response_text")
+        print("🎯 **EXPECTED RESULT**: 100% Enhanced Emoji Mapping consistency between regular and enhanced chat endpoints")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test questions from review request
+        test_questions = [
+            {
+                "question": "What are the water system requirements for construction?",
+                "type": "Water System Question",
+                "description": "Should have Complete Enhanced Emoji Mapping with 🧐 **Mentoring Insight:** section"
+            },
+            {
+                "question": "What are fire safety requirements for high-rise buildings in Australia?", 
+                "type": "Fire Safety Question",
+                "description": "Should have Complete Enhanced Emoji Mapping with both sections and 🧐 emoji consistently"
+            }
+        ]
+        
+        print("📋 Expected Enhanced Emoji Mapping structure:")
+        print("   🔧 **Technical Answer:**")
+        print("   🧐 **Mentoring Insight:** (professor with monocle)")
+        print("   ✅ Both endpoints should produce equivalent responses")
+        print("   ✅ No structural mismatches between endpoints")
+        
+        for test_case in test_questions:
+            question = test_case["question"]
+            question_type = test_case["type"]
+            description = test_case["description"]
+            
+            print(f"\n🔍 Testing {question_type}: '{question}'")
+            print(f"   📝 {description}")
+            
+            # Test 1: Regular chat endpoint (/api/chat/ask) - MAIN FOCUS
+            print(f"\n1️⃣ Testing POST /api/chat/ask for {question_type}")
+            regular_data = {
+                "question": question,
+                "session_id": f"structural_fix_{question_type.lower().replace(' ', '_')}_regular"
+            }
+            
+            regular_success, regular_response, regular_status = await self.make_request("POST", "/chat/ask", regular_data, mock_headers)
+            
+            regular_has_enhanced_mapping = False
+            regular_has_tech_section = False
+            regular_has_mentoring_section = False
+            regular_uses_correct_emoji = False
+            regular_response_content = ""
+            
+            if regular_success and isinstance(regular_response, dict) and "response" in regular_response:
+                regular_response_content = str(regular_response["response"])
+                
+                # Check for Enhanced Emoji Mapping structure
+                regular_has_tech_section = ("🔧 **Technical Answer**" in regular_response_content or 
+                                          "🔧 Technical Answer" in regular_response_content)
+                regular_has_mentoring_section = ("🧐 **Mentoring Insight**" in regular_response_content or 
+                                                "🧐 Mentoring Insight" in regular_response_content)
+                regular_uses_correct_emoji = "🧐" in regular_response_content
+                regular_has_enhanced_mapping = regular_has_tech_section and regular_has_mentoring_section
+                
+                print(f"   📝 Response length: {len(regular_response_content)} characters")
+                print(f"   🔧 Has Technical Answer section: {regular_has_tech_section}")
+                print(f"   🧐 Has Mentoring Insight section: {regular_has_mentoring_section}")
+                print(f"   🧐 Uses correct emoji (🧐): {regular_uses_correct_emoji}")
+                print(f"   ✅ Has Enhanced Emoji Mapping: {regular_has_enhanced_mapping}")
+                
+                # Show first 800 chars for analysis
+                preview = regular_response_content[:800] + "..." if len(regular_response_content) > 800 else regular_response_content
+                print(f"   📄 Response preview: {preview}")
+                
+                # CRITICAL SUCCESS CRITERIA
+                if regular_has_enhanced_mapping and regular_uses_correct_emoji:
+                    self.log_test(f"✅ Regular Chat - {question_type} - Enhanced Emoji Mapping", True, 
+                                "Complete Enhanced Emoji Mapping with 🧐 **Mentoring Insight:** section")
+                elif regular_has_tech_section and not regular_has_mentoring_section:
+                    self.log_test(f"❌ Regular Chat - {question_type} - Missing Mentoring Section", False, 
+                                "Has Technical Answer but missing Mentoring Insight section")
+                elif regular_has_mentoring_section and not regular_uses_correct_emoji:
+                    self.log_test(f"❌ Regular Chat - {question_type} - Wrong Emoji", False, 
+                                "Has Mentoring Insight but not using 🧐 emoji")
+                else:
+                    self.log_test(f"❌ Regular Chat - {question_type} - No Enhanced Mapping", False, 
+                                "Missing Enhanced Emoji Mapping structure entirely")
+                
+                self.log_test(f"Regular Chat - {question_type} - API Response", True, f"Received {len(regular_response_content)} char response")
+            else:
+                self.log_test(f"❌ Regular Chat - {question_type} - API Response", False, f"Status: {regular_status}", regular_response)
+                print(f"   ❌ Failed to get response from regular chat endpoint")
+            
+            # Test 2: Enhanced chat endpoint (/api/chat/ask-enhanced) - COMPARISON
+            print(f"\n2️⃣ Testing POST /api/chat/ask-enhanced for {question_type}")
+            enhanced_data = {
+                "question": question,
+                "session_id": f"structural_fix_{question_type.lower().replace(' ', '_')}_enhanced"
+            }
+            
+            enhanced_success, enhanced_response, enhanced_status = await self.make_request("POST", "/chat/ask-enhanced", enhanced_data, mock_headers)
+            
+            enhanced_has_enhanced_mapping = False
+            enhanced_has_tech_section = False
+            enhanced_has_mentoring_section = False
+            enhanced_uses_correct_emoji = False
+            enhanced_response_content = ""
+            
+            if enhanced_success and isinstance(enhanced_response, dict) and "response" in enhanced_response:
+                enhanced_response_content = str(enhanced_response["response"])
+                
+                # Check for Enhanced Emoji Mapping structure
+                enhanced_has_tech_section = ("🔧 **Technical Answer**" in enhanced_response_content or 
+                                           "🔧 Technical Answer" in enhanced_response_content)
+                enhanced_has_mentoring_section = ("🧐 **Mentoring Insight**" in enhanced_response_content or 
+                                                 "🧐 Mentoring Insight" in enhanced_response_content)
+                enhanced_uses_correct_emoji = "🧐" in enhanced_response_content
+                enhanced_has_enhanced_mapping = enhanced_has_tech_section and enhanced_has_mentoring_section
+                
+                print(f"   📝 Response length: {len(enhanced_response_content)} characters")
+                print(f"   🔧 Has Technical Answer section: {enhanced_has_tech_section}")
+                print(f"   🧐 Has Mentoring Insight section: {enhanced_has_mentoring_section}")
+                print(f"   🧐 Uses correct emoji (🧐): {enhanced_uses_correct_emoji}")
+                print(f"   ✅ Has Enhanced Emoji Mapping: {enhanced_has_enhanced_mapping}")
+                
+                # Show first 800 chars for analysis
+                preview = enhanced_response_content[:800] + "..." if len(enhanced_response_content) > 800 else enhanced_response_content
+                print(f"   📄 Response preview: {preview}")
+                
+                # CRITICAL SUCCESS CRITERIA
+                if enhanced_has_enhanced_mapping and enhanced_uses_correct_emoji:
+                    self.log_test(f"✅ Enhanced Chat - {question_type} - Enhanced Emoji Mapping", True, 
+                                "Complete Enhanced Emoji Mapping with 🧐 **Mentoring Insight:** section")
+                else:
+                    self.log_test(f"❌ Enhanced Chat - {question_type} - Enhanced Mapping Issue", False, 
+                                "Enhanced endpoint should always have complete Enhanced Emoji Mapping")
+                
+                self.log_test(f"Enhanced Chat - {question_type} - API Response", True, f"Received {len(enhanced_response_content)} char response")
+            else:
+                self.log_test(f"❌ Enhanced Chat - {question_type} - API Response", False, f"Status: {enhanced_status}", enhanced_response)
+                print(f"   ❌ Failed to get response from enhanced chat endpoint")
+            
+            # Test 3: CRITICAL CONSISTENCY VERIFICATION
+            print(f"\n3️⃣ CRITICAL CONSISTENCY VERIFICATION for {question_type}")
+            
+            if regular_success and enhanced_success:
+                # Check if both endpoints use Enhanced Emoji Mapping
+                both_have_enhanced_mapping = regular_has_enhanced_mapping and enhanced_has_enhanced_mapping
+                both_use_correct_emoji = regular_uses_correct_emoji and enhanced_uses_correct_emoji
+                
+                # Check response format consistency
+                regular_is_direct_text = isinstance(regular_response.get("response"), str)
+                enhanced_is_direct_text = isinstance(enhanced_response.get("response"), str)
+                format_consistency = regular_is_direct_text and enhanced_is_direct_text
+                
+                print(f"   📊 Consistency Analysis:")
+                print(f"      Regular has Enhanced Mapping: {regular_has_enhanced_mapping}")
+                print(f"      Enhanced has Enhanced Mapping: {enhanced_has_enhanced_mapping}")
+                print(f"      Both use correct 🧐 emoji: {both_use_correct_emoji}")
+                print(f"      Response format consistency: {format_consistency}")
+                
+                if both_have_enhanced_mapping and both_use_correct_emoji and format_consistency:
+                    self.log_test(f"🎯 CRITICAL: {question_type} - Endpoint Consistency", True, 
+                                "✅ Both endpoints use identical Enhanced Emoji Mapping structure")
+                elif not both_have_enhanced_mapping:
+                    missing_endpoints = []
+                    if not regular_has_enhanced_mapping:
+                        missing_endpoints.append("Regular")
+                    if not enhanced_has_enhanced_mapping:
+                        missing_endpoints.append("Enhanced")
+                    self.log_test(f"❌ CRITICAL: {question_type} - Missing Enhanced Mapping", False, 
+                                f"Missing Enhanced Emoji Mapping in: {', '.join(missing_endpoints)}")
+                elif not both_use_correct_emoji:
+                    self.log_test(f"❌ CRITICAL: {question_type} - Emoji Inconsistency", False, 
+                                "Endpoints not using 🧐 emoji consistently")
+                else:
+                    self.log_test(f"❌ CRITICAL: {question_type} - Format Inconsistency", False, 
+                                "Response format inconsistency between endpoints")
+            else:
+                self.log_test(f"❌ CRITICAL: {question_type} - Cannot Compare", False, 
+                            "Cannot compare endpoints - one or both failed")
+        
+        print("\n🎯 FINAL STRUCTURAL FIX VERIFICATION:")
+        
+        # Count successful tests
+        successful_tests = [result for result in self.test_results if result["success"] and "Enhanced Emoji Mapping" in result["test"]]
+        consistency_tests = [result for result in self.test_results if result["success"] and "Endpoint Consistency" in result["test"]]
+        
+        total_mapping_tests = len([result for result in self.test_results if "Enhanced Emoji Mapping" in result["test"]])
+        total_consistency_tests = len([result for result in self.test_results if "Endpoint Consistency" in result["test"]])
+        
+        print(f"   📊 Enhanced Emoji Mapping Tests: {len(successful_tests)}/{total_mapping_tests} passed")
+        print(f"   📊 Endpoint Consistency Tests: {len(consistency_tests)}/{total_consistency_tests} passed")
+        
+        if len(consistency_tests) == total_consistency_tests and total_consistency_tests > 0:
+            print("🚀 **BREAKTHROUGH**: 100% Enhanced Emoji Mapping consistency achieved!")
+            print("✅ Both endpoints use identical Enhanced Emoji Mapping structure")
+            print("✅ Both use 🧐 (professor with monocle) for Mentoring Insight consistently")
+            print("✅ No structural mismatches between endpoints")
+            print("✅ Frontend can parse responses from both endpoints identically")
+            self.log_test("🎯 BREAKTHROUGH: Enhanced Emoji Mapping Structural Fix", True, 
+                        "100% Enhanced Emoji Mapping consistency achieved between regular and enhanced chat endpoints")
+        else:
+            print("❌ STRUCTURAL FIX INCOMPLETE:")
+            print("   Regular and enhanced endpoints still have inconsistent Enhanced Emoji Mapping")
+            print("   Backend needs further investigation and fixes")
+            self.log_test("🎯 BREAKTHROUGH: Enhanced Emoji Mapping Structural Fix", False, 
+                        "Enhanced Emoji Mapping consistency not achieved - structural fix incomplete")
+
     async def test_enhanced_emoji_mapping_consistency_fix(self):
         """🚨 CRITICAL: Test Enhanced Emoji Mapping Consistency Fix from Review Request"""
         print("\n🚨 === ENHANCED EMOJI MAPPING CONSISTENCY FIX VERIFICATION ===")
