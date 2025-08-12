@@ -235,198 +235,98 @@ const ChatInterface = () => {
   };
 
   // Format AI response with tight spacing and professional typography (Emergent style)
-  const formatAIResponse = (content) => {
-    if (!content) return '';
+  const formatAIResponse = (text) => {
+    let formatted = text;
     
-    let formatted = content;
+    // 🚨 PHASE 0: CRITICAL EMOJI FAILSAFE - Force 🧐 (professor with monocle) for Mentoring Insight
+    formatted = formatted.replace(/🤓\s*\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
+    formatted = formatted.replace(/🧠\s*\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
+    formatted = formatted.replace(/💡\s*\*\*Mentoring Insight\*\*/gi, '🧐 **Mentoring Insight**');
+    formatted = formatted.replace(/🤓 Mentoring Insight/gi, '🧐 Mentoring Insight');
+    formatted = formatted.replace(/🧠 Mentoring Insight/gi, '🧐 Mentoring Insight');
+    formatted = formatted.replace(/💡 Mentoring Insight/gi, '🧐 Mentoring Insight');
     
-    // 🚨 CRITICAL FAILSAFE: Force correct Enhanced Emoji Mapping regardless of backend
-    // Replace ANY incorrect emojis with the definitive Enhanced Emoji Mapping
-    formatted = formatted.replace(/🧠\s*\*\*Mentoring Insight\*\*/gi, '🤓 **Mentoring Insight**');
-    formatted = formatted.replace(/💡\s*\*\*Mentoring Insight\*\*/gi, '🤓 **Mentoring Insight**');
-    formatted = formatted.replace(/🧠 Mentoring Insight/gi, '🤓 Mentoring Insight');
-    formatted = formatted.replace(/💡 Mentoring Insight/gi, '🤓 Mentoring Insight');
+    // PHASE 1: MASTER ENHANCED EMOJI MAPPING with PROFESSIONAL TYPOGRAPHY HIERARCHY
+    const emojiMappings = [
+      {
+        pattern: /\*\*Technical Answer:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-orange-200 pb-3"><span class="text-2xl">🔧</span><span class="text-onesource-dark">Technical Answer</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Mentoring Insight:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-blue-200 pb-3"><span class="text-2xl">🧐</span><span class="text-onesource-dark">Mentoring Insight</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Next Steps:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-green-200 pb-3"><span class="text-2xl">📋</span><span class="text-green-700">Next Steps</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Code Requirements:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-blue-200 pb-3"><span class="text-2xl">📊</span><span class="text-blue-700">Code Requirements</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Compliance Verification:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-green-200 pb-3"><span class="text-2xl">✅</span><span class="text-green-700">Compliance Verification</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Alternative Solutions:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-purple-200 pb-3"><span class="text-2xl">🔄</span><span class="text-purple-700">Alternative Solutions</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Authority Requirements:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-gray-200 pb-3"><span class="text-2xl">🏛️</span><span class="text-gray-700">Authority Requirements</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Documentation Needed:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-blue-200 pb-3"><span class="text-2xl">📄</span><span class="text-blue-700">Documentation Needed</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Workflow Recommendations:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-orange-200 pb-3"><span class="text-2xl">⚙️</span><span class="text-orange-700">Workflow Recommendations</span></h2></div>'
+      },
+      {
+        pattern: /\*\*Clarifying Questions:\*\*/gi,
+        replacement: '<div class="mt-6 mb-4"><h2 class="text-xl font-bold text-gray-900 flex items-center gap-3 border-b-2 border-red-200 pb-3"><span class="text-2xl">❓</span><span class="text-red-700">Clarifying Questions</span></h2></div>'
+      }
+    ];
     
-    // STEP 1: Handle markdown headers FIRST (before line breaks are removed)
-    
-    // STEP 1: Handle markdown headers FIRST (before line breaks are removed)
-    
-    // Handle # patterns - Main sections (ENHANCED EMOJI MAPPING)
-    formatted = formatted.replace(/^#\s*(\d+\.?\s*)?(.*?)$/gmi, (match, number, title) => {
-      const cleanTitle = title.trim();
-      const lowerTitle = cleanTitle.toLowerCase();
-      
-      if (lowerTitle.includes('technical answer') || lowerTitle.includes('technical')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔧 <strong>Technical Answer</strong></h3></div>';
-      }
-      if (lowerTitle.includes('mentoring') || lowerTitle.includes('insight')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🧠 <strong>Mentoring Insight</strong></h3></div>';
-      }
-      if (lowerTitle.includes('next steps') || lowerTitle.includes('clarifying')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>Next Steps</strong></h3></div>';
-      }
-      if (lowerTitle.includes('code requirements') || lowerTitle.includes('requirements')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📊 <strong>Code Requirements</strong></h3></div>';
-      }
-      if (lowerTitle.includes('compliance')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">✅ <strong>Compliance Verification</strong></h3></div>';
-      }
-      if (lowerTitle.includes('alternative')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🔄 <strong>Alternative Solutions</strong></h3></div>';
-      }
-      if (lowerTitle.includes('authority')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">🏛️ <strong>Authority Requirements</strong></h3></div>';
-      }
-      if (lowerTitle.includes('documentation')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📄 <strong>Documentation Needed</strong></h3></div>';
-      }
-      if (lowerTitle.includes('workflow') || lowerTitle.includes('recommendations')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">⚙️ <strong>Workflow Recommendations</strong></h3></div>';
-      }
-      if (lowerTitle.includes('questions') || lowerTitle.includes('clarify')) {
-        return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">❓ <strong>Clarifying Questions</strong></h3></div>';
-      }
-      
-      // Default
-      return '<div class="mt-4 mb-2"><h3 class="text-base font-bold text-gray-900 flex items-center gap-2">📋 <strong>' + cleanTitle + '</strong></h3></div>';
+    // Apply all emoji mappings
+    emojiMappings.forEach(mapping => {
+      formatted = formatted.replace(mapping.pattern, mapping.replacement);
     });
     
-    // Handle ## patterns - Sub-sections (ENHANCED EMOJI MAPPING)
-    formatted = formatted.replace(/^##\s*(\d+\.?\s*)?(.*?)$/gmi, (match, number, title) => {
-      const cleanTitle = title ? title.trim() : '';
-      const lowerTitle = cleanTitle.toLowerCase();
-      const fullTitle = (number || '') + cleanTitle;
-      
-      if (lowerTitle.includes('code requirements') || lowerTitle.includes('requirements')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📊 <strong>' + fullTitle + '</strong></h4></div>';
-      }
-      if (lowerTitle.includes('compliance')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">✅ <strong>' + fullTitle + '</strong></h4></div>';
-      }
-      if (lowerTitle.includes('alternative')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔄 <strong>' + fullTitle + '</strong></h4></div>';
-      }
-      if (lowerTitle.includes('authority')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🏛️ <strong>' + fullTitle + '</strong></h4></div>';
-      }
-      if (lowerTitle.includes('documentation')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">📄 <strong>' + fullTitle + '</strong></h4></div>';
-      }
-      if (lowerTitle.includes('workflow') || lowerTitle.includes('recommendations')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">⚙️ <strong>' + fullTitle + '</strong></h4></div>';
-      }
-      if (lowerTitle.includes('questions') || lowerTitle.includes('clarify')) {
-        return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">❓ <strong>' + fullTitle + '</strong></h4></div>';
-      }
-      
-      // Default - handles any ## pattern including numbered ones
-      return '<div class="mt-3 mb-1"><h4 class="text-sm font-semibold text-gray-800 flex items-center gap-2">🔹 <strong>' + fullTitle + '</strong></h4></div>';
-    });
+    // PHASE 2: PROFESSIONAL CONTENT FORMATTING
     
-    // Handle ### patterns - Minor sections
-    formatted = formatted.replace(/^###\s*(.*?)$/gmi, (match, title) => {
-      const cleanTitle = title.trim();
-      return '<div class="mt-2 mb-1"><h5 class="text-sm font-medium text-gray-700 flex items-center gap-2">▪️ <strong>' + cleanTitle + '</strong></h5></div>';
-    });
+    // Handle markdown headers FIRST (before line breaks are removed)
+    formatted = formatted.replace(/^### (.*?)$/gm, '<h3 class="text-lg font-semibold text-gray-900 mt-4 mb-2">$1</h3>');
+    formatted = formatted.replace(/^## (.*?)$/gm, '<h2 class="text-xl font-bold text-gray-900 mt-6 mb-4">$1</h2>');
+    formatted = formatted.replace(/^# (.*?)$/gm, '<h1 class="text-2xl font-bold text-gray-900 mt-8 mb-6">$1</h1>');
     
-    // STEP 2: Handle plain **text:** patterns and convert to Enhanced Emoji Mapping with PROFESSIONAL STYLING
-    // Enhanced emoji mapping with proper professional formatting
-    formatted = formatted.replace(/\*\*Technical Answer:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔧 <span class="text-onesource-dark">Technical Answer</span></h2></div>');
-    formatted = formatted.replace(/\*\*Technical Answer\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔧 <span class="text-onesource-dark">Technical Answer</span></h2></div>');
-    formatted = formatted.replace(/\*\*Mentoring Insight:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🤓 <span class="text-onesource-dark">Mentoring Insight</span></h2></div>');
-    formatted = formatted.replace(/\*\*Mentoring Insight\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🤓 <span class="text-onesource-dark">Mentoring Insight</span></h2></div>');
-    formatted = formatted.replace(/\*\*Next Steps:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📋 <span class="text-onesource-dark">Next Steps</span></h2></div>');
-    formatted = formatted.replace(/\*\*Next Steps\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📋 <span class="text-onesource-dark">Next Steps</span></h2></div>');
-    formatted = formatted.replace(/\*\*Code Requirements:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📊 <span class="text-onesource-dark">Code Requirements</span></h2></div>');
-    formatted = formatted.replace(/\*\*Code Requirements\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📊 <span class="text-onesource-dark">Code Requirements</span></h2></div>');
-    formatted = formatted.replace(/\*\*Compliance Verification:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">✅ <span class="text-onesource-dark">Compliance Verification</span></h2></div>');
-    formatted = formatted.replace(/\*\*Compliance Verification\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">✅ <span class="text-onesource-dark">Compliance Verification</span></h2></div>');
-    formatted = formatted.replace(/\*\*Alternative Solutions:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔄 <span class="text-onesource-dark">Alternative Solutions</span></h2></div>');
-    formatted = formatted.replace(/\*\*Alternative Solutions\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔄 <span class="text-onesource-dark">Alternative Solutions</span></h2></div>');
-    formatted = formatted.replace(/\*\*Authority Requirements:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🏛️ <span class="text-onesource-dark">Authority Requirements</span></h2></div>');
-    formatted = formatted.replace(/\*\*Authority Requirements\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🏛️ <span class="text-onesource-dark">Authority Requirements</span></h2></div>');
-    formatted = formatted.replace(/\*\*Documentation Needed:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📄 <span class="text-onesource-dark">Documentation Needed</span></h2></div>');
-    formatted = formatted.replace(/\*\*Documentation Needed\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📄 <span class="text-onesource-dark">Documentation Needed</span></h2></div>');
-    formatted = formatted.replace(/\*\*Workflow Recommendations:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">⚙️ <span class="text-onesource-dark">Workflow Recommendations</span></h2></div>');
-    formatted = formatted.replace(/\*\*Workflow Recommendations\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">⚙️ <span class="text-onesource-dark">Workflow Recommendations</span></h2></div>');
-    formatted = formatted.replace(/\*\*Clarifying Questions:\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">❓ <span class="text-onesource-dark">Clarifying Questions</span></h2></div>');
-    formatted = formatted.replace(/\*\*Clarifying Questions\*\*/gi, '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">❓ <span class="text-onesource-dark">Clarifying Questions</span></h2></div>');
+    // Professional bullet points with ONESource branding
+    formatted = formatted.replace(/^• (.+)$/gm, '<div class="ml-4 mb-3 flex items-start"><span class="inline-block w-2 h-2 bg-onesource-medium rounded-full mr-4 mt-3 flex-shrink-0"></span><span class="text-gray-800 leading-relaxed text-base">$1</span></div>');
+    formatted = formatted.replace(/^\* (.+)$/gm, '<div class="ml-4 mb-3 flex items-start"><span class="inline-block w-2 h-2 bg-onesource-medium rounded-full mr-4 mt-3 flex-shrink-0"></span><span class="text-gray-800 leading-relaxed text-base">$1</span></div>');
     
-    // STEP 3: Convert remaining **bold** to proper HTML bold with professional styling
+    // Professional numbered lists with circular styled numbers
+    formatted = formatted.replace(/^(\d+)\. (.+)$/gm, '<div class="ml-4 mb-4 flex items-start"><span class="inline-flex items-center justify-center w-7 h-7 bg-onesource-dark text-white text-sm font-bold rounded-full mr-4 flex-shrink-0">$1</span><span class="text-gray-800 leading-relaxed text-base">$2</span></div>');
+    
+    // Convert remaining **bold** to professional styling
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>');
     
-    // STEP 3: Handle markdown tables
-    formatted = formatted.replace(/(\|.*\|[\r\n]+\|[-\s\|:]+\|[\r\n]+((\|.*\|[\r\n]*)+))/gm, (match) => {
-      const lines = match.trim().split('\n');
-      const headers = lines[0].split('|').filter(cell => cell.trim()).map(cell => cell.trim());
-      const rows = lines.slice(2).map(line => 
-        line.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
-      );
-      
-      return `
-        <div class="my-4 overflow-x-auto">
-          <table class="min-w-full border-collapse border border-gray-300 bg-white shadow-sm rounded-lg">
-            <thead class="bg-blue-50">
-              <tr>
-                ${headers.map(header => `<th class="border border-gray-300 px-3 py-2 text-left font-semibold text-gray-900 text-sm">${header}</th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              ${rows.map(row => `
-                <tr class="hover:bg-gray-50">
-                  ${row.map(cell => `<td class="border border-gray-300 px-3 py-2 text-sm text-gray-700">${cell}</td>`).join('')}
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-    });
-    
-    // STEP 4: Convert bullet points with ultra-tight spacing
-    formatted = formatted.replace(/^\s*[-•]\s*\*\*(.*?)\*\*:\s*(.*?)$/gm, 
-      '<div class="flex items-start gap-2 mb-0.5 ml-3"><span class="flex-shrink-0 w-1 h-1 bg-blue-600 rounded-full mt-2"></span><div><strong class="text-gray-900 font-medium">$1:</strong> <span class="text-gray-700">$2</span></div></div>');
-    
-    formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, 
-      '<div class="flex items-start gap-2 mb-0.5 ml-3"><span class="flex-shrink-0 w-1 h-1 bg-blue-500 rounded-full mt-2"></span><span class="text-gray-700">$1</span></div>');
-    
-    // STEP 5: Add clickable links
-    formatted = formatted.replace(/\b(NCC|National Construction Code)\b/g, 
-      '<a href="https://ncc.abcb.gov.au/" target="_blank" class="font-medium text-onesource-dark hover:text-onesource-medium underline">$1</a>');
-    
-    formatted = formatted.replace(/\b(AS \d{4}(?:\.\d+)?)\b/g, 
-      '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-onesource-dark hover:text-onesource-medium underline bg-onesource-pale px-1 rounded">$1</a>');
-    
-    formatted = formatted.replace(/\b(NZS \d{4}(?:\.\d+)?)\b/g, 
-      '<a href="https://www.standards.govt.nz/" target="_blank" class="font-medium text-onesource-dark hover:text-onesource-medium underline bg-onesource-pale px-1 rounded">$1</a>');
-    
-    // STEP 6: Handle line breaks LAST (after all markdown processing)
-    formatted = formatted.replace(/\n\n/g, '<br>');  // Double breaks become single
-    formatted = formatted.replace(/\n/g, '');        // Remove single breaks for tight spacing
-    
-    // STEP 6.5: Final cleanup - catch any remaining markdown headers that slipped through
-    formatted = formatted.replace(/^#+\s*(.*?)$/gm, '<div class="mt-2 mb-1"><h5 class="text-sm font-medium text-gray-700 flex items-center gap-2">▪️ <strong>$1</strong></h5></div>');
-    
-    // STEP 7: Wrap in container with tight spacing
-    formatted = `<div style="line-height: 1.3; margin: 0; padding: 0;">${formatted}</div>`;
-    
-    // STEP 4: Format bullet points professionally with proper spacing
-    formatted = formatted.replace(/^• (.+)$/gm, '<div class="ml-4 mb-2"><span class="inline-block w-2 h-2 bg-onesource-medium rounded-full mr-3 mt-2"></span><span class="text-gray-800 leading-relaxed">$1</span></div>');
-    formatted = formatted.replace(/^\* (.+)$/gm, '<div class="ml-4 mb-2"><span class="inline-block w-2 h-2 bg-onesource-medium rounded-full mr-3 mt-2"></span><span class="text-gray-800 leading-relaxed">$1</span></div>');
-    
-    // STEP 5: Format numbered lists professionally  
-    formatted = formatted.replace(/^(\d+)\. (.+)$/gm, '<div class="ml-4 mb-3"><span class="inline-flex items-center justify-center w-6 h-6 bg-onesource-dark text-white text-sm font-bold rounded-full mr-3">$1</span><span class="text-gray-800 leading-relaxed">$2</span></div>');
-    
-    // STEP 6: Add professional paragraph spacing
+    // Professional paragraph spacing with proper line height
     formatted = formatted.replace(/\n\n/g, '<div class="mb-4"></div>');
     formatted = formatted.replace(/\n/g, '<br class="mb-1">');
     
-    // STEP 7: Style tables professionally if they exist
-    formatted = formatted.replace(/<table/g, '<div class="overflow-x-auto mb-6"><table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm"');
+    // PHASE 3: PROFESSIONAL TABLE STYLING (WCAG-compliant)
+    formatted = formatted.replace(/<table/g, '<div class="overflow-x-auto mb-6 shadow-sm rounded-lg border border-gray-200"><table class="min-w-full bg-white"');
     formatted = formatted.replace(/<\/table>/g, '</table></div>');
-    formatted = formatted.replace(/<th/g, '<th class="px-4 py-3 bg-onesource-pale text-left text-sm font-bold text-gray-900 border-b border-gray-200"');
-    formatted = formatted.replace(/<td/g, '<td class="px-4 py-3 text-sm text-gray-800 border-b border-gray-100"');
-
+    formatted = formatted.replace(/<th/g, '<th class="px-6 py-4 bg-onesource-pale text-left text-sm font-bold text-gray-900 border-b border-gray-200 uppercase tracking-wider"');
+    formatted = formatted.replace(/<td/g, '<td class="px-6 py-4 text-sm text-gray-800 border-b border-gray-100 leading-relaxed"');
+    
+    // PHASE 4: RESPONSIVE DESIGN ADJUSTMENTS
+    // Add responsive classes for mobile optimization
+    formatted = formatted.replace(/class="text-xl/g, 'class="text-lg md:text-xl');
+    formatted = formatted.replace(/class="text-2xl/g, 'class="text-xl md:text-2xl');
+    
     return formatted;
   };
 
