@@ -292,10 +292,10 @@ const PricingPage = () => {
               >
                 {/* Popular/Promotional Badge */}
                 {(plan.badge || plan.highlighted || plan.popular) && (
-                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-30">
-                    <Badge className={`px-6 py-3 font-bold text-base shadow-lg ${
-                      plan.mostPopular ? 'bg-onesource-dark text-white border-2 border-onesource-pale' :
-                      plan.popular ? 'bg-onesource-medium text-white shadow-lg' :
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-30">
+                    <Badge className={`px-3 py-1 font-semibold text-xs shadow-md ${
+                      plan.mostPopular ? 'bg-onesource-dark text-white border border-onesource-pale' :
+                      plan.popular ? 'bg-onesource-medium text-white shadow-md' :
                       plan.badge === 'Most Popular' || plan.highlighted ? 'bg-blue-500 text-white' :
                       plan.badge === 'Best Value' ? 'bg-green-500 text-white' :
                       plan.badge === 'Limited Time' ? 'bg-orange-500 text-white' :
