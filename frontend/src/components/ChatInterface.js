@@ -893,7 +893,7 @@ const ChatInterface = () => {
                                   ...prev,
                                   [message.id]: !prev[message.id]
                                 }))}
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                className="text-onesource-dark hover:text-onesource-medium hover:bg-onesource-pale"
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
