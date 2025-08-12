@@ -295,7 +295,7 @@ ENHANCED AI INTELLIGENCE CONTEXT:"""
             # Add Phase 1 context (always available)
             ai_context += f"""
 
-🧠 **PHASE 1: ENHANCED PROMPTING ACTIVE**
+🤓 **PHASE 1: ENHANCED PROMPTING ACTIVE**
 - Construction-specific prompt templates applied
 - Detected discipline: {detected_discipline.replace('_', ' ').title()}
 - Professional response structure with Technical Answer, Mentoring Insight, and Next Steps"""
