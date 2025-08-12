@@ -1,5 +1,6 @@
 import os
 import openai
+from openai import AsyncOpenAI
 from typing import Dict, Any, List
 import uuid
 from datetime import datetime
