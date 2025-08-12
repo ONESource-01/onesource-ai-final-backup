@@ -311,6 +311,160 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="partners" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Users className="h-5 w-5 mr-2" />
+                  Partner Applications
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {partnersLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-onesource-dark mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading partner applications...</p>
+                  </div>
+                ) : partners.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p>No partner applications found</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {partners.map((partner) => (
+                      <div key={partner.id} className="border rounded-lg p-4 space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-1">
+                            <h4 className="font-semibold text-lg">{partner.company_name}</h4>
+                            <p className="text-sm text-gray-600">
+                              <strong>Contact:</strong> {partner.contact_person} ({partner.email})
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              <strong>Industry:</strong> {partner.industry_sector}
+                            </p>
+                            {partner.phone && (
+                              <p className="text-sm text-gray-600">
+                                <strong>Phone:</strong> {partner.phone}
+                              </p>
+                            )}
+                          </div>
+                          <Badge 
+                            variant={
+                              partner.status === 'approved' ? 'default' : 
+                              partner.status === 'rejected' ? 'destructive' : 
+                              'secondary'
+                            }
+                          >
+                            {partner.status || 'pending'}
+                          </Badge>
+                        </div>
+
+                        {/* Business ID Information */}
+                        <div className="bg-gray-50 rounded p-3 space-y-2">
+                          <h5 className="font-medium text-sm">Business Registration</h5>
+                          {partner.manual_review_required ? (
+                            <div className="flex items-center gap-2 text-amber-600">
+                              <AlertTriangle className="h-4 w-4" />
+                              <span className="text-sm">Manual review required - No business registration provided</span>
+                            </div>
+                          ) : (
+                            <div className="space-y-1">
+                              <p className="text-sm">
+                                <strong>Country:</strong> {partner.country || 'AU'}
+                              </p>
+                              <p className="text-sm">
+                                <strong>Type:</strong> {partner.business_id_scheme || 'ABN/ACN'}
+                              </p>
+                              <p className="text-sm">
+                                <strong>Number:</strong> {partner.business_id_number || partner.abn_acn}
+                              </p>
+                              {partner.business_id_valid && (
+                                <div className="flex items-center gap-1 text-green-600">
+                                  <Check className="h-3 w-3" />
+                                  <span className="text-xs">Format validated</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {partner.description && (
+                          <div>
+                            <h5 className="font-medium text-sm mb-1">Company Description</h5>
+                            <p className="text-sm text-gray-700">{partner.description}</p>
+                          </div>
+                        )}
+
+                        {partner.admin_notes && (
+                          <div className="bg-blue-50 rounded p-3">
+                            <h5 className="font-medium text-sm mb-1">Admin Notes</h5>
+                            <p className="text-sm text-blue-700">{partner.admin_notes}</p>
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="text-xs text-gray-500">
+                            Applied: {new Date(partner.created_at).toLocaleDateString()}
+                          </div>
+                          
+                          {partner.status === 'pending' && (
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const reason = prompt('Add approval notes (optional):');
+                                  if (reason !== null) {
+                                    handlePartnerAction(partner.id, 'approve', reason);
+                                  }
+                                }}
+                                disabled={partnerActionLoading === partner.id}
+                                className="text-green-600 border-green-600 hover:bg-green-50"
+                              >
+                                {partnerActionLoading === partner.id ? (
+                                  <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                                ) : (
+                                  <>
+                                    <Check className="h-3 w-3 mr-1" />
+                                    Approve
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const reason = prompt('Rejection reason (required):');
+                                  if (reason && reason.trim()) {
+                                    handlePartnerAction(partner.id, 'reject', reason);
+                                  } else if (reason === '') {
+                                    alert('Please provide a reason for rejection.');
+                                  }
+                                }}
+                                disabled={partnerActionLoading === partner.id}
+                                className="text-red-600 border-red-600 hover:bg-red-50"
+                              >
+                                {partnerActionLoading === partner.id ? (
+                                  <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
+                                ) : (
+                                  <>
+                                    <X className="h-3 w-3 mr-1" />
+                                    Reject
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="users" className="space-y-6">
             <Card>
               <CardHeader>
