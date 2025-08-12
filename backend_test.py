@@ -754,15 +754,15 @@ class BackendTester:
             all_have_tech = all(ep["has_tech"] for ep in endpoints_tested)
             
             if all_use_correct_mentoring and none_use_wrong_mentoring:
-                self.log_test("🎯 CRITICAL: Enhanced Emoji Mapping Consistency (🤓)", True, 
-                            "✅ ALL endpoints use correct 🤓 emoji for Mentoring Insight")
-                print("   ✅ CONSISTENCY ACHIEVED: All endpoints use 🤓 nerd face emoji correctly")
+                self.log_test("🎯 CRITICAL: Enhanced Emoji Mapping Consistency (🧐)", True, 
+                            "✅ ALL endpoints use correct 🧐 emoji for Mentoring Insight")
+                print("   ✅ CONSISTENCY ACHIEVED: All endpoints use 🧐 professor with monocle emoji correctly")
             else:
-                self.log_test("🎯 CRITICAL: Enhanced Emoji Mapping Consistency (🤓)", False, 
+                self.log_test("🎯 CRITICAL: Enhanced Emoji Mapping Consistency (🧐)", False, 
                             "❌ Inconsistent or incorrect emoji usage across endpoints")
                 print("   ❌ CONSISTENCY BROKEN:")
                 for ep in endpoints_tested:
-                    print(f"      {ep['name']} - 🤓 correct: {ep['has_correct_mentoring']}, wrong emoji: {ep['has_wrong_mentoring']}")
+                    print(f"      {ep['name']} - 🧐 correct: {ep['has_correct_mentoring']}, wrong emoji: {ep['has_wrong_mentoring']}")
             
             if all_have_tech:
                 self.log_test("✅ Technical Answer Consistency", True, 
