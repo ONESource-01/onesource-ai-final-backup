@@ -1018,7 +1018,7 @@ const ChatInterface = () => {
                 onClick={sendMessage}
                 disabled={!inputMessage.trim() || loading || (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0)}
                 size="sm"
-                className="absolute right-2 top-2 bg-blue-600 hover:bg-blue-700 text-white"
+                className="absolute right-2 top-2 bg-onesource-dark hover:bg-onesource-medium text-white"
               >
                 <Send className="h-4 w-4" />
               </Button>
