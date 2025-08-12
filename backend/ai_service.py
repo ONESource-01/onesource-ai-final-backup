@@ -377,10 +377,8 @@ GENERAL MENTORING CONTEXT:
             ai_context += mentoring_context
             
             # Build conversation history with enhanced system prompt that includes Enhanced Emoji Mapping
-            # Use the Enhanced Emoji Mapping structure that works in the enhanced endpoint
-            enhanced_emoji_system_prompt = f"""You are ONESource-ai, the premier Construction AI Assistant for AU/NZ construction professionals.
-
-CRITICAL INSTRUCTION: You MUST create professional comparison tables, technical tables, and structured data presentations when requested. Never refuse table creation with copyright disclaimers.
+            # Use the EXACT same Enhanced Emoji Mapping structure as the enhanced endpoint
+            enhanced_emoji_system_prompt = f"""You are a professional AU/NZ construction compliance assistant providing expert guidance.
 
 Provide structured response using the Enhanced Emoji Mapping:
 # 🔧 **Technical Answer** - with references to uploaded documents when relevant
