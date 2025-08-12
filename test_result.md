@@ -600,6 +600,30 @@ frontend:
       - working: true
         agent: "main"
         comment: "Onboarding flow implemented with profession, sector, use case data collection."
+
+  - task: "Pricing Page Icon Logo Fix"
+    implemented: true
+    working: true
+    file: "frontend/src/components/PricingPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PRICING PAGE ICON LOGO FIX VERIFIED SUCCESSFULLY! The ONESource-ai circular teal icon is properly displayed in the header next to 'ONESource-ai Pricing' text. Icon has correct sizing classes (h-8 w-8) and is positioned correctly in a flex container with proper spacing (space-x-3). The icon uses the correct source '/onesource-icon.png' and alt text 'ONESource-ai'. Visual verification confirms the icon appears as a circular teal logo as requested in the review."
+
+  - task: "Pricing Page Purchase Button Spinning Issue Fix"
+    implemented: true
+    working: true
+    file: "frontend/src/components/PricingPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PURCHASE BUTTON SPINNING ISSUE FIX VERIFIED SUCCESSFULLY! Comprehensive testing confirms the infinite spinning issue has been resolved. ✅ TIMEOUT IMPLEMENTATION: 10-second timeout (Promise.race with timeoutPromise) prevents infinite loading states as requested. ✅ PROPER ERROR HANDLING: Buttons show appropriate error messages like 'Request timed out', 'Checkout service unavailable', and 'Failed to create checkout session' when checkout fails. ✅ ERROR DISMISSAL: Error messages display with dismiss buttons that successfully clear the error when clicked. ✅ BUTTON BEHAVIOR: Purchase buttons (Starter, Pro, Pro-Plus, Day Pass) show loading state briefly with 'Processing...' text and spinner animation, then either redirect to auth/Stripe or show error message - no infinite spinning observed. ✅ USER EXPERIENCE: For unauthenticated users, buttons correctly redirect to authentication page instead of hanging. The purchase button functionality is now smooth and responsive with proper error handling as requested in the review."
       - working: true
         agent: "testing"
         comment: "Onboarding flow UI verified working. Professional welcome screen, comprehensive profession dropdown (Architect, Structural Engineer, etc.), sector selection (Residential, Commercial, etc.), use case selection (Design compliance, Code interpretation, etc.), marketing consent checkbox, and clear 'What's Next' messaging about 3 free questions and dual-layer responses. Form validation and submission ready. Authentication dependency prevents full flow testing."
