@@ -1170,7 +1170,7 @@ async def ask_question(
         
         EXACT SECTION HEADERS TO USE (MUST include emojis):
         - 🔧 **Technical Answer:** (REQUIRED - MUST BE INCLUDED)
-        - 🧠 **Mentoring Insight:** (REQUIRED - MUST BE INCLUDED)  
+        - 💡 **Mentoring Insight:** (REQUIRED - MUST BE INCLUDED)  
         - 📋 **Next Steps:** (optional)
         - 📊 **Code Requirements:** (optional)
         - ✅ **Compliance Verification:** (optional)
