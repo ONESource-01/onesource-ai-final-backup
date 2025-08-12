@@ -247,41 +247,7 @@ const ChatInterface = () => {
     formatted = formatted.replace(/🧠 Mentoring Insight/gi, '🤓 Mentoring Insight');
     formatted = formatted.replace(/💡 Mentoring Insight/gi, '🤓 Mentoring Insight');
     
-    // STEP 1: Enhanced Emoji Mapping section headers (# format)
-    if (formatted.includes('🔧')) {
-      const title = formatted.match(/# 🔧\s*\*?\*?(.*?)\*?\*?$/im);
-      if (title && title[1]) {
-        const lowerTitle = title[1].toLowerCase();
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔧 <span class="text-onesource-dark">Technical Answer</span></h2></div>';
-      }
-      if (lowerTitle.includes('mentoring')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🤓 <span class="text-onesource-dark">Mentoring Insight</span></h2></div>';
-      }
-      if (lowerTitle.includes('next steps')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📋 <span class="text-onesource-dark">Next Steps</span></h2></div>';
-      }
-      if (lowerTitle.includes('code requirements')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📊 <span class="text-onesource-dark">Code Requirements</span></h2></div>';
-      }
-      if (lowerTitle.includes('compliance')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">✅ <span class="text-onesource-dark">Compliance Verification</span></h2></div>';
-      }
-      if (lowerTitle.includes('alternative')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🔄 <span class="text-onesource-dark">Alternative Solutions</span></h2></div>';
-      }
-      if (lowerTitle.includes('authority')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">🏛️ <span class="text-onesource-dark">Authority Requirements</span></h2></div>';
-      }
-      if (lowerTitle.includes('documentation')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">📄 <span class="text-onesource-dark">Documentation Needed</span></h2></div>';
-      }
-      if (lowerTitle.includes('workflow')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">⚙️ <span class="text-onesource-dark">Workflow Recommendations</span></h2></div>';
-      }
-      if (lowerTitle.includes('question')) {
-        return '<div class="mt-6 mb-4"><h2 class="text-lg font-bold text-gray-900 flex items-center gap-3 border-b border-gray-200 pb-2">❓ <span class="text-onesource-dark">Clarifying Questions</span></h2></div>';
-      }
-    }
+    // STEP 1: Handle markdown headers FIRST (before line breaks are removed)
     
     // STEP 1: Handle markdown headers FIRST (before line breaks are removed)
     
