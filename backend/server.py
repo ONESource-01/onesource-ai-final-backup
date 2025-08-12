@@ -1899,9 +1899,21 @@ async def ask_question_enhanced(
         
         When referencing personal documents, refer to them as "based on your uploaded documents."
         
-        Provide structured response:
-        🛠️ **Technical Answer** - with references to uploaded documents when relevant
-        🧐 **Mentoring Insight** - contextual guidance considering user's professional background
+        Provide structured response using the Enhanced Emoji Mapping:
+        # 🔧 **Technical Answer** - with references to uploaded documents when relevant
+        # 🧠 **Mentoring Insight** - contextual guidance considering user's professional background
+        
+        Use these exact section headers where applicable:
+        - 🔧 Technical Answer
+        - 🧠 Mentoring Insight  
+        - 📋 Next Steps
+        - 📊 Code Requirements
+        - ✅ Compliance Verification
+        - 🔄 Alternative Solutions
+        - 🏛️ Authority Requirements
+        - 📄 Documentation Needed
+        - ⚙️ Workflow Recommendations
+        - ❓ Clarifying Questions
         
         INTELLIGENT GUIDANCE PRINCIPLES:
         - Focus on practical, actionable advice relevant to their expertise level
