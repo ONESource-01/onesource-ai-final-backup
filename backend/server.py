@@ -1177,7 +1177,7 @@ async def ask_question(
         await db.conversations.insert_one(conversation_data)
         
         response_data = {
-            "response": formatted_response,
+            "response": response_structure,
             "session_id": conversation_data["session_id"],
             "tokens_used": ai_response.get("tokens_used", 0)
         }
