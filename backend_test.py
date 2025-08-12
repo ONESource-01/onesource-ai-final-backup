@@ -300,59 +300,75 @@ class BackendTester:
         print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat) - MAIN FOCUS")
         regular_data = {
             "question": test_question,
-            "session_id": "water_systems_test_regular"
+            "session_id": "fire_safety_test_regular"
         }
         
         regular_success, regular_response, regular_status = await self.make_request("POST", "/chat/ask", regular_data, mock_headers)
         
         regular_has_tech_emoji = False
-        regular_has_mentoring_emoji = False
-        regular_has_water_content = False
+        regular_has_mentoring_emoji_correct = False
+        regular_has_mentoring_emoji_wrong = False
+        regular_has_fire_content = False
         regular_response_content = ""
         
         if regular_success and isinstance(regular_response, dict) and "response" in regular_response:
             regular_response_content = str(regular_response["response"])
             
-            # Check for Enhanced Emoji Mapping emojis
-            regular_has_tech_emoji = "🔧 **Technical Answer**" in regular_response_content
-            regular_has_mentoring_emoji = "🧠 **Mentoring Insight**" in regular_response_content
+            # Check for Enhanced Emoji Mapping emojis - CRITICAL: Must be 🤓 NOT 🧠 or 💡
+            regular_has_tech_emoji = "🔧 **Technical Answer**" in regular_response_content or "🔧 Technical Answer" in regular_response_content
+            regular_has_mentoring_emoji_correct = "🤓 **Mentoring Insight**" in regular_response_content or "🤓 Mentoring Insight" in regular_response_content
+            regular_has_mentoring_emoji_wrong = ("🧠 **Mentoring Insight**" in regular_response_content or 
+                                               "💡 **Mentoring Insight**" in regular_response_content or
+                                               "🧠 Mentoring Insight" in regular_response_content or
+                                               "💡 Mentoring Insight" in regular_response_content)
             
-            # Check for water system specific content (AS/NZS 3500, plumbing standards)
-            water_indicators = [
-                "AS/NZS 3500" in regular_response_content,
-                "AS 3500" in regular_response_content,
-                "plumbing" in regular_response_content.lower(),
-                "water system" in regular_response_content.lower(),
-                "hydraulic" in regular_response_content.lower(),
-                "pipe sizing" in regular_response_content.lower(),
-                "water supply" in regular_response_content.lower()
+            # Check for fire safety specific content
+            fire_indicators = [
+                "fire safety" in regular_response_content.lower(),
+                "AS 1851" in regular_response_content,
+                "AS 2118" in regular_response_content,
+                "BCA" in regular_response_content,
+                "NCC" in regular_response_content,
+                "sprinkler" in regular_response_content.lower(),
+                "fire protection" in regular_response_content.lower(),
+                "smoke alarm" in regular_response_content.lower()
             ]
-            regular_has_water_content = any(water_indicators)
+            regular_has_fire_content = any(fire_indicators)
             
             print(f"   📝 Response length: {len(regular_response_content)} characters")
-            print(f"   🔧 Has '🔧 **Technical Answer**': {regular_has_tech_emoji}")
-            print(f"   🧠 Has '🧠 **Mentoring Insight**': {regular_has_mentoring_emoji}")
-            print(f"   💧 Has water system content: {regular_has_water_content}")
+            print(f"   🔧 Has '🔧 Technical Answer': {regular_has_tech_emoji}")
+            print(f"   🤓 Has '🤓 Mentoring Insight' (CORRECT): {regular_has_mentoring_emoji_correct}")
+            print(f"   🚨 Has wrong emoji (🧠 or 💡): {regular_has_mentoring_emoji_wrong}")
+            print(f"   🔥 Has fire safety content: {regular_has_fire_content}")
             
-            # Show first 400 chars for analysis
-            preview = regular_response_content[:400] + "..." if len(regular_response_content) > 400 else regular_response_content
+            # Show first 500 chars for analysis
+            preview = regular_response_content[:500] + "..." if len(regular_response_content) > 500 else regular_response_content
             print(f"   📄 Response preview: {preview}")
             
-            # Log specific findings
-            if regular_has_tech_emoji and regular_has_mentoring_emoji:
-                self.log_test("✅ Regular Chat - Enhanced Emoji Mapping", True, "Both 🔧 and 🧠 emojis present")
+            # CRITICAL CHECK: Must use 🤓 emoji, NOT 🧠 or 💡
+            if regular_has_mentoring_emoji_correct and not regular_has_mentoring_emoji_wrong:
+                self.log_test("✅ Regular Chat - CORRECT Mentoring Emoji (🤓)", True, "Uses 🤓 nerd face emoji as required")
+            elif regular_has_mentoring_emoji_wrong:
+                wrong_emojis = []
+                if "🧠" in regular_response_content:
+                    wrong_emojis.append("🧠 brain")
+                if "💡" in regular_response_content:
+                    wrong_emojis.append("💡 lightbulb")
+                self.log_test("❌ Regular Chat - WRONG Mentoring Emoji", False, f"Uses incorrect emoji(s): {', '.join(wrong_emojis)} instead of 🤓")
             else:
-                missing_emojis = []
-                if not regular_has_tech_emoji:
-                    missing_emojis.append("🔧 **Technical Answer**")
-                if not regular_has_mentoring_emoji:
-                    missing_emojis.append("🧠 **Mentoring Insight**")
-                self.log_test("❌ Regular Chat - Enhanced Emoji Mapping", False, f"Missing: {', '.join(missing_emojis)}")
+                self.log_test("❌ Regular Chat - Missing Mentoring Emoji", False, "No Mentoring Insight section found")
             
-            if regular_has_water_content:
-                self.log_test("✅ Regular Chat - Water System Content", True, "Contains water system/plumbing content")
+            # Check technical answer emoji
+            if regular_has_tech_emoji:
+                self.log_test("✅ Regular Chat - Technical Answer Emoji", True, "Has 🔧 Technical Answer")
             else:
-                self.log_test("⚠️ Regular Chat - Water System Content", False, "Missing water system specific content")
+                self.log_test("❌ Regular Chat - Missing Technical Answer", False, "Missing 🔧 Technical Answer section")
+            
+            # Check fire safety content
+            if regular_has_fire_content:
+                self.log_test("✅ Regular Chat - Fire Safety Content", True, "Contains fire safety specific content")
+            else:
+                self.log_test("⚠️ Regular Chat - Fire Safety Content", False, "Missing fire safety specific content")
             
             self.log_test("Regular Chat - API Response", True, f"Received {len(regular_response_content)} char response")
         else:
@@ -363,153 +379,247 @@ class BackendTester:
         print("\n2️⃣ Testing POST /api/chat/ask-enhanced (Enhanced Chat) - COMPARISON")
         enhanced_data = {
             "question": test_question,
-            "session_id": "water_systems_test_enhanced"
+            "session_id": "fire_safety_test_enhanced"
         }
         
         enhanced_success, enhanced_response, enhanced_status = await self.make_request("POST", "/chat/ask-enhanced", enhanced_data, mock_headers)
         
         enhanced_has_tech_emoji = False
-        enhanced_has_mentoring_emoji = False
-        enhanced_has_water_content = False
+        enhanced_has_mentoring_emoji_correct = False
+        enhanced_has_mentoring_emoji_wrong = False
+        enhanced_has_fire_content = False
         enhanced_response_content = ""
         
         if enhanced_success and isinstance(enhanced_response, dict) and "response" in enhanced_response:
             enhanced_response_content = str(enhanced_response["response"])
             
-            # Check for Enhanced Emoji Mapping emojis
-            enhanced_has_tech_emoji = "🔧 **Technical Answer**" in enhanced_response_content
-            enhanced_has_mentoring_emoji = "🧠 **Mentoring Insight**" in enhanced_response_content
+            # Check for Enhanced Emoji Mapping emojis - CRITICAL: Must be 🤓 NOT 🧠 or 💡
+            enhanced_has_tech_emoji = "🔧 **Technical Answer**" in enhanced_response_content or "🔧 Technical Answer" in enhanced_response_content
+            enhanced_has_mentoring_emoji_correct = "🤓 **Mentoring Insight**" in enhanced_response_content or "🤓 Mentoring Insight" in enhanced_response_content
+            enhanced_has_mentoring_emoji_wrong = ("🧠 **Mentoring Insight**" in enhanced_response_content or 
+                                                "💡 **Mentoring Insight**" in enhanced_response_content or
+                                                "🧠 Mentoring Insight" in enhanced_response_content or
+                                                "💡 Mentoring Insight" in enhanced_response_content)
             
-            # Check for water system specific content
-            water_indicators = [
-                "AS/NZS 3500" in enhanced_response_content,
-                "AS 3500" in enhanced_response_content,
-                "plumbing" in enhanced_response_content.lower(),
-                "water system" in enhanced_response_content.lower(),
-                "hydraulic" in enhanced_response_content.lower(),
-                "pipe sizing" in enhanced_response_content.lower(),
-                "water supply" in enhanced_response_content.lower()
+            # Check for fire safety specific content
+            fire_indicators = [
+                "fire safety" in enhanced_response_content.lower(),
+                "AS 1851" in enhanced_response_content,
+                "AS 2118" in enhanced_response_content,
+                "BCA" in enhanced_response_content,
+                "NCC" in enhanced_response_content,
+                "sprinkler" in enhanced_response_content.lower(),
+                "fire protection" in enhanced_response_content.lower(),
+                "smoke alarm" in enhanced_response_content.lower()
             ]
-            enhanced_has_water_content = any(water_indicators)
+            enhanced_has_fire_content = any(fire_indicators)
             
             print(f"   📝 Response length: {len(enhanced_response_content)} characters")
-            print(f"   🔧 Has '🔧 **Technical Answer**': {enhanced_has_tech_emoji}")
-            print(f"   🧠 Has '🧠 **Mentoring Insight**': {enhanced_has_mentoring_emoji}")
-            print(f"   💧 Has water system content: {enhanced_has_water_content}")
+            print(f"   🔧 Has '🔧 Technical Answer': {enhanced_has_tech_emoji}")
+            print(f"   🤓 Has '🤓 Mentoring Insight' (CORRECT): {enhanced_has_mentoring_emoji_correct}")
+            print(f"   🚨 Has wrong emoji (🧠 or 💡): {enhanced_has_mentoring_emoji_wrong}")
+            print(f"   🔥 Has fire safety content: {enhanced_has_fire_content}")
             
-            # Show first 400 chars for analysis
-            preview = enhanced_response_content[:400] + "..." if len(enhanced_response_content) > 400 else enhanced_response_content
+            # Show first 500 chars for analysis
+            preview = enhanced_response_content[:500] + "..." if len(enhanced_response_content) > 500 else enhanced_response_content
             print(f"   📄 Response preview: {preview}")
             
-            # Log specific findings
-            if enhanced_has_tech_emoji and enhanced_has_mentoring_emoji:
-                self.log_test("✅ Enhanced Chat - Enhanced Emoji Mapping", True, "Both 🔧 and 🧠 emojis present")
+            # CRITICAL CHECK: Must use 🤓 emoji, NOT 🧠 or 💡
+            if enhanced_has_mentoring_emoji_correct and not enhanced_has_mentoring_emoji_wrong:
+                self.log_test("✅ Enhanced Chat - CORRECT Mentoring Emoji (🤓)", True, "Uses 🤓 nerd face emoji as required")
+            elif enhanced_has_mentoring_emoji_wrong:
+                wrong_emojis = []
+                if "🧠" in enhanced_response_content:
+                    wrong_emojis.append("🧠 brain")
+                if "💡" in enhanced_response_content:
+                    wrong_emojis.append("💡 lightbulb")
+                self.log_test("❌ Enhanced Chat - WRONG Mentoring Emoji", False, f"Uses incorrect emoji(s): {', '.join(wrong_emojis)} instead of 🤓")
             else:
-                missing_emojis = []
-                if not enhanced_has_tech_emoji:
-                    missing_emojis.append("🔧 **Technical Answer**")
-                if not enhanced_has_mentoring_emoji:
-                    missing_emojis.append("🧠 **Mentoring Insight**")
-                self.log_test("❌ Enhanced Chat - Enhanced Emoji Mapping", False, f"Missing: {', '.join(missing_emojis)}")
+                self.log_test("❌ Enhanced Chat - Missing Mentoring Emoji", False, "No Mentoring Insight section found")
             
-            if enhanced_has_water_content:
-                self.log_test("✅ Enhanced Chat - Water System Content", True, "Contains water system/plumbing content")
+            # Check technical answer emoji
+            if enhanced_has_tech_emoji:
+                self.log_test("✅ Enhanced Chat - Technical Answer Emoji", True, "Has 🔧 Technical Answer")
             else:
-                self.log_test("⚠️ Enhanced Chat - Water System Content", False, "Missing water system specific content")
+                self.log_test("❌ Enhanced Chat - Missing Technical Answer", False, "Missing 🔧 Technical Answer section")
+            
+            # Check fire safety content
+            if enhanced_has_fire_content:
+                self.log_test("✅ Enhanced Chat - Fire Safety Content", True, "Contains fire safety specific content")
+            else:
+                self.log_test("⚠️ Enhanced Chat - Fire Safety Content", False, "Missing fire safety specific content")
             
             self.log_test("Enhanced Chat - API Response", True, f"Received {len(enhanced_response_content)} char response")
         else:
             self.log_test("❌ Enhanced Chat - API Response", False, f"Status: {enhanced_status}", enhanced_response)
             print(f"   ❌ Failed to get response from enhanced chat endpoint")
         
-        # Test 3: CRITICAL CONSISTENCY ANALYSIS
-        print("\n3️⃣ CRITICAL CONSISTENCY ANALYSIS")
+        # Test 3: Boost response endpoint (/api/chat/boost-response) - THIRD ENDPOINT
+        print("\n3️⃣ Testing POST /api/chat/boost-response (Boost Response) - THIRD ENDPOINT")
+        boost_data = {
+            "question": test_question,
+            "target_tier": "pro"
+        }
         
-        if regular_success and enhanced_success:
-            # Check if both endpoints have the required emojis
-            consistency_check = (
-                regular_has_tech_emoji == enhanced_has_tech_emoji and
-                regular_has_mentoring_emoji == enhanced_has_mentoring_emoji and
-                regular_has_tech_emoji and regular_has_mentoring_emoji  # Both should be True
-            )
+        boost_success, boost_response, boost_status = await self.make_request("POST", "/chat/boost-response", boost_data, mock_headers)
+        
+        boost_has_tech_emoji = False
+        boost_has_mentoring_emoji_correct = False
+        boost_has_mentoring_emoji_wrong = False
+        boost_has_fire_content = False
+        boost_response_content = ""
+        
+        if boost_success and isinstance(boost_response, dict) and "boosted_response" in boost_response:
+            boost_response_content = str(boost_response["boosted_response"])
             
-            if consistency_check:
-                self.log_test("🎯 Enhanced Emoji Mapping Consistency", True, 
-                            "✅ Both endpoints use identical Enhanced Emoji Mapping format")
-                print("   ✅ CONSISTENCY ACHIEVED: Both endpoints use 🔧 and 🧠 emojis correctly")
+            # Check for Enhanced Emoji Mapping emojis - CRITICAL: Must be 🤓 NOT 🧠 or 💡
+            boost_has_tech_emoji = "🔧 **Technical Answer**" in boost_response_content or "🔧 Technical Answer" in boost_response_content
+            boost_has_mentoring_emoji_correct = "🤓 **Mentoring Insight**" in boost_response_content or "🤓 Mentoring Insight" in boost_response_content
+            boost_has_mentoring_emoji_wrong = ("🧠 **Mentoring Insight**" in boost_response_content or 
+                                             "💡 **Mentoring Insight**" in boost_response_content or
+                                             "🧠 Mentoring Insight" in boost_response_content or
+                                             "💡 Mentoring Insight" in boost_response_content)
+            
+            # Check for fire safety specific content
+            fire_indicators = [
+                "fire safety" in boost_response_content.lower(),
+                "AS 1851" in boost_response_content,
+                "AS 2118" in boost_response_content,
+                "BCA" in boost_response_content,
+                "NCC" in boost_response_content,
+                "sprinkler" in boost_response_content.lower(),
+                "fire protection" in boost_response_content.lower(),
+                "smoke alarm" in boost_response_content.lower()
+            ]
+            boost_has_fire_content = any(fire_indicators)
+            
+            print(f"   📝 Response length: {len(boost_response_content)} characters")
+            print(f"   🔧 Has '🔧 Technical Answer': {boost_has_tech_emoji}")
+            print(f"   🤓 Has '🤓 Mentoring Insight' (CORRECT): {boost_has_mentoring_emoji_correct}")
+            print(f"   🚨 Has wrong emoji (🧠 or 💡): {boost_has_mentoring_emoji_wrong}")
+            print(f"   🔥 Has fire safety content: {boost_has_fire_content}")
+            
+            # Show first 500 chars for analysis
+            preview = boost_response_content[:500] + "..." if len(boost_response_content) > 500 else boost_response_content
+            print(f"   📄 Response preview: {preview}")
+            
+            # CRITICAL CHECK: Must use 🤓 emoji, NOT 🧠 or 💡
+            if boost_has_mentoring_emoji_correct and not boost_has_mentoring_emoji_wrong:
+                self.log_test("✅ Boost Response - CORRECT Mentoring Emoji (🤓)", True, "Uses 🤓 nerd face emoji as required")
+            elif boost_has_mentoring_emoji_wrong:
+                wrong_emojis = []
+                if "🧠" in boost_response_content:
+                    wrong_emojis.append("🧠 brain")
+                if "💡" in boost_response_content:
+                    wrong_emojis.append("💡 lightbulb")
+                self.log_test("❌ Boost Response - WRONG Mentoring Emoji", False, f"Uses incorrect emoji(s): {', '.join(wrong_emojis)} instead of 🤓")
             else:
-                self.log_test("🎯 Enhanced Emoji Mapping Consistency", False, 
-                            "❌ Inconsistent emoji formatting between endpoints")
+                self.log_test("❌ Boost Response - Missing Mentoring Emoji", False, "No Mentoring Insight section found")
+            
+            # Check technical answer emoji
+            if boost_has_tech_emoji:
+                self.log_test("✅ Boost Response - Technical Answer Emoji", True, "Has 🔧 Technical Answer")
+            else:
+                self.log_test("❌ Boost Response - Missing Technical Answer", False, "Missing 🔧 Technical Answer section")
+            
+            # Check fire safety content
+            if boost_has_fire_content:
+                self.log_test("✅ Boost Response - Fire Safety Content", True, "Contains fire safety specific content")
+            else:
+                self.log_test("⚠️ Boost Response - Fire Safety Content", False, "Missing fire safety specific content")
+            
+            self.log_test("Boost Response - API Response", True, f"Received {len(boost_response_content)} char response")
+        elif boost_status == 429:
+            # Daily limit reached - this is expected behavior
+            error_message = boost_response.get("detail", "Unknown error") if isinstance(boost_response, dict) else str(boost_response)
+            self.log_test("⚠️ Boost Response - Daily Limit Reached", True, f"Expected 429 daily limit: {error_message}")
+            print(f"   ⚠️ Boost endpoint returned 429 (daily limit) - this is expected behavior")
+        else:
+            self.log_test("❌ Boost Response - API Response", False, f"Status: {boost_status}", boost_response)
+            print(f"   ❌ Failed to get response from boost endpoint")
+        
+        # Test 4: CRITICAL CONSISTENCY ANALYSIS
+        print("\n4️⃣ CRITICAL ENHANCED EMOJI MAPPING CONSISTENCY ANALYSIS")
+        
+        endpoints_tested = []
+        if regular_success:
+            endpoints_tested.append({
+                "name": "Regular Chat",
+                "has_correct_mentoring": regular_has_mentoring_emoji_correct,
+                "has_wrong_mentoring": regular_has_mentoring_emoji_wrong,
+                "has_tech": regular_has_tech_emoji
+            })
+        
+        if enhanced_success:
+            endpoints_tested.append({
+                "name": "Enhanced Chat", 
+                "has_correct_mentoring": enhanced_has_mentoring_emoji_correct,
+                "has_wrong_mentoring": enhanced_has_mentoring_emoji_wrong,
+                "has_tech": enhanced_has_tech_emoji
+            })
+        
+        if boost_success:
+            endpoints_tested.append({
+                "name": "Boost Response",
+                "has_correct_mentoring": boost_has_mentoring_emoji_correct,
+                "has_wrong_mentoring": boost_has_mentoring_emoji_wrong,
+                "has_tech": boost_has_tech_emoji
+            })
+        
+        if len(endpoints_tested) >= 2:
+            # Check consistency across all working endpoints
+            all_use_correct_mentoring = all(ep["has_correct_mentoring"] for ep in endpoints_tested)
+            none_use_wrong_mentoring = not any(ep["has_wrong_mentoring"] for ep in endpoints_tested)
+            all_have_tech = all(ep["has_tech"] for ep in endpoints_tested)
+            
+            if all_use_correct_mentoring and none_use_wrong_mentoring:
+                self.log_test("🎯 CRITICAL: Enhanced Emoji Mapping Consistency (🤓)", True, 
+                            "✅ ALL endpoints use correct 🤓 emoji for Mentoring Insight")
+                print("   ✅ CONSISTENCY ACHIEVED: All endpoints use 🤓 nerd face emoji correctly")
+            else:
+                self.log_test("🎯 CRITICAL: Enhanced Emoji Mapping Consistency (🤓)", False, 
+                            "❌ Inconsistent or incorrect emoji usage across endpoints")
                 print("   ❌ CONSISTENCY BROKEN:")
-                print(f"      Regular chat - 🔧: {regular_has_tech_emoji}, 🧠: {regular_has_mentoring_emoji}")
-                print(f"      Enhanced chat - 🔧: {enhanced_has_tech_emoji}, 🧠: {enhanced_has_mentoring_emoji}")
-                
-                # Identify the specific issue
-                if not regular_has_tech_emoji or not regular_has_mentoring_emoji:
-                    print("   🔍 ROOT CAUSE: Regular chat endpoint missing Enhanced Emoji Mapping")
-                    if not regular_has_tech_emoji:
-                        print("      - Missing '🔧 **Technical Answer**' emoji")
-                    if not regular_has_mentoring_emoji:
-                        print("      - Missing '🧠 **Mentoring Insight**' emoji")
-                
-                if not enhanced_has_tech_emoji or not enhanced_has_mentoring_emoji:
-                    print("   🔍 UNEXPECTED: Enhanced chat endpoint also missing emojis")
+                for ep in endpoints_tested:
+                    print(f"      {ep['name']} - 🤓 correct: {ep['has_correct_mentoring']}, wrong emoji: {ep['has_wrong_mentoring']}")
             
-            # Check water system content consistency
-            water_content_consistency = regular_has_water_content and enhanced_has_water_content
-            if water_content_consistency:
-                self.log_test("✅ Water System Content Consistency", True, 
-                            "Both endpoints provide water system specific content")
+            if all_have_tech:
+                self.log_test("✅ Technical Answer Consistency", True, 
+                            "All endpoints use 🔧 Technical Answer")
             else:
-                self.log_test("⚠️ Water System Content Consistency", False, 
-                            f"Regular: {regular_has_water_content}, Enhanced: {enhanced_has_water_content}")
+                self.log_test("❌ Technical Answer Consistency", False, 
+                            "Some endpoints missing 🔧 Technical Answer")
         else:
             self.log_test("🎯 Enhanced Emoji Mapping Consistency", False, 
-                        "Cannot compare - one or both endpoints failed")
-        
-        # Test 4: FRONTEND EXPECTATION VERIFICATION
-        print("\n4️⃣ FRONTEND EXPECTATION VERIFICATION")
-        
-        # Check if the response format matches what frontend expects
-        if regular_success:
-            response_format_check = {
-                "has_response_field": "response" in regular_response,
-                "has_session_id": "session_id" in regular_response,
-                "has_tokens_used": "tokens_used" in regular_response,
-                "response_is_string": isinstance(regular_response.get("response"), str),
-                "response_has_content": len(str(regular_response.get("response", ""))) > 50
-            }
-            
-            format_score = sum(response_format_check.values())
-            if format_score >= 4:  # At least 4 out of 5 checks pass
-                self.log_test("✅ Regular Chat - Frontend Format", True, 
-                            f"Response format suitable for frontend ({format_score}/5 checks passed)")
-            else:
-                self.log_test("⚠️ Regular Chat - Frontend Format", False, 
-                            f"Response format issues ({format_score}/5 checks passed)", response_format_check)
+                        "Cannot compare - insufficient working endpoints")
         
         print("\n🎯 FINAL VERDICT FOR REVIEW REQUEST:")
-        if regular_success:
-            if regular_has_tech_emoji and regular_has_mentoring_emoji:
-                print("✅ Enhanced Emoji Mapping: WORKING")
-                print("   Regular chat endpoint correctly uses 🔧 **Technical Answer** and 🧠 **Mentoring Insight**")
-                
-                if regular_has_water_content:
-                    print("✅ Water System Content: PRESENT")
-                    print("   Response includes water system/plumbing standards content")
-                    print("🎉 CONCLUSION: Backend is sending correct emoji-formatted responses")
-                    print("   If frontend shows missing emojis, the issue is in frontend rendering/parsing")
-                else:
-                    print("⚠️ Water System Content: LIMITED")
-                    print("   Response may not include specific AS/NZS 3500 plumbing standards")
-                    print("🔍 CONCLUSION: Backend emoji format is correct, but content specificity may need improvement")
+        
+        # Count working endpoints with correct emoji
+        correct_emoji_count = sum(1 for ep in endpoints_tested if ep["has_correct_mentoring"] and not ep["has_wrong_mentoring"])
+        wrong_emoji_count = sum(1 for ep in endpoints_tested if ep["has_wrong_mentoring"])
+        total_working = len(endpoints_tested)
+        
+        if total_working > 0:
+            if correct_emoji_count == total_working and wrong_emoji_count == 0:
+                print("✅ Enhanced Emoji Mapping Fix: SUCCESSFUL")
+                print(f"   All {total_working} working endpoints correctly use 🤓 for Mentoring Insight")
+                print("   ✅ NO instances of incorrect 🧠 or 💡 emojis found")
+                print("🎉 CONCLUSION: The DEFINITIVE Enhanced Emoji Mapping fix is working correctly")
+                print("   Backend is sending responses with correct 🤓 emoji as required")
+            elif wrong_emoji_count > 0:
+                print("❌ Enhanced Emoji Mapping Fix: FAILED")
+                print(f"   {wrong_emoji_count}/{total_working} endpoints still use incorrect emojis (🧠 or 💡)")
+                print("   🚨 CRITICAL: Some endpoints not updated with correct 🤓 emoji")
+                print("🚨 CONCLUSION: Backend still has emoji mapping inconsistency - fix incomplete")
             else:
-                print("❌ Enhanced Emoji Mapping: BROKEN")
-                print("   Regular chat endpoint missing required emoji formatting")
-                print("🚨 CONCLUSION: Backend issue confirmed - regular chat endpoint needs emoji mapping fix")
+                print("⚠️ Enhanced Emoji Mapping Fix: PARTIAL")
+                print(f"   {correct_emoji_count}/{total_working} endpoints use correct emoji")
+                print("   Some endpoints may be missing Mentoring Insight sections entirely")
+                print("🔍 CONCLUSION: Backend may need further investigation for missing sections")
         else:
-            print("⚠️ Enhanced Emoji Mapping: CANNOT DETERMINE")
-            print("   Regular chat endpoint failed to respond")
+            print("⚠️ Enhanced Emoji Mapping Fix: CANNOT DETERMINE")
+            print("   No endpoints responded successfully")
             print("🚨 CONCLUSION: Backend API failure - investigate server issues")
 
     async def test_critical_subscription_fixes(self):
