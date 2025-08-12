@@ -1377,7 +1377,7 @@ Professional construction delivery involves elevated compliance requirements. En
         await db.conversations.insert_one(conversation_data)
         
         response_data = {
-            "response": response_structure,
+            "response": ai_response_text,  # Send the formatted text directly like enhanced endpoint
             "session_id": conversation_data["session_id"],
             "tokens_used": tokens_used
         }
