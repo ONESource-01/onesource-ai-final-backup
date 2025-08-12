@@ -96,7 +96,7 @@ async def test_enhanced_emoji_mapping_consistency():
         print("\n2️⃣ Testing POST /api/chat/ask-enhanced (Enhanced Chat)")
         enhanced_data = {
             "question": test_question,
-            "session_id": "emoji_test_enhanced"
+            "session_id": "water_systems_test_enhanced"
         }
         
         try:
