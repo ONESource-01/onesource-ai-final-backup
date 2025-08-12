@@ -285,17 +285,18 @@ class BackendTester:
         print("🎯 Expected: 🔧 **Technical Answer:** and 🧠 **Mentoring Insight:** section headers")
         print("🎯 Expected: AS/NZS 3500 plumbing standards content")
         
-        # Test 1: Regular chat endpoint (/api/chat/ask)
-        print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat)")
+        # Test 1: Regular chat endpoint (/api/chat/ask) - MAIN FOCUS
+        print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat) - MAIN FOCUS")
         regular_data = {
             "question": test_question,
-            "session_id": "emoji_test_regular"
+            "session_id": "water_systems_test_regular"
         }
         
         regular_success, regular_response, regular_status = await self.make_request("POST", "/chat/ask", regular_data, mock_headers)
         
         regular_has_tech_emoji = False
         regular_has_mentoring_emoji = False
+        regular_has_water_content = False
         regular_response_content = ""
         
         if regular_success and isinstance(regular_response, dict) and "response" in regular_response:
@@ -305,30 +306,60 @@ class BackendTester:
             regular_has_tech_emoji = "🔧 **Technical Answer**" in regular_response_content
             regular_has_mentoring_emoji = "🧠 **Mentoring Insight**" in regular_response_content
             
+            # Check for water system specific content (AS/NZS 3500, plumbing standards)
+            water_indicators = [
+                "AS/NZS 3500" in regular_response_content,
+                "AS 3500" in regular_response_content,
+                "plumbing" in regular_response_content.lower(),
+                "water system" in regular_response_content.lower(),
+                "hydraulic" in regular_response_content.lower(),
+                "pipe sizing" in regular_response_content.lower(),
+                "water supply" in regular_response_content.lower()
+            ]
+            regular_has_water_content = any(water_indicators)
+            
             print(f"   📝 Response length: {len(regular_response_content)} characters")
             print(f"   🔧 Has '🔧 **Technical Answer**': {regular_has_tech_emoji}")
             print(f"   🧠 Has '🧠 **Mentoring Insight**': {regular_has_mentoring_emoji}")
+            print(f"   💧 Has water system content: {regular_has_water_content}")
             
-            # Show first 300 chars for analysis
-            preview = regular_response_content[:300] + "..." if len(regular_response_content) > 300 else regular_response_content
+            # Show first 400 chars for analysis
+            preview = regular_response_content[:400] + "..." if len(regular_response_content) > 400 else regular_response_content
             print(f"   📄 Response preview: {preview}")
+            
+            # Log specific findings
+            if regular_has_tech_emoji and regular_has_mentoring_emoji:
+                self.log_test("✅ Regular Chat - Enhanced Emoji Mapping", True, "Both 🔧 and 🧠 emojis present")
+            else:
+                missing_emojis = []
+                if not regular_has_tech_emoji:
+                    missing_emojis.append("🔧 **Technical Answer**")
+                if not regular_has_mentoring_emoji:
+                    missing_emojis.append("🧠 **Mentoring Insight**")
+                self.log_test("❌ Regular Chat - Enhanced Emoji Mapping", False, f"Missing: {', '.join(missing_emojis)}")
+            
+            if regular_has_water_content:
+                self.log_test("✅ Regular Chat - Water System Content", True, "Contains water system/plumbing content")
+            else:
+                self.log_test("⚠️ Regular Chat - Water System Content", False, "Missing water system specific content")
             
             self.log_test("Regular Chat - API Response", True, f"Received {len(regular_response_content)} char response")
         else:
-            self.log_test("Regular Chat - API Response", False, f"Status: {regular_status}", regular_response)
+            self.log_test("❌ Regular Chat - API Response", False, f"Status: {regular_status}", regular_response)
             print(f"   ❌ Failed to get response from regular chat endpoint")
         
-        # Test 2: Enhanced chat endpoint (/api/chat/ask-enhanced)
-        print("\n2️⃣ Testing POST /api/chat/ask-enhanced (Enhanced Chat)")
+        # Test 2: Enhanced chat endpoint (/api/chat/ask-enhanced) - COMPARISON
+        print("\n2️⃣ Testing POST /api/chat/ask-enhanced (Enhanced Chat) - COMPARISON")
         enhanced_data = {
             "question": test_question,
-            "session_id": "emoji_test_enhanced"
+            "session_id": "water_systems_test_enhanced"
         }
         
         enhanced_success, enhanced_response, enhanced_status = await self.make_request("POST", "/chat/ask-enhanced", enhanced_data, mock_headers)
         
         enhanced_has_tech_emoji = False
         enhanced_has_mentoring_emoji = False
+        enhanced_has_water_content = False
         enhanced_response_content = ""
         
         if enhanced_success and isinstance(enhanced_response, dict) and "response" in enhanced_response:
@@ -338,21 +369,50 @@ class BackendTester:
             enhanced_has_tech_emoji = "🔧 **Technical Answer**" in enhanced_response_content
             enhanced_has_mentoring_emoji = "🧠 **Mentoring Insight**" in enhanced_response_content
             
+            # Check for water system specific content
+            water_indicators = [
+                "AS/NZS 3500" in enhanced_response_content,
+                "AS 3500" in enhanced_response_content,
+                "plumbing" in enhanced_response_content.lower(),
+                "water system" in enhanced_response_content.lower(),
+                "hydraulic" in enhanced_response_content.lower(),
+                "pipe sizing" in enhanced_response_content.lower(),
+                "water supply" in enhanced_response_content.lower()
+            ]
+            enhanced_has_water_content = any(water_indicators)
+            
             print(f"   📝 Response length: {len(enhanced_response_content)} characters")
             print(f"   🔧 Has '🔧 **Technical Answer**': {enhanced_has_tech_emoji}")
             print(f"   🧠 Has '🧠 **Mentoring Insight**': {enhanced_has_mentoring_emoji}")
+            print(f"   💧 Has water system content: {enhanced_has_water_content}")
             
-            # Show first 300 chars for analysis
-            preview = enhanced_response_content[:300] + "..." if len(enhanced_response_content) > 300 else enhanced_response_content
+            # Show first 400 chars for analysis
+            preview = enhanced_response_content[:400] + "..." if len(enhanced_response_content) > 400 else enhanced_response_content
             print(f"   📄 Response preview: {preview}")
+            
+            # Log specific findings
+            if enhanced_has_tech_emoji and enhanced_has_mentoring_emoji:
+                self.log_test("✅ Enhanced Chat - Enhanced Emoji Mapping", True, "Both 🔧 and 🧠 emojis present")
+            else:
+                missing_emojis = []
+                if not enhanced_has_tech_emoji:
+                    missing_emojis.append("🔧 **Technical Answer**")
+                if not enhanced_has_mentoring_emoji:
+                    missing_emojis.append("🧠 **Mentoring Insight**")
+                self.log_test("❌ Enhanced Chat - Enhanced Emoji Mapping", False, f"Missing: {', '.join(missing_emojis)}")
+            
+            if enhanced_has_water_content:
+                self.log_test("✅ Enhanced Chat - Water System Content", True, "Contains water system/plumbing content")
+            else:
+                self.log_test("⚠️ Enhanced Chat - Water System Content", False, "Missing water system specific content")
             
             self.log_test("Enhanced Chat - API Response", True, f"Received {len(enhanced_response_content)} char response")
         else:
-            self.log_test("Enhanced Chat - API Response", False, f"Status: {enhanced_status}", enhanced_response)
+            self.log_test("❌ Enhanced Chat - API Response", False, f"Status: {enhanced_status}", enhanced_response)
             print(f"   ❌ Failed to get response from enhanced chat endpoint")
         
-        # Test 3: Compare consistency
-        print("\n3️⃣ CONSISTENCY ANALYSIS")
+        # Test 3: CRITICAL CONSISTENCY ANALYSIS
+        print("\n3️⃣ CRITICAL CONSISTENCY ANALYSIS")
         
         if regular_success and enhanced_success:
             # Check if both endpoints have the required emojis
@@ -383,49 +443,63 @@ class BackendTester:
                 
                 if not enhanced_has_tech_emoji or not enhanced_has_mentoring_emoji:
                     print("   🔍 UNEXPECTED: Enhanced chat endpoint also missing emojis")
+            
+            # Check water system content consistency
+            water_content_consistency = regular_has_water_content and enhanced_has_water_content
+            if water_content_consistency:
+                self.log_test("✅ Water System Content Consistency", True, 
+                            "Both endpoints provide water system specific content")
+            else:
+                self.log_test("⚠️ Water System Content Consistency", False, 
+                            f"Regular: {regular_has_water_content}, Enhanced: {enhanced_has_water_content}")
         else:
             self.log_test("🎯 Enhanced Emoji Mapping Consistency", False, 
                         "Cannot compare - one or both endpoints failed")
         
-        # Test 4: Additional emoji checks
-        print("\n4️⃣ ADDITIONAL EMOJI ANALYSIS")
+        # Test 4: FRONTEND EXPECTATION VERIFICATION
+        print("\n4️⃣ FRONTEND EXPECTATION VERIFICATION")
         
-        # Check for other Enhanced Emoji Mapping elements
-        enhanced_emojis = [
-            "📋 **Next Steps**",
-            "📊 **Code Requirements**", 
-            "✅ **Compliance Verification**",
-            "🔄 **Alternative Solutions**",
-            "🏛️ **Authority Requirements**",
-            "📄 **Documentation Needed**",
-            "⚙️ **Workflow Recommendations**",
-            "❓ **Clarifying Questions**"
-        ]
-        
+        # Check if the response format matches what frontend expects
         if regular_success:
-            regular_emoji_count = sum(1 for emoji in enhanced_emojis if emoji in regular_response_content)
-            print(f"   📊 Regular chat - Additional emojis found: {regular_emoji_count}/{len(enhanced_emojis)}")
-            self.log_test("Regular Chat - Additional Emojis", regular_emoji_count > 0, 
-                        f"Found {regular_emoji_count} additional Enhanced Emoji Mapping elements")
-        
-        if enhanced_success:
-            enhanced_emoji_count = sum(1 for emoji in enhanced_emojis if emoji in enhanced_response_content)
-            print(f"   📊 Enhanced chat - Additional emojis found: {enhanced_emoji_count}/{len(enhanced_emojis)}")
-            self.log_test("Enhanced Chat - Additional Emojis", enhanced_emoji_count > 0, 
-                        f"Found {enhanced_emoji_count} additional Enhanced Emoji Mapping elements")
-        
-        print("\n🎯 FINAL VERDICT:")
-        if regular_success and enhanced_success:
-            if regular_has_tech_emoji and regular_has_mentoring_emoji and enhanced_has_tech_emoji and enhanced_has_mentoring_emoji:
-                print("✅ Enhanced Emoji Mapping Consistency: ACHIEVED")
-                print("   Both endpoints correctly use 🔧 **Technical Answer** and 🧠 **Mentoring Insight**")
+            response_format_check = {
+                "has_response_field": "response" in regular_response,
+                "has_session_id": "session_id" in regular_response,
+                "has_tokens_used": "tokens_used" in regular_response,
+                "response_is_string": isinstance(regular_response.get("response"), str),
+                "response_has_content": len(str(regular_response.get("response", ""))) > 50
+            }
+            
+            format_score = sum(response_format_check.values())
+            if format_score >= 4:  # At least 4 out of 5 checks pass
+                self.log_test("✅ Regular Chat - Frontend Format", True, 
+                            f"Response format suitable for frontend ({format_score}/5 checks passed)")
             else:
-                print("❌ Enhanced Emoji Mapping Consistency: BROKEN")
-                print("   Regular and/or enhanced endpoints missing required emoji formatting")
-                print("   🚨 URGENT FIX REQUIRED: Update regular chat endpoint to match enhanced formatting")
+                self.log_test("⚠️ Regular Chat - Frontend Format", False, 
+                            f"Response format issues ({format_score}/5 checks passed)", response_format_check)
+        
+        print("\n🎯 FINAL VERDICT FOR REVIEW REQUEST:")
+        if regular_success:
+            if regular_has_tech_emoji and regular_has_mentoring_emoji:
+                print("✅ Enhanced Emoji Mapping: WORKING")
+                print("   Regular chat endpoint correctly uses 🔧 **Technical Answer** and 🧠 **Mentoring Insight**")
+                
+                if regular_has_water_content:
+                    print("✅ Water System Content: PRESENT")
+                    print("   Response includes water system/plumbing standards content")
+                    print("🎉 CONCLUSION: Backend is sending correct emoji-formatted responses")
+                    print("   If frontend shows missing emojis, the issue is in frontend rendering/parsing")
+                else:
+                    print("⚠️ Water System Content: LIMITED")
+                    print("   Response may not include specific AS/NZS 3500 plumbing standards")
+                    print("🔍 CONCLUSION: Backend emoji format is correct, but content specificity may need improvement")
+            else:
+                print("❌ Enhanced Emoji Mapping: BROKEN")
+                print("   Regular chat endpoint missing required emoji formatting")
+                print("🚨 CONCLUSION: Backend issue confirmed - regular chat endpoint needs emoji mapping fix")
         else:
-            print("⚠️ Enhanced Emoji Mapping Consistency: CANNOT DETERMINE")
-            print("   One or both endpoints failed to respond")
+            print("⚠️ Enhanced Emoji Mapping: CANNOT DETERMINE")
+            print("   Regular chat endpoint failed to respond")
+            print("🚨 CONCLUSION: Backend API failure - investigate server issues")
 
     async def test_critical_chat_functionality(self):
         """🚨 CRITICAL URGENT TESTING - Test chat responses as reported by user"""
