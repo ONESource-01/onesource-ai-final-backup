@@ -421,7 +421,7 @@ INTELLIGENT GUIDANCE PRINCIPLES:
             
             messages.append({"role": "user", "content": question})
             
-            response = self.client.chat.completions.create(
+            response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",  # Use the model from environment
                 messages=messages,
                 max_tokens=1800,  # Increased for more comprehensive responses
