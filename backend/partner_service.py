@@ -208,6 +208,44 @@ class PartnerService:
         except Exception as e:
             print(f"Error reviewing partner application: {e}")
             return {"success": False, "message": str(e)}
+
+    async def get_all_partners(self):
+        """Get all partner applications"""
+        try:
+            partners = await self.db.partners.find({}).to_list(None)
+            
+            # Convert ObjectId to string and format dates
+            for partner in partners:
+                if '_id' in partner:
+                    partner['id'] = str(partner['_id'])
+                    del partner['_id']
+                
+                # Format dates
+                for date_field in ['created_at', 'updated_at', 'registration_date', 'reviewed_at']:
+                    if date_field in partner and partner[date_field]:
+                        partner[date_field] = partner[date_field].isoformat()
+            
+            return partners
+            
+        except Exception as e:
+            print(f"Error getting all partners: {e}")
+            return []
+
+    async def send_partner_review_email(self, partner: dict, action: str, admin_notes: str = None):
+        """Send email notification after partner review"""
+        try:
+            # This is a placeholder - implement actual email sending
+            print(f"Sending {action} email to {partner.get('email', partner.get('primary_email'))}")
+            print(f"Company: {partner.get('company_name')}")
+            if admin_notes:
+                print(f"Admin notes: {admin_notes}")
+            
+            # In production, implement actual email sending using SendGrid or similar
+            return True
+            
+        except Exception as e:
+            print(f"Error sending partner review email: {e}")
+            return False
     
     async def get_partner_by_email(self, email: str) -> Optional[Dict[str, Any]]:
         """Get partner information by email"""
