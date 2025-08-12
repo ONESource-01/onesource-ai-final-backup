@@ -207,7 +207,7 @@ const KnowledgeVault = () => {
             <div className="flex items-center">
               <a href="/" className="flex items-center">
                 <img 
-                  src="/onesource-primary-logo.svg" 
+                  src="/onesource-primary-logo.png" 
                   alt="ONESource-ai" 
                   className="h-24 w-auto mr-3"
                 />
