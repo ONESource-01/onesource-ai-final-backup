@@ -225,7 +225,7 @@ const PricingPage = () => {
               Back to Home
             </Link>
             <div className="flex items-center space-x-3">
-              <img src="/onesource-icon.png" alt="ONESource-ai" className="h-8 w-8" />
+              <img src="/onesource-icon.svg" alt="ONESource-ai" className="h-8 w-8" />
               <h1 className="text-2xl font-bold text-onesource-dark">ONESource-ai Pricing</h1>
             </div>
             {user && (
