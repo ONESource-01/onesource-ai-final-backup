@@ -1282,7 +1282,7 @@ Multi-story commercial construction involves elevated compliance requirements. E
         response_data = {
             "response": response_structure,
             "session_id": conversation_data["session_id"],
-            "tokens_used": ai_response.get("tokens_used", 0)
+            "tokens_used": tokens_used
         }
         
         # Add trial warning for anonymous users
