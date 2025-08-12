@@ -260,8 +260,9 @@ const AdminDashboard = () => {
 
         {/* Management Tabs */}
         <Tabs defaultValue="reports" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="partners">Partners</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="content">Content</TabsTrigger>
             <TabsTrigger value="system">System</TabsTrigger>
