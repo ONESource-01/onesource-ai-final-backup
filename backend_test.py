@@ -459,30 +459,23 @@ class BackendTester:
             print(f"   Status: {status}")
             print(f"   Response: {response_data}")
 
-    async def test_enhanced_emoji_mapping_consistency(self):
+    async def test_enhanced_emoji_mapping_consistency_fix(self):
         """🚨 CRITICAL: Test Enhanced Emoji Mapping Consistency Fix from Review Request"""
         print("\n🚨 === ENHANCED EMOJI MAPPING CONSISTENCY FIX VERIFICATION ===")
-        print("Testing the DEFINITIVE Enhanced Emoji Mapping fix with professional formatting")
-        print("🎯 CRITICAL VERIFICATION: All responses should show 🤓 for Mentoring Insight (NOT 🧠 or 💡)")
+        print("Testing the CRITICAL Enhanced Emoji Mapping fix based on review request")
+        print("🎯 CRITICAL VERIFICATION: Both endpoints should use 🧐 **Mentoring Insight:** (professor with monocle)")
+        print("🚨 MUST NOT use 🤓 (nerd face) or 🧠 (brain) emojis anywhere in responses")
         
         mock_headers = {"Authorization": "Bearer mock_dev_token"}
         
         # Use the EXACT question from the review request
-        test_question = "What are fire safety requirements?"
+        test_question = "What are fire safety requirements for high-rise buildings in Australia?"
         
         print(f"🔍 Testing question: '{test_question}'")
-        print("📋 Verifying Enhanced Emoji Mapping format...")
-        print("🎯 Expected Enhanced Emoji Mapping:")
-        print("   🔧 Technical Answer")
-        print("   🤓 Mentoring Insight (MUST be 🤓 nerd face, NOT 🧠 or 💡)")
-        print("   📋 Next Steps")
-        print("   📊 Code Requirements")
-        print("   ✅ Compliance Verification")
-        print("   🔄 Alternative Solutions")
-        print("   🏛️ Authority Requirements")
-        print("   📄 Documentation Needed")
-        print("   ⚙️ Workflow Recommendations")
-        print("   ❓ Clarifying Questions")
+        print("📋 Expected Enhanced Emoji Mapping format:")
+        print("   🔧 **Technical Answer:**")
+        print("   🧐 **Mentoring Insight:** (MUST be 🧐 professor with monocle)")
+        print("   NO 🤓 (nerd face) or 🧠 (brain) emojis allowed")
         
         # Test 1: Regular chat endpoint (/api/chat/ask) - MAIN FOCUS
         print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat) - MAIN FOCUS")
