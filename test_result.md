@@ -603,10 +603,10 @@ backend:
   - task: "Enhanced Emoji Mapping Consistency Fix Verification"
     implemented: true
     working: true
-    file: "backend/ai_service.py"
+    file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "testing"
