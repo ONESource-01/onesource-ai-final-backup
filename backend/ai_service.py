@@ -425,10 +425,10 @@ GENERAL MENTORING CONTEXT:
     def format_dual_response(self, response: str) -> Dict[str, str]:
         """Split AI response into Technical and Mentoring sections"""
         try:
-            # Look for the section markers
-            if "🛠️" in response and "🧐" in response:
-                parts = response.split("🧐")
-                technical = parts[0].replace("🛠️", "").strip()
+            # Look for the section markers using Enhanced Emoji Mapping
+            if "🔧" in response and "🧠" in response:
+                parts = response.split("🧠")
+                technical = parts[0].replace("🔧", "").strip()
                 mentoring = parts[1].strip()
                 
                 return {
