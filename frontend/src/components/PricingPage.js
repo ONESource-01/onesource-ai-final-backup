@@ -165,7 +165,7 @@ const PricingPage = () => {
     {
       id: 'consultant', // Fixed: backend expects 'consultant' not 'pro-plus'
       name: 'Pro-Plus',
-      price: pricing?.consultant?.amount || 29.00,
+      price: 38.9,
       currency: 'AUD',
       period: 'per month',
       description: 'Complete Construction Knowledge Platform',
