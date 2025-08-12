@@ -118,7 +118,7 @@ const PricingPage = () => {
       features: [
         '3 questions per day',
         'Basic AI responses',
-        'Document uploads to Knowledge Vault',
+        'Document uploads to Knowledge Vault (Partners ONLY)',
         'Basic knowledge vault search',
         'Standard construction guidance',
         'Partner document upload access',
