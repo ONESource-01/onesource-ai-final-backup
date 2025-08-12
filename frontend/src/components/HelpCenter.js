@@ -450,6 +450,92 @@ When you ask about disciplines outside your expertise, ONESource-ai provides exp
 
 **Why This Matters:**
 Selecting the correct experience level ensures you receive responses that match your expertise, learning style, and professional needs. This personalization makes ONESource-ai more effective and relevant to your specific career stage.`
+    },
+    {
+      id: 8,
+      question: "How does the Community Knowledge Bank work?",
+      category: "community",
+      answer: `The Community Knowledge Bank is a shared resource where construction industry partners contribute verified technical content:
+
+**Partner Contributions:**
+• **Verified Organizations**: Only approved industry partners can contribute content
+• **Quality Assurance**: All partner content undergoes technical review
+• **Proper Attribution**: Every response clearly identifies the contributing organization
+• **Current Information**: Partners keep their content updated with latest practices
+
+**Content Types:**
+• Technical specifications and standards interpretations
+• Best practice guides and methodologies  
+• Product technical data and installation guides
+• Compliance checklists and verification procedures
+• Regional variations and local authority requirements
+
+**User Benefits:**
+• **Enhanced Responses**: AI draws from both general knowledge and partner-specific expertise
+• **Industry Insights**: Access to real-world applications and case studies
+• **Trusted Sources**: Content comes from established construction professionals
+• **Attribution Transparency**: Always know the source of specialized information
+
+**Content Management:**
+• Partners control their own content updates
+• Users can provide feedback on partner content quality
+• Regular auditing ensures accuracy and relevance
+• Integration with personal knowledge for comprehensive guidance
+
+**Privacy & Control:**
+• Community content is searchable by all users
+• Personal Knowledge Bank remains completely private
+• Clear distinction between community and personal content sources
+• User choice in how much to rely on community vs personal content`
+    },
+    {
+      id: 9,
+      question: "How does AI personalization work with my industry experience?",
+      category: "personalization",
+      answer: `ONESource-ai personalizes every response based on your selected experience level to provide the most appropriate guidance:
+
+**Graduate / Beginner (0-2 years):**
+• AI provides detailed explanations, step-by-step guidance, educational context, and mentoring advice
+• Perfect for learning fundamental concepts and building confidence
+
+**Response Examples:**
+• Explains basic concepts like "What is a fire rating?" before discussing specific requirements
+• Provides step-by-step compliance checklists with explanations for each step
+• Includes educational context: "This requirement exists because..." with safety rationale
+• Offers learning resources and suggests professional development pathways
+
+**Intermediate (3-7 years):**
+• AI offers practical solutions with moderate detail, focuses on real-world applications
+• Provides tips for professional development and efficiency improvements
+
+**Response Examples:**
+• Provides practical solutions: "For this scenario, you could use Method A or B, here's when to choose each"
+• Focuses on real-world applications and common challenges you'll face
+• Includes efficiency tips: "Pro tip: This calculation can be simplified by..."
+• Suggests when to consult specialists and what questions to ask them
+
+**Senior (8-15 years):**
+• AI provides advanced technical insights, discusses complex scenarios
+• Offers strategic perspectives and focuses on leadership and decision-making aspects
+
+**Response Examples:**
+• Discusses complex scenarios: "When dealing with conflicting code requirements, consider..."
+• Offers strategic perspectives on project risks and mitigation strategies
+• Focuses on leadership aspects: "When presenting this to stakeholders, emphasize..."
+• Provides advanced technical insights and alternative design approaches
+
+**Expert / Principal (15+ years):**
+• AI delivers concise, high-level insights, focuses on innovation and cutting-edge practices
+• Discusses industry trends and provides expert-to-expert technical discourse
+
+**Response Examples:**
+• Delivers concise, high-level insights without basic explanations
+• Discusses cutting-edge practices and emerging industry trends
+• Provides expert-to-expert technical discourse with advanced terminology
+• Focuses on innovation opportunities and industry leadership perspectives
+
+**Why This Matters:**
+Selecting the correct experience level ensures you receive responses that match your expertise, learning style, and professional needs. This personalization makes ONESource-ai more effective and relevant to your specific career stage.`
     }
   ];
 
