@@ -275,18 +275,27 @@ const PricingPage = () => {
             {pricingPlans.map((plan) => (
               <Card 
                 key={plan.id} 
-                className={`relative ${plan.highlighted ? 'ring-2 ring-blue-500 shadow-xl' : ''}`}
+                className={`relative ${
+                  plan.highlighted 
+                    ? 'ring-2 ring-onesource-dark shadow-xl transform lg:scale-105 lg:z-10' 
+                    : ''
+                } ${
+                  plan.popular 
+                    ? 'lg:min-h-[600px]' 
+                    : 'lg:min-h-[550px]'
+                }`}
               >
-                {/* Promotional Badge */}
-                {(plan.badge || plan.highlighted) && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className={`px-4 py-1 ${
+                {/* Popular/Promotional Badge */}
+                {(plan.badge || plan.highlighted || plan.popular) && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                    <Badge className={`px-4 py-2 font-bold text-sm ${
+                      plan.popular ? 'bg-onesource-dark text-white shadow-lg' :
                       plan.badge === 'Most Popular' || plan.highlighted ? 'bg-blue-500 text-white' :
                       plan.badge === 'Best Value' ? 'bg-green-500 text-white' :
                       plan.badge === 'Limited Time' ? 'bg-orange-500 text-white' :
                       'bg-blue-500 text-white'
                     }`}>
-                      {plan.badge || 'Most Popular'}
+                      {plan.popular ? 'MOST POPULAR' : plan.badge || 'Most Popular'}
                     </Badge>
                   </div>
                 )}
