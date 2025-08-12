@@ -574,13 +574,13 @@ class BackendTester:
         if enhanced_success and isinstance(enhanced_response, dict) and "response" in enhanced_response:
             enhanced_response_content = str(enhanced_response["response"])
             
-            # Check for Enhanced Emoji Mapping emojis - CRITICAL: Must be 🤓 NOT 🧠 or 💡
+            # Check for Enhanced Emoji Mapping emojis - CRITICAL: Must be 🧐 NOT 🤓 or 🧠
             enhanced_has_tech_emoji = "🔧 **Technical Answer**" in enhanced_response_content or "🔧 Technical Answer" in enhanced_response_content
-            enhanced_has_mentoring_emoji_correct = "🤓 **Mentoring Insight**" in enhanced_response_content or "🤓 Mentoring Insight" in enhanced_response_content
-            enhanced_has_mentoring_emoji_wrong = ("🧠 **Mentoring Insight**" in enhanced_response_content or 
-                                                "💡 **Mentoring Insight**" in enhanced_response_content or
-                                                "🧠 Mentoring Insight" in enhanced_response_content or
-                                                "💡 Mentoring Insight" in enhanced_response_content)
+            enhanced_has_mentoring_emoji_correct = "🧐 **Mentoring Insight**" in enhanced_response_content or "🧐 Mentoring Insight" in enhanced_response_content
+            enhanced_has_mentoring_emoji_wrong = ("🤓 **Mentoring Insight**" in enhanced_response_content or 
+                                                "🧠 **Mentoring Insight**" in enhanced_response_content or
+                                                "🤓 Mentoring Insight" in enhanced_response_content or
+                                                "🧠 Mentoring Insight" in enhanced_response_content)
             
             # Check for fire safety specific content
             fire_indicators = [
