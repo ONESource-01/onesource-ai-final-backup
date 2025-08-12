@@ -61,7 +61,15 @@ async def test_enhanced_emoji_mapping_consistency():
         regular_response_content = ""
         
         if regular_success and isinstance(regular_response, dict) and "response" in regular_response:
-            regular_response_content = str(regular_response["response"])
+            response_data = regular_response["response"]
+            
+            # Check if response is structured (with technical/mentoring keys) or plain text
+            if isinstance(response_data, dict) and "technical" in response_data:
+                # Structured response - check the technical section
+                regular_response_content = str(response_data["technical"])
+            else:
+                # Plain text response
+                regular_response_content = str(response_data)
             
             # Check for Enhanced Emoji Mapping emojis
             regular_has_tech_emoji = "🔧 **Technical Answer**" in regular_response_content
