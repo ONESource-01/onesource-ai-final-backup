@@ -14,22 +14,22 @@ from datetime import datetime
 # Pricing packages (server-side only for security)
 PRICING_PACKAGES = {
     "pro": {
-        "amount": 4.90,
+        "amount": 17.90,  # Updated: $17.9 AUD
         "currency": "aud",
-        "name": "Pro Plan",
-        "description": "Full access with limited report/project save slots"
+        "name": "ONESource-ai Pro Monthly",
+        "description": "Enhanced AI guidance with deeper insights for professional use"
     },
     "consultant": {
-        "amount": 19.00,
-        "currency": "aud", 
-        "name": "Consultant Plan",
-        "description": "Unlimited queries, report saving & download, priority AI response"
+        "amount": 38.90,  # Updated: $38.9 AUD  
+        "currency": "aud",
+        "name": "ONESource-ai Pro-Plus Monthly",
+        "description": "Comprehensive AI assistance with advanced features for construction professionals"
     },
     "day_pass": {
-        "amount": 9.90,
+        "amount": 28.50,  # Updated: $28.5 AUD
         "currency": "aud",
-        "name": "Day Pass",
-        "description": "One-time access for a single day"
+        "name": "ONESource-ai Day Pass",
+        "description": "Full Pro-Plus access for 24 hours when you need it most"
     }
 }
 
