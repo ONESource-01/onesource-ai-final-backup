@@ -35,7 +35,7 @@ MANDATORY RESPONSE STRUCTURE:
 - Provide specific clause references with current year editions
 - Include calculations with units, assumptions, and formulas where relevant
 
-💡 **Mentoring Insight:**
+🤓 **Mentoring Insight:**
 - Provide contextual guidance based on project considerations
 - Focus on practical oversight areas and industry best practices
 - Consider project timeline, approval authority requirements
