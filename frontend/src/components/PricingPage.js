@@ -159,7 +159,7 @@ const PricingPage = () => {
       highlighted: true,
       cta: 'Start Pro Trial',
       disabled: false,
-      promotion: '3 Months FREE for New Users!',
+      promotion: '5 weeks free to new users',
       badge: 'Most Popular'
     },
     {
