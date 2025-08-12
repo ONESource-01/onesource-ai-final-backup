@@ -2276,7 +2276,7 @@ async def boost_response(
         if not question or not target_tier:
             raise HTTPException(status_code=400, detail="Missing question or target_tier")
         
-        # Check daily booster limit (1 per day)
+        # CRITICAL FIX: Check daily booster limit more intelligently
         today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         today_end = today_start + timedelta(days=1)
         
@@ -2285,8 +2285,26 @@ async def boost_response(
             "date": {"$gte": today_start, "$lt": today_end}
         })
         
-        if booster_usage and booster_usage.get("usage_count", 0) >= 1:
-            raise HTTPException(status_code=429, detail="Daily booster limit reached. Try again tomorrow!")
+        # Check user's subscription tier for boost limits
+        user_subscription = await firebase_service.check_user_subscription(uid)
+        subscription_tier = user_subscription.get("subscription_tier", "starter")
+        
+        # Set daily boost limits based on subscription tier
+        if subscription_tier == "starter":
+            daily_limit = 1  # Free users get 1 boost per day
+        elif subscription_tier in ["pro", "pro_plus"]:
+            daily_limit = 10  # Pro users get more boosts per day
+        else:
+            daily_limit = 1  # Default to 1 for unknown tiers
+        
+        current_usage = booster_usage.get("usage_count", 0) if booster_usage else 0
+        
+        if current_usage >= daily_limit:
+            limit_reset_time = (today_end).strftime("%H:%M UTC tomorrow")
+            raise HTTPException(
+                status_code=429, 
+                detail=f"Daily booster limit reached ({current_usage}/{daily_limit}). Resets at {limit_reset_time}. Upgrade for more boosts!"
+            )
         
         # Generate enhanced response based on target tier
         enhanced_system_prompt = f"""
