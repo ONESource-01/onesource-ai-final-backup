@@ -193,8 +193,9 @@ const PricingPage = () => {
               <ArrowLeft className="h-5 w-5 mr-2" />
               Back to Home
             </Link>
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-900">ONESource-ai Pricing</h1>
+            <div className="flex items-center space-x-3">
+              <img src="/onesource-icon.png" alt="ONESource-ai" className="h-8 w-8" />
+              <h1 className="text-2xl font-bold text-onesource-dark">ONESource-ai Pricing</h1>
             </div>
             {user && (
               <div className="flex items-center space-x-4">
