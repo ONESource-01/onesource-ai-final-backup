@@ -673,6 +673,18 @@ frontend:
         agent: "main"
         comment: "✅ COMPLETE BRANDING UPDATE IMPLEMENTED SUCCESSFULLY! ✅ LOGO UPDATES: All primary logo references updated from SVG to PNG format (ONESource-ai_Final.png) across 15+ components including App.js, AuthPage.js, UserProfile.js, PageHeader.js, AdminDashboard.js, KnowledgeVault.js, and all legal pages. All assistant icon references updated to use ONESource_ICON.png in ChatInterface.js and OnboardingFlow.js. ✅ HOME PAGE LINKS: Added clickable home page links (href='/') to primary logos in App.js and UserProfile.js headers for improved navigation. ✅ COLOR PALETTE IMPLEMENTATION: Added comprehensive ONESource brand colors to Tailwind config: onesource-dark (#0f2f57), onesource-medium (#4b6b8b), onesource-light (#95a6b7), onesource-pale (#c9d6e4), onesource-white (#f8fafc). ✅ BUTTON PROMINENCE: Updated all primary buttons to use new color scheme - bg-onesource-dark with hover:bg-onesource-medium for enhanced visual hierarchy and brand consistency. Updated ChatInterface, HelpCenter, PricingPage, KnowledgeVault buttons. ✅ ACCENT COLORS: Updated link colors, progress bars, and interactive elements to use new brand colors for consistent branding. ✅ STANDARDS LINKS: Updated inline standards references (AS/NZS links) to use new color palette with onesource-pale backgrounds. ✅ VISUAL VERIFICATION: Screenshots confirm new branding displays correctly with professional appearance, proper button prominence using dark blue (#0f2f57), and cohesive brand identity throughout the application. The complete branding update is production-ready with enhanced visual hierarchy."
 
+  - task: "Help Center UI Improvements - Bold Text, Assistant Icon, and Button Colors"
+    implemented: true
+    working: true
+    file: "frontend/src/components/HelpCenter.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "🎉 ALL THREE HELP CENTER IMPROVEMENTS SUCCESSFULLY VERIFIED! ✅ BOLD TEXT FORMATTING FIX: Comprehensive testing confirms **bold** text now displays as proper HTML bold formatting instead of showing ** symbols. Found 0 '**' symbols in AI response and 4/4 expected bold sections properly formatted ('Comprehensive Standards Coverage', 'All Construction Disciplines', 'All Construction Sectors', 'Dynamic Standards Integration'). The dangerouslySetInnerHTML regex replacement .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') is working perfectly. ✅ ASSISTANT ICON FIX: ONESource-ai Assistant header now correctly displays the ONESource circular teal icon (onesource-icon.png) instead of bot emoji. Found 1 ONESource icon in AI response and 0 bot emojis, confirming the fix is working. ✅ BUTTON COLOR CONTRAST: Category buttons now use the correct color scheme with proper visual hierarchy. Building Standards button successfully clicked and color changes verified. Unselected buttons use Gull Grey (#95a6b7) and selected buttons use Bismark (#4b6b8b) as specified in the Tailwind config. All three requested improvements are working correctly and provide better user experience with professional formatting, proper branding, and improved visual contrast."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
