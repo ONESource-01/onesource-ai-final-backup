@@ -664,20 +664,43 @@ Selecting the correct experience level ensures you receive responses that match 
     }, 1500);
   };
 
-  const filteredArticles = popularArticles.filter(article => {
-    const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
+  const filteredArticles = useMemo(() => {
+    console.log('Filtering articles with searchQuery:', searchQuery, 'selectedCategory:', selectedCategory);
     
-    // Search in multiple fields including content/answer
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = searchQuery === '' || // Show all when search is empty
-                         article.title?.toLowerCase().includes(searchLower) ||
-                         article.question?.toLowerCase().includes(searchLower) ||
-                         article.excerpt?.toLowerCase().includes(searchLower) ||
-                         article.answer?.toLowerCase().includes(searchLower) ||
-                         article.content?.toLowerCase().includes(searchLower);
+    const filtered = popularArticles.filter(article => {
+      const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
+      
+      // Search in multiple fields including content/answer
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = searchQuery === '' || // Show all when search is empty
+                           article.title?.toLowerCase().includes(searchLower) ||
+                           article.question?.toLowerCase().includes(searchLower) ||
+                           article.excerpt?.toLowerCase().includes(searchLower) ||
+                           article.answer?.toLowerCase().includes(searchLower) ||
+                           article.content?.toLowerCase().includes(searchLower);
+      
+      const result = matchesCategory && matchesSearch;
+      
+      // Debug logging for articles containing "standards"
+      if (searchQuery.toLowerCase() === 'standards') {
+        console.log(`Article ${article.id}: "${article.question || article.title}"`, {
+          matchesCategory,
+          matchesSearch,
+          result,
+          hasTitle: !!article.title?.toLowerCase().includes('standards'),
+          hasQuestion: !!article.question?.toLowerCase().includes('standards'),
+          hasAnswer: !!article.answer?.toLowerCase().includes('standards'),
+          hasContent: !!article.content?.toLowerCase().includes('standards'),
+          hasExcerpt: !!article.excerpt?.toLowerCase().includes('standards')
+        });
+      }
+      
+      return result;
+    });
     
-    return matchesCategory && matchesSearch;
-  });
+    console.log(`Filtered ${filtered.length} articles from ${popularArticles.length} total`);
+    return filtered;
+  }, [searchQuery, selectedCategory, popularArticles]);
 
   const handleContactSupport = (type) => {
     const emails = {
