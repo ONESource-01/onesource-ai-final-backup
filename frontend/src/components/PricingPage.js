@@ -156,7 +156,7 @@ const PricingPage = () => {
         'No knowledge-enhanced chat mode',
         'No full 3-phase AI system'
       ],
-      highlighted: true,
+      highlighted: false, // Removed highlighting from Pro
       cta: 'Start Pro Trial',
       disabled: false,
       promotion: '5 weeks free to new users',
