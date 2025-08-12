@@ -622,6 +622,18 @@ frontend:
         agent: "testing"
         comment: "Hero Block Variations testing completed successfully! ✅ Modern Hero Variant: Default variant loads correctly with 'Smart Construction Compliance Assistant' title, '🚀 Powered by Advanced AI' badge, 'Try 3 Questions Free' CTA button, construction professional image from Pexels, and proper AU/NZ construction branding. ✅ Visual Components: All hero images load properly (4 images found), construction professional image displays correctly, gradient overlays and text readability verified, AS/NZS compliant response overlay working. ✅ Navigation & Header: ONESource-ai logo displays correctly, Features/Pricing/Sign In navigation links functional, header styling adapts properly, CTA buttons navigate correctly to auth page. ✅ Landing Page Layout: Features section with 6 feature cards displays properly, footer with legal links (Privacy Policy, Terms of Service, Partner Upload Policy) all functional, responsive design works across desktop (1920x1080), tablet (768x1024), and mobile (390x844) viewports. ✅ User Experience: Anonymous user experience working correctly, admin controls properly hidden for non-admin users (expected behavior), color scheme and ONESource-ai branding consistent throughout. ✅ Additional Testing: Pricing page navigation works (8 pricing elements found), legal pages (Terms, Privacy Policy) load correctly with professional content and Standards Australia compliance notices. ⚠️ Limitations: Cannot test hero variant switching without admin access, cannot test authenticated user flows without valid Firebase config, HeroBlockSelector component not visible for anonymous users (expected security behavior). All core hero block functionality working as designed with excellent visual quality and professional construction industry focus."
 
+  - task: "Rewrite Help Centre FAQ Response for Construction Standards Coverage"
+    implemented: true
+    working: true
+    file: "frontend/src/components/HelpCenter.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Successfully rewrote the 'What construction standards does ONESource-ai cover?' FAQ response to address user concerns about being 'quite limiting'. New response emphasizes comprehensive AU/NZ standards coverage across ALL disciplines and sectors, removes limiting specific standard lists, and highlights dynamic intelligent standards integration. Response now conveys that ONESource-ai considers all relevant AU/NZ standards available to the AI agent across the entire construction industry. Needs frontend testing to verify display and formatting."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
