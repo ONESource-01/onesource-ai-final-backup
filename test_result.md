@@ -693,18 +693,15 @@ metadata:
 
 test_plan:
   current_focus:
-    - "✅ HELP CENTRE SEARCH FUNCTIONALITY TESTING COMPLETED SUCCESSFULLY"
-    - "Search functionality working correctly after recent fix"
-    - "Shows all articles when search is empty (searchQuery === '')"
-    - "Searches across title, question, excerpt, answer, and content fields"
-    - "Case-insensitive matching working properly"
-    - "Category filtering combined with search operational"
-    - "All requested search terms return appropriate results"
+    - "Enhanced Emoji Mapping Consistency Testing"
+    - "Regular vs Boosted Response Format Verification"
+    - "Chat Interface Emoji Mapping Analysis"
   stuck_tasks: 
     - "Firebase authentication configuration - API key issues preventing full auth flow (non-critical - demo auth working)"
     - "SendGrid API key configuration - needs valid API key for email functionality in production (non-critical for core functionality)"
+    - "Enhanced Emoji Mapping Inconsistency - Regular chat uses old emojis (🛠️, 🧐) while enhanced chat uses new emojis (🔧, 🧠)"
   test_all: false
-  test_priority: "help_centre_search_verification_complete"
+  test_priority: "emoji_mapping_consistency_verification"
 
 agent_communication:
   - agent: "main"
