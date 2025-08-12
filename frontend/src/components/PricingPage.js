@@ -59,11 +59,27 @@ const PricingPage = () => {
     setPurchaseLoading(packageId);
     setError('');
 
+    // Create a more aggressive timeout with proper cleanup
+    let timeoutId;
+    let isCompleted = false;
+
     try {
-      // Add timeout to prevent indefinite spinning
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 10000)
-      );
+      // Create cleanup function
+      const cleanup = (reason) => {
+        if (!isCompleted) {
+          isCompleted = true;
+          setPurchaseLoading('');
+          if (timeoutId) clearTimeout(timeoutId);
+          console.log(`🔄 Purchase flow ended: ${reason}`);
+        }
+      };
+
+      // Set aggressive timeout - 8 seconds max
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error('Request timeout - taking longer than expected'));
+        }, 8000);
+      });
       
       const originUrl = window.location.origin;
       console.log('📡 Making checkout request:', { packageId, originUrl });
@@ -78,19 +94,24 @@ const PricingPage = () => {
 
       if (response.data.checkout_url) {
         console.log('🎉 Redirecting to Stripe:', response.data.checkout_url);
+        cleanup('Success - redirecting to Stripe');
         window.location.href = response.data.checkout_url;
       } else {
         console.log('❌ No checkout_url in response:', response.data);
+        cleanup('Error - no checkout URL');
         setError('Failed to create checkout session. Please try again.');
-        setPurchaseLoading('');
       }
     } catch (err) {
       console.error('💥 Purchase error:', err);
       
-      // Clear loading state on error
-      setPurchaseLoading('');
+      // Ensure loading state is cleared immediately
+      if (!isCompleted) {
+        isCompleted = true;
+        setPurchaseLoading('');
+        if (timeoutId) clearTimeout(timeoutId);
+      }
       
-      if (err.message === 'Request timeout') {
+      if (err.message === 'Request timeout - taking longer than expected') {
         setError('Request timed out. Please check your connection and try again.');
       } else if (err.response?.status === 404) {
         setError('Checkout service unavailable. Please try again later.');
