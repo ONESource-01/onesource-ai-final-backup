@@ -963,7 +963,7 @@ const ChatInterface = () => {
                   <div className="flex gap-4">
                     <div className="flex-shrink-0">
                       <img 
-                        src="/onesource-icon.svg" 
+                        src="/onesource-icon.png" 
                         alt="ONESource-ai" 
                         className="h-8 w-8 animate-pulse"
                       />
