@@ -192,7 +192,7 @@ const PricingPage = () => {
     {
       id: 'day_pass',
       name: 'Day Pass',
-      price: pricing?.day_pass?.amount || 15.00,
+      price: 28.5,
       currency: 'AUD',
       period: 'per day',
       description: 'Full Platform Access When You Need It',
