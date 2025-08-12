@@ -118,14 +118,35 @@ class PartnerService:
             partner_record = {
                 "partner_id": partner_id,
                 "company_name": registration_data["company_name"],
-                "abn": registration_data["abn"],
-                "primary_contact_name": registration_data["primary_contact_name"],
-                "primary_email": registration_data["primary_email"],
-                "backup_email": registration_data["backup_email"],
-                "agreed_to_terms": registration_data["agreed_to_terms"],
+                
+                # Contact information (new structure)
+                "contact_person": registration_data.get("contact_person") or registration_data.get("primary_contact_name"),
+                "email": registration_data.get("email") or registration_data.get("primary_email"),
+                "phone": registration_data.get("phone", ""),
+                "industry_sector": registration_data.get("industry_sector", ""),
+                "description": registration_data.get("description", ""),
+                
+                # Legacy fields for backward compatibility
+                "abn": registration_data.get("abn", ""),
+                "abn_acn": registration_data.get("abn_acn", ""),
+                "primary_email": registration_data.get("email") or registration_data.get("primary_email"),
+                "primary_contact_name": registration_data.get("contact_person") or registration_data.get("primary_contact_name"),
+                "backup_email": registration_data.get("backup_email", ""),
+                "agreed_to_terms": registration_data.get("agreed_to_terms", True),
+                
+                # New global business ID fields
+                "country": registration_data.get("country", "AU"),
+                "business_id_scheme": registration_data.get("business_id_scheme", "ABN"),
+                "business_id_number": registration_data.get("business_id_number", ""),
+                "business_id_valid": registration_data.get("business_id_valid", False),
+                "manual_review_required": registration_data.get("manual_review_required", False),
+                
+                # System fields
+                "status": "pending",  # All new registrations start as pending
                 "terms_agreement_date": datetime.utcnow(),
                 "registration_date": datetime.utcnow(),
-                "status": "active",
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
                 "upload_count": 0,
                 "created_by": registration_data.get("created_by", "self_registration")
             }
