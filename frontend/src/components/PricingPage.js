@@ -277,26 +277,31 @@ const PricingPage = () => {
               <Card 
                 key={plan.id} 
                 className={`relative ${
-                  plan.highlighted 
-                    ? 'ring-2 ring-onesource-dark shadow-xl transform lg:scale-105 lg:z-10' 
-                    : ''
+                  plan.highlighted && plan.mostPopular
+                    ? 'ring-4 ring-onesource-pale border-2 border-onesource-pale bg-gradient-to-b from-white to-onesource-white shadow-2xl transform lg:scale-110 lg:z-20' 
+                    : plan.highlighted
+                    ? 'ring-2 ring-onesource-medium shadow-xl transform lg:scale-105 lg:z-10'
+                    : 'hover:shadow-lg transition-shadow duration-300'
                 } ${
-                  plan.popular 
+                  plan.mostPopular
+                    ? 'lg:min-h-[650px]' 
+                    : plan.popular 
                     ? 'lg:min-h-[600px]' 
                     : 'lg:min-h-[550px]'
                 }`}
               >
                 {/* Popular/Promotional Badge */}
                 {(plan.badge || plan.highlighted || plan.popular) && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                    <Badge className={`px-4 py-2 font-bold text-sm ${
-                      plan.popular ? 'bg-onesource-dark text-white shadow-lg' :
+                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-30">
+                    <Badge className={`px-6 py-3 font-bold text-base shadow-lg ${
+                      plan.mostPopular ? 'bg-onesource-dark text-white border-2 border-onesource-pale' :
+                      plan.popular ? 'bg-onesource-medium text-white shadow-lg' :
                       plan.badge === 'Most Popular' || plan.highlighted ? 'bg-blue-500 text-white' :
                       plan.badge === 'Best Value' ? 'bg-green-500 text-white' :
                       plan.badge === 'Limited Time' ? 'bg-orange-500 text-white' :
                       'bg-blue-500 text-white'
                     }`}>
-                      {plan.popular ? 'MOST POPULAR' : plan.badge || 'Most Popular'}
+                      {plan.mostPopular ? 'MOST POPULAR' : plan.popular ? 'MOST POPULAR' : plan.badge || 'Popular'}
                     </Badge>
                   </div>
                 )}
