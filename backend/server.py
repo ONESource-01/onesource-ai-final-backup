@@ -2201,13 +2201,14 @@ async def submit_feedback(
     """Submit feedback for a chat response"""
     try:
         uid = current_user["uid"]
+        user_email = current_user.get("email", "unknown@example.com")
         
         # Prepare feedback data for storage
         feedback_record = {
             "feedback_id": str(uuid.uuid4()),
             "message_id": feedback_data.message_id,
             "user_id": uid,
-            "user_email": current_user.get("email"),
+            "user_email": user_email,
             "feedback_type": feedback_data.feedback_type,
             "comment": feedback_data.comment,
             "timestamp": datetime.utcnow(),
@@ -2217,9 +2218,18 @@ async def submit_feedback(
         # Store feedback in MongoDB
         await db.chat_feedback.insert_one(feedback_record)
         
+        # TODO: Send email notification to support team
+        # This would require email service integration (SendGrid, etc.)
+        print(f"📝 New feedback received:")
+        print(f"   Type: {feedback_data.feedback_type}")
+        print(f"   User: {user_email}")
+        print(f"   Comment: {feedback_data.comment}")
+        print(f"   Feedback ID: {feedback_record['feedback_id']}")
+        
         return {
             "message": "Feedback submitted successfully",
-            "feedback_id": feedback_record["feedback_id"]
+            "feedback_id": feedback_record["feedback_id"],
+            "note": "Your feedback has been recorded and will be reviewed by our team"
         }
         
     except Exception as e:
