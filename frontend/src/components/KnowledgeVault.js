@@ -593,7 +593,7 @@ const KnowledgeVault = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handlePartnerRegistration} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="company_name">Company Name *</Label>
                       <Input
@@ -603,15 +603,13 @@ const KnowledgeVault = () => {
                         required
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="abn_acn">ABN/ACN *</Label>
-                      <Input
-                        id="abn_acn"
-                        value={partnerForm.abn_acn}
-                        onChange={(e) => setPartnerForm({...partnerForm, abn_acn: e.target.value})}
-                        required
-                      />
-                    </div>
+                    
+                    {/* Business Identifier Selector */}
+                    <BusinessIdSelector
+                      value={partnerForm.business_id}
+                      onChange={(businessId) => setPartnerForm({...partnerForm, business_id: businessId})}
+                      required
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
