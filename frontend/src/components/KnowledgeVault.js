@@ -699,8 +699,20 @@ const KnowledgeVault = () => {
                   <Alert>
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                      We'll verify your ABN and review your application. Approved partners can upload 
+                      We'll verify your business registration and review your application. Approved partners can upload 
                       content to the Community Knowledge Bank with proper attribution.
+                      
+                      {partnerForm.business_id.unverified && (
+                        <div className="mt-2 text-amber-600">
+                          <strong>Manual Review:</strong> Your application will require additional verification since no business registration number was provided.
+                        </div>
+                      )}
+                      
+                      {partnerForm.business_id.valid && !partnerForm.business_id.unverified && (
+                        <div className="mt-2 text-green-600">
+                          <strong>Business ID Valid:</strong> {partnerForm.business_id.message}
+                        </div>
+                      )}
                     </AlertDescription>
                   </Alert>
 
