@@ -658,6 +658,21 @@ frontend:
         agent: "testing"
         comment: "🎯 URGENT BUG FIX VERIFICATION COMPLETED SUCCESSFULLY! ✅ CRITICAL ISSUE RESOLVED: The Help Centre search functionality is working perfectly after the pointer-events-none fix was applied to the Search icon. ✅ ONCHANGE HANDLER CONFIRMED: Console logs clearly show 'Search input changed:' messages firing for every character typed, confirming the onChange event is working correctly. ✅ SEARCH FILTERING OPERATIONAL: Comprehensive testing shows proper filtering: Initial 18 articles → 'standards' search: 12 articles → 'fire safety' search: 6 articles → 'construction' search: 10 articles → Clearing search: 18 articles restored. ✅ DEBUG LOGGING WORKING: All expected console messages appearing: 'Filtering articles with searchQuery: [text]' and 'Filtered X articles from Y total' with detailed article matching logs. ✅ SPECIFIC CONTENT VERIFIED: 'What construction standards does ONESource-ai cover?' FAQ properly found in standards search results. ✅ POINTER-EVENTS FIX APPLIED: Search icon has pointer-events-none class preventing event blocking. ✅ ALL TEST SCENARIOS PASSED: Successfully tested typing 'standards', clearing search, trying 'fire safety' and 'construction' terms - all working as expected. The urgent production issue reported in the review request has been completely resolved. Search functionality is production-ready and working correctly for beta users."
 
+  - task: "Complete Branding Update - New Logos and Color Palette Implementation"
+    implemented: true
+    working: true
+    file: "Multiple files - logos, tailwind.config.js, components"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User provided new ONESource branding assets: ONESource-ai_Final.png (primary logo), ONESource_ICON.png (assistant icon), and new color palette. Requirements: 1) Replace all primary logos with new logo sized like feedback page, 2) Use icon logo for 'ONESource-ai Assistant' contexts, 3) Implement new color palette for better button prominence, 4) Make primary logo link to home page. Need to systematically update all logo references and color scheme throughout the application."
+      - working: true
+        agent: "main"
+        comment: "✅ COMPLETE BRANDING UPDATE IMPLEMENTED SUCCESSFULLY! ✅ LOGO UPDATES: All primary logo references updated from SVG to PNG format (ONESource-ai_Final.png) across 15+ components including App.js, AuthPage.js, UserProfile.js, PageHeader.js, AdminDashboard.js, KnowledgeVault.js, and all legal pages. All assistant icon references updated to use ONESource_ICON.png in ChatInterface.js and OnboardingFlow.js. ✅ HOME PAGE LINKS: Added clickable home page links (href='/') to primary logos in App.js and UserProfile.js headers for improved navigation. ✅ COLOR PALETTE IMPLEMENTATION: Added comprehensive ONESource brand colors to Tailwind config: onesource-dark (#0f2f57), onesource-medium (#4b6b8b), onesource-light (#95a6b7), onesource-pale (#c9d6e4), onesource-white (#f8fafc). ✅ BUTTON PROMINENCE: Updated all primary buttons to use new color scheme - bg-onesource-dark with hover:bg-onesource-medium for enhanced visual hierarchy and brand consistency. Updated ChatInterface, HelpCenter, PricingPage, KnowledgeVault buttons. ✅ ACCENT COLORS: Updated link colors, progress bars, and interactive elements to use new brand colors for consistent branding. ✅ STANDARDS LINKS: Updated inline standards references (AS/NZS links) to use new color palette with onesource-pale backgrounds. ✅ VISUAL VERIFICATION: Screenshots confirm new branding displays correctly with professional appearance, proper button prominence using dark blue (#0f2f57), and cohesive brand identity throughout the application. The complete branding update is production-ready with enhanced visual hierarchy."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
