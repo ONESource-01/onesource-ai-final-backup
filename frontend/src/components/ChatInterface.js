@@ -401,6 +401,23 @@ const ChatInterface = () => {
     // STEP 7: Wrap in container with tight spacing
     formatted = `<div style="line-height: 1.3; margin: 0; padding: 0;">${formatted}</div>`;
     
+    // STEP 4: Format bullet points professionally with proper spacing
+    formatted = formatted.replace(/^• (.+)$/gm, '<div class="ml-4 mb-2"><span class="inline-block w-2 h-2 bg-onesource-medium rounded-full mr-3 mt-2"></span><span class="text-gray-800 leading-relaxed">$1</span></div>');
+    formatted = formatted.replace(/^\* (.+)$/gm, '<div class="ml-4 mb-2"><span class="inline-block w-2 h-2 bg-onesource-medium rounded-full mr-3 mt-2"></span><span class="text-gray-800 leading-relaxed">$1</span></div>');
+    
+    // STEP 5: Format numbered lists professionally  
+    formatted = formatted.replace(/^(\d+)\. (.+)$/gm, '<div class="ml-4 mb-3"><span class="inline-flex items-center justify-center w-6 h-6 bg-onesource-dark text-white text-sm font-bold rounded-full mr-3">$1</span><span class="text-gray-800 leading-relaxed">$2</span></div>');
+    
+    // STEP 6: Add professional paragraph spacing
+    formatted = formatted.replace(/\n\n/g, '<div class="mb-4"></div>');
+    formatted = formatted.replace(/\n/g, '<br class="mb-1">');
+    
+    // STEP 7: Style tables professionally if they exist
+    formatted = formatted.replace(/<table/g, '<div class="overflow-x-auto mb-6"><table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm"');
+    formatted = formatted.replace(/<\/table>/g, '</table></div>');
+    formatted = formatted.replace(/<th/g, '<th class="px-4 py-3 bg-onesource-pale text-left text-sm font-bold text-gray-900 border-b border-gray-200"');
+    formatted = formatted.replace(/<td/g, '<td class="px-4 py-3 text-sm text-gray-800 border-b border-gray-100"');
+
     return formatted;
   };
 
