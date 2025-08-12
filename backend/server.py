@@ -2136,6 +2136,13 @@ async def ask_question_enhanced(
             )
             ai_response = response.choices[0].message.content
         
+        # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency
+        # Replace any incorrect emojis with the correct 🤓 emoji
+        ai_response = ai_response.replace("🧠 **Mentoring Insight**", "🤓 **Mentoring Insight**")
+        ai_response = ai_response.replace("💡 **Mentoring Insight**", "🤓 **Mentoring Insight**")
+        ai_response = ai_response.replace("🧠 Mentoring Insight", "🤓 Mentoring Insight")
+        ai_response = ai_response.replace("💡 Mentoring Insight", "🤓 Mentoring Insight")
+        
         # Format response with partner attributions
         formatted_response = {
             "technical": ai_response,
