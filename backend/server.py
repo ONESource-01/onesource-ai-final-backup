@@ -1320,6 +1320,13 @@ Multi-story commercial construction involves elevated compliance requirements. E
             tokens_used = response.usage.total_tokens
             model_used = "gpt-4o-mini"
         
+        # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency
+        # Replace any incorrect emojis with the correct 🤓 emoji
+        ai_response_text = ai_response_text.replace("🧠 **Mentoring Insight**", "🤓 **Mentoring Insight**")
+        ai_response_text = ai_response_text.replace("💡 **Mentoring Insight**", "🤓 **Mentoring Insight**")
+        ai_response_text = ai_response_text.replace("🧠 Mentoring Insight", "🤓 Mentoring Insight")
+        ai_response_text = ai_response_text.replace("💡 Mentoring Insight", "🤓 Mentoring Insight")
+        
         # Create ai_response structure for backward compatibility
         ai_response = {
             "response": ai_response_text,
