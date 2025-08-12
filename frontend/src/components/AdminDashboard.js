@@ -101,6 +101,46 @@ const AdminDashboard = () => {
     }
   };
 
+  // Partner management functions
+  const fetchPartners = async () => {
+    setPartnersLoading(true);
+    try {
+      const response = await apiEndpoints.getPartnerApplications();
+      setPartners(response.data.partners || []);
+    } catch (error) {
+      console.error('Failed to fetch partners:', error);
+    } finally {
+      setPartnersLoading(false);
+    }
+  };
+
+  const handlePartnerAction = async (partnerId, action, reason = '') => {
+    setPartnerActionLoading(partnerId);
+    try {
+      await apiEndpoints.reviewPartnerApplication({
+        partner_id: partnerId,
+        action: action, // 'approve' or 'reject'
+        admin_notes: reason
+      });
+      
+      // Refresh partners list
+      await fetchPartners();
+      await fetchStats(); // Refresh stats
+    } catch (error) {
+      console.error('Partner action failed:', error);
+      alert('Failed to ' + action + ' partner: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setPartnerActionLoading(null);
+    }
+  };
+
+  // Fetch partners when component mounts
+  useEffect(() => {
+    if (isAdmin) {
+      fetchPartners();
+    }
+  }, [isAdmin]);
+
   // Loading state
   if (loading || adminLoading) {
     return (
