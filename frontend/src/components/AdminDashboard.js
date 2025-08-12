@@ -38,6 +38,11 @@ const AdminDashboard = () => {
   });
   const [reportResult, setReportResult] = useState('');
   const [reportLoading, setReportLoading] = useState(false);
+  
+  // Partner management state
+  const [partners, setPartners] = useState([]);
+  const [partnersLoading, setPartnersLoading] = useState(false);
+  const [partnerActionLoading, setPartnerActionLoading] = useState(null);
 
   // Check admin status
   useEffect(() => {
