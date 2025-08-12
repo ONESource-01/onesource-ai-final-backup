@@ -17,16 +17,31 @@ import re
 
 @dataclass
 class PartnerRegistration:
-    """Partner registration data structure"""
+    """Partner registration data structure - Updated for global business IDs"""
     company_name: str
-    abn: str
-    primary_contact_name: str
-    primary_email: str
-    backup_email: str
-    agreed_to_terms: bool
-    registration_date: datetime
-    partner_id: str
-    status: str = "active"  # active, suspended, inactive
+    contact_person: str
+    email: str
+    phone: Optional[str] = None
+    industry_sector: str = ""
+    description: str = ""
+    
+    # Legacy ABN field for backward compatibility
+    abn_acn: Optional[str] = None
+    
+    # New global business ID fields
+    country: str = "AU"
+    business_id_scheme: str = "ABN"
+    business_id_number: Optional[str] = None
+    business_id_valid: bool = False
+    manual_review_required: bool = False
+    
+    # System fields
+    registration_date: Optional[datetime] = None
+    partner_id: Optional[str] = None
+    status: str = "pending"  # pending, approved, rejected
+    admin_notes: Optional[str] = None
+    reviewed_by: Optional[str] = None
+    reviewed_at: Optional[datetime] = None
 
 
 class PartnerService:
