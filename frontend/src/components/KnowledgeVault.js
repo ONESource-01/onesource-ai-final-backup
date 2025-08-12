@@ -33,7 +33,13 @@ const KnowledgeVault = () => {
   const [showPartnerForm, setShowPartnerForm] = useState(false);
   const [partnerForm, setPartnerForm] = useState({
     company_name: '',
-    abn_acn: '',
+    business_id: {
+      country: 'AU',
+      scheme: 'ABN',
+      number: '',
+      valid: false,
+      message: ''
+    },
     contact_person: '',
     email: '',
     phone: '',
