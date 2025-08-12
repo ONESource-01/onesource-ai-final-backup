@@ -43,7 +43,7 @@ async def test_enhanced_emoji_mapping_consistency():
         print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat)")
         regular_data = {
             "question": test_question,
-            "session_id": "emoji_test_regular"
+            "session_id": "water_systems_test_regular"
         }
         
         try:
