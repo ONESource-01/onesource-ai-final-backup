@@ -1202,7 +1202,7 @@ async def ask_question(
         - Keep compliance statements minimal and contextual
         - No generic signatures or boilerplate endings
         
-        REMEMBER: Both 🔧 **Technical Answer:** and 🧠 **Mentoring Insight:** sections are MANDATORY for Enhanced Emoji Mapping consistency.
+        REMEMBER: Both 🔧 **Technical Answer:** and 💡 **Mentoring Insight:** sections are MANDATORY for Enhanced Emoji Mapping consistency.
         
         Question: {chat_data.question}
         """
