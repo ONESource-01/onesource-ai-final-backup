@@ -348,7 +348,7 @@ const ChatInterface = () => {
       '<a href="https://ncc.abcb.gov.au/" target="_blank" class="font-medium text-onesource-dark hover:text-onesource-medium underline">$1</a>');
     
     formatted = formatted.replace(/\b(AS \d{4}(?:\.\d+)?)\b/g, 
-      '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
+      '<a href="https://www.standards.org.au/" target="_blank" class="font-medium text-onesource-dark hover:text-onesource-medium underline bg-onesource-pale px-1 rounded">$1</a>');
     
     formatted = formatted.replace(/\b(NZS \d{4}(?:\.\d+)?)\b/g, 
       '<a href="https://www.standards.govt.nz/" target="_blank" class="font-medium text-blue-600 hover:text-blue-800 underline bg-blue-50 px-1 rounded">$1</a>');
