@@ -806,7 +806,7 @@ Selecting the correct experience level ensures you receive responses that match 
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <p className="font-medium text-blue-800">{showBotResponse.question}</p>
+                      <p className="font-medium text-onesource-dark">{showBotResponse.question}</p>
                       <div className="prose prose-sm max-w-none text-gray-700">
                         {showBotResponse.answer.split('\n').map((paragraph, index) => (
                           <div key={index} className="mb-2">
