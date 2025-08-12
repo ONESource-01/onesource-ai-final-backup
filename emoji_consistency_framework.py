@@ -280,7 +280,8 @@ class EmojiConsistencyFramework:
                     "headers": dict(response.headers),
                     "data": response_data
                 }
-                self.raw_responses[endpoint].append(response_log)
+                endpoint_key = "regular" if endpoint == "ask" else "enhanced"
+                self.raw_responses[endpoint_key].append(response_log)
                 
                 return response.status < 400, response_data, response.status, ""
                 
