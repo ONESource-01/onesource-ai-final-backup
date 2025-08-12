@@ -2128,7 +2128,7 @@ async def ask_question_enhanced(
             
             Refer to current AS/NZS standards and NCC requirements for your project's approval date.
             
-            # 🤓 **Mentoring Insight:**
+            # 🧐 **Mentoring Insight:**
             Key project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes.
             """
         else:
