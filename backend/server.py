@@ -1269,43 +1269,43 @@ Here's a comprehensive analysis addressing your construction compliance question
 | **Energy Efficiency** | NCC Section J | Thermal performance and sustainability |
 
 **Critical Design Elements:**
-• Multi-story structural systems require professional structural engineering
-• Fire-resistant construction materials and assemblies
-• Accessible design features throughout all levels
-• Mechanical services coordination for optimal performance
+• Professional engineering coordination across all disciplines
+• Authority consultation for approval pathway clarity
+• Material specification compliance verification
+• Installation methodology and sequencing requirements
 
 **Compliance Verification Points:**
-• Building approval authority consultation
-• Professional certifications required for structural, fire, and accessibility elements
+• Building approval authority pre-lodgement meetings
+• Professional certifications for structural, fire, and accessibility elements
 • Environmental considerations including energy efficiency and water management
 
 🧐 **Mentoring Insight:**
 
 **Professional Development Considerations:**
-Early engagement with specialist consultants (structural, fire safety, accessibility) is crucial for multi-story commercial projects. Consider the project's complexity matrix - three-story commercial buildings often trigger multiple compliance thresholds that require coordinated professional oversight.
+Complex construction projects benefit from early engagement with specialist consultants across relevant disciplines. Consider the project's compliance matrix - identify which standards trigger mandatory professional oversight requirements.
 
 **Key Project Coordination Points:**
 • Structural engineer engagement during conceptual design phase
-• Fire safety engineer input for performance-based solutions  
-• Building surveyor consultation for approval pathway clarity
-• Services coordination between disciplines for optimal outcomes
+• Fire safety engineer input for performance-based solutions
+• Building surveyor consultation for approval pathway optimization
+• Services coordination between disciplines for integrated outcomes
 
 **Risk Management Focus:**
-Multi-story commercial construction involves elevated compliance requirements. Ensure your project timeline accounts for authority consultation periods and professional certification processes. Consider alternative compliance pathways early to optimize project delivery.
+Professional construction delivery involves elevated compliance requirements. Ensure your project timeline accounts for authority consultation periods and professional certification processes. Consider alternative compliance pathways early to optimize project delivery outcomes.
 
 📋 **Next Steps:**
 
-1. **Initial Consultation:** Engage building approval authority for project pathway clarity
-2. **Professional Team Assembly:** Coordinate structural, fire safety, and services specialists
-3. **Compliance Strategy:** Develop integrated compliance approach across all disciplines
-4. **Design Development:** Progress with coordinated multi-disciplinary design approach"""
+1. **Authority Consultation:** Engage building approval authority for project-specific pathway guidance
+2. **Professional Team Assembly:** Coordinate specialist consultants for relevant disciplines
+3. **Compliance Strategy Development:** Create integrated compliance approach across all standards
+4. **Design Progression:** Advance with coordinated multi-disciplinary design methodology"""
             
             tokens_used = 450
             model_used = "mock-gpt-4o"
         else:
             # Real OpenAI API call with Enhanced Emoji Mapping system prompt
-            from openai import AsyncOpenAI
-            openai_client = AsyncOpenAI(api_key=api_key)
+            import openai
+            openai_client = openai.OpenAI(api_key=api_key)
             
             response = await openai_client.chat.completions.create(
                 model="gpt-4o-mini",
@@ -1316,9 +1316,26 @@ Multi-story commercial construction involves elevated compliance requirements. E
                 max_tokens=1800,
                 temperature=0.2
             )
-            ai_response_text = response.choices[0].message.content
+            raw_ai_response = response.choices[0].message.content
             tokens_used = response.usage.total_tokens
             model_used = "gpt-4o-mini"
+            
+            # 🚨 CRITICAL FORCED POST-PROCESSING - Guarantee Enhanced Emoji Mapping
+            # If OpenAI doesn't follow the system prompt, force the correct format
+            ai_response_text = raw_ai_response
+            
+            # Ensure it has the required sections - if not, force them
+            if "🔧 **Technical Answer**" not in ai_response_text and "**Technical Answer**" in ai_response_text:
+                ai_response_text = ai_response_text.replace("**Technical Answer**", "🔧 **Technical Answer**")
+            elif "Technical Answer" not in ai_response_text:
+                # If completely missing, prepend with proper header
+                ai_response_text = f"🔧 **Technical Answer:**\n\n{ai_response_text}"
+            
+            if "🧐 **Mentoring Insight**" not in ai_response_text and "**Mentoring Insight**" in ai_response_text:
+                ai_response_text = ai_response_text.replace("**Mentoring Insight**", "🧐 **Mentoring Insight**")
+            elif "Mentoring Insight" not in ai_response_text:
+                # If completely missing, append with proper section
+                ai_response_text += f"\n\n🧐 **Mentoring Insight:**\n\nKey project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes."
         
         # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency
         # Replace any incorrect emojis with the correct 🤓 emoji
