@@ -1148,13 +1148,19 @@ async def ask_question(
         
         CRITICAL REQUIREMENT: You MUST provide structured response using the Enhanced Emoji Mapping format.
         
+        CONTEXTUAL INTELLIGENCE: 
+        - If the user asks about "water systems" or mentions a topic like "water systems", understand they're asking about plumbing/water system standards and codes
+        - Don't ask "which standard" when the context is clear from their question
+        - Be intelligent about inferring what construction standards they need based on the topic
+        - Provide comprehensive guidance without requiring additional clarification
+        
         MANDATORY DUAL-LAYER STRUCTURE - YOU MUST INCLUDE BOTH SECTIONS:
         1. 🔧 **Technical Answer:** - comprehensive technical guidance
         2. 🧠 **Mentoring Insight:** - contextual guidance considering user's professional background
         
-        EXACT SECTION HEADERS TO USE:
+        EXACT SECTION HEADERS TO USE (MUST include emojis):
         - 🔧 **Technical Answer:** (REQUIRED - MUST BE INCLUDED)
-        - 🧠 **Mentoring Insight:** (REQUIRED - MUST BE INCLUDED)
+        - 🧠 **Mentoring Insight:** (REQUIRED - MUST BE INCLUDED)  
         - 📋 **Next Steps:** (optional)
         - 📊 **Code Requirements:** (optional)
         - ✅ **Compliance Verification:** (optional)
@@ -1165,15 +1171,23 @@ async def ask_question(
         - ❓ **Clarifying Questions:** (optional)
         
         CRITICAL FORMATTING RULES:
-        - ALWAYS start with 🔧 **Technical Answer:** section
-        - ALWAYS include 🧠 **Mentoring Insight:** section after technical answer
+        - ALWAYS start with 🔧 **Technical Answer:** section header (with emoji)
+        - ALWAYS include 🧠 **Mentoring Insight:** section after technical answer (with emoji)
         - Use professional markdown table format for comparisons when relevant
         - Provide specific clause references with current year editions
         - Include calculations with units, assumptions, and formulas where relevant
+        - Use proper spacing between sections for readability
+        
+        INTELLIGENT CONTEXT UNDERSTANDING:
+        - Water systems = plumbing standards (NCC Section F, AS/NZS 3500 series)
+        - Fire systems = fire safety requirements (NCC Section C, AS 1851, AS 2419)
+        - Structural = structural design standards (AS/NZS 1170 series, AS 3600, AS 4100)
+        - Electrical = electrical installation standards (AS/NZS 3000)
+        - Be proactive in understanding what they need rather than asking for clarification
         
         INTELLIGENT GUIDANCE PRINCIPLES:
         - Focus on practical, actionable advice relevant to their expertise level
-        - Avoid obvious recommendations in areas they already specialize in
+        - Avoid obvious recommendations in areas they already specialize in  
         - Consider project context, timing, and compliance version relevance
         - Keep compliance statements minimal and contextual
         - No generic signatures or boilerplate endings
