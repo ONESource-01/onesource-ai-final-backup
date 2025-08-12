@@ -148,11 +148,34 @@ class FirebaseService:
         """Check user's subscription status"""
         try:
             if not self.db:
-                # Mock implementation
+                # CRITICAL FIX: Mock implementation that respects different user types
+                subscription_tier = "starter"
+                subscription_active = False
+                trial_questions_used = 0
+                
+                # Mock different user types based on token patterns
+                if "pro_user" in uid.lower():
+                    subscription_tier = "pro"
+                    subscription_active = True
+                    trial_questions_used = 0  # Pro users don't use trial questions
+                elif "consultant" in uid.lower() or "pro_plus" in uid.lower():
+                    subscription_tier = "consultant"  # Pro-Plus
+                    subscription_active = True
+                    trial_questions_used = 0
+                elif "day_pass" in uid.lower():
+                    subscription_tier = "day_pass"
+                    subscription_active = True
+                    trial_questions_used = 0
+                else:
+                    # Default to starter for demo users and others
+                    subscription_tier = "starter"
+                    subscription_active = False
+                    trial_questions_used = 0  # Fresh users start with 0
+                
                 return {
-                    'subscription_tier': 'starter',
-                    'trial_questions_used': 0,
-                    'subscription_active': False,
+                    'subscription_tier': subscription_tier,
+                    'trial_questions_used': trial_questions_used,
+                    'subscription_active': subscription_active,
                     'subscription_expires': None
                 }
                 
