@@ -79,9 +79,22 @@ async def test_enhanced_emoji_mapping_consistency():
             regular_has_mentoring_emoji = ("🧠 **Mentoring Insight**" in regular_response_content or 
                                          "🧠 **Mentoring Insight:**" in regular_response_content)
             
+            # Check for water system specific content (AS/NZS 3500, plumbing standards)
+            water_indicators = [
+                "AS/NZS 3500" in regular_response_content,
+                "AS 3500" in regular_response_content,
+                "plumbing" in regular_response_content.lower(),
+                "water system" in regular_response_content.lower(),
+                "hydraulic" in regular_response_content.lower(),
+                "pipe sizing" in regular_response_content.lower(),
+                "water supply" in regular_response_content.lower()
+            ]
+            regular_has_water_content = any(water_indicators)
+            
             print(f"   📝 Response length: {len(regular_response_content)} characters")
             print(f"   🔧 Has '🔧 **Technical Answer**': {regular_has_tech_emoji}")
             print(f"   🧠 Has '🧠 **Mentoring Insight**': {regular_has_mentoring_emoji}")
+            print(f"   💧 Has water system content: {regular_has_water_content}")
             
             # Show first 300 chars for analysis
             preview = regular_response_content[:300] + "..." if len(regular_response_content) > 300 else regular_response_content
