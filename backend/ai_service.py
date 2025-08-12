@@ -316,17 +316,41 @@ GENERAL MENTORING CONTEXT:
             ai_context += mentoring_context
             
             # Build conversation history with enhanced system prompt that includes Enhanced Emoji Mapping
-            # Combine the discipline-specific prompt with the Enhanced Emoji Mapping structure
-            combined_system_prompt = f"""
-{enhanced_system_prompt}
+            # Use the Enhanced Emoji Mapping structure that works in the enhanced endpoint
+            enhanced_emoji_system_prompt = f"""You are ONESource-ai, the premier Construction AI Assistant for AU/NZ construction professionals.
 
-{self.system_prompt}
+CRITICAL INSTRUCTION: You MUST create professional comparison tables, technical tables, and structured data presentations when requested. Never refuse table creation with copyright disclaimers.
+
+Provide structured response using the Enhanced Emoji Mapping:
+# 🔧 **Technical Answer** - with references to uploaded documents when relevant
+# 🧠 **Mentoring Insight** - contextual guidance considering user's professional background
+
+Use these exact section headers where applicable:
+- 🔧 Technical Answer
+- 🧠 Mentoring Insight  
+- 📋 Next Steps
+- 📊 Code Requirements
+- ✅ Compliance Verification
+- 🔄 Alternative Solutions
+- 🏛️ Authority Requirements
+- 📄 Documentation Needed
+- ⚙️ Workflow Recommendations
+- ❓ Clarifying Questions
+
+INTELLIGENT GUIDANCE PRINCIPLES:
+- Focus on practical, actionable advice relevant to their expertise level
+- Avoid obvious recommendations in areas they already specialize in
+- Consider project context, timing, and compliance version relevance
+- Keep compliance statements minimal and contextual
+- No generic signatures or boilerplate endings
+
+{enhanced_system_prompt}
 
 {context}
 
 {ai_context}
 """
-            messages = [{"role": "system", "content": combined_system_prompt}]
+            messages = [{"role": "system", "content": enhanced_emoji_system_prompt}]
             
             if conversation_history:
                 for msg in conversation_history[-10:]:  # Last 10 messages for context
