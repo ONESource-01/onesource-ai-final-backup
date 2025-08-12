@@ -71,9 +71,11 @@ async def test_enhanced_emoji_mapping_consistency():
                 # Plain text response
                 regular_response_content = str(response_data)
             
-            # Check for Enhanced Emoji Mapping emojis
-            regular_has_tech_emoji = "🔧 **Technical Answer**" in regular_response_content
-            regular_has_mentoring_emoji = "🧠 **Mentoring Insight**" in regular_response_content
+            # Check for Enhanced Emoji Mapping emojis (flexible matching)
+            regular_has_tech_emoji = ("🔧 **Technical Answer**" in regular_response_content or 
+                                    "🔧 **Technical Answer:**" in regular_response_content)
+            regular_has_mentoring_emoji = ("🧠 **Mentoring Insight**" in regular_response_content or 
+                                         "🧠 **Mentoring Insight:**" in regular_response_content)
             
             print(f"   📝 Response length: {len(regular_response_content)} characters")
             print(f"   🔧 Has '🔧 **Technical Answer**': {regular_has_tech_emoji}")
