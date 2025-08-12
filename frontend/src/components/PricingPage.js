@@ -185,8 +185,9 @@ const PricingPage = () => {
       highlighted: false,
       cta: 'Start Pro-Plus Trial',
       disabled: false,
-      promotion: '3 Months FREE for New Users!',
-      badge: 'Best Value'
+      promotion: '5 weeks free to new users',
+      badge: 'Best Value',
+      popular: true
     },
     {
       id: 'day_pass',
