@@ -238,13 +238,24 @@ const PricingPage = () => {
               Get expert construction industry guidance with plans designed for professionals at every level
             </p>
           </div>
-
+          
+          {/* Error Alert */}
           {error && (
-            <Alert className="border-red-200 bg-red-50 mb-8 max-w-2xl mx-auto">
-              <AlertDescription className="text-red-700">
-                {error}
-              </AlertDescription>
-            </Alert>
+            <div className="mb-8">
+              <Alert className="bg-red-50 border-red-200">
+                <AlertDescription className="text-red-700 flex items-center justify-between">
+                  <span>{error}</span>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setError('')}
+                    className="ml-4 text-red-700 border-red-300 hover:bg-red-100"
+                  >
+                    Dismiss
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
