@@ -144,6 +144,62 @@ Each phase builds upon the previous, delivering increasingly sophisticated const
     },
     {
       id: 5,
+      question: "How do System Prompts and Mentoring Responses work behind the scenes?",
+      category: "ai-intelligence",
+      answer: `ONESource-ai uses sophisticated system prompts and intelligent mentoring to deliver personalized construction expertise:
+
+## **🧠 System Prompts - The AI's Expert Identity**
+
+**What They Do:**
+System prompts are detailed instructions that transform generic AI into specialized construction experts. Think of them as "expert personalities" that the AI adopts based on your question.
+
+**How They Work:**
+1. **Question Analysis:** System detects discipline (structural, fire safety, etc.) and sector (commercial, residential, etc.) from your question content
+2. **Expert Selection:** Chooses appropriate expert prompt from 40+ construction disciplines
+3. **Context Application:** AI responds as that specific type of expert with relevant standards, terminology, and approach
+
+**Example in Action:**
+- **Fire Safety Question:** AI becomes fire safety engineer, references AS 1851, AS 3786, NCC Volume One
+- **Structural Question:** AI becomes structural engineer, uses AS 1170, AS 3600, AS 4100 standards
+- **Cost Question:** AI becomes quantity surveyor, applies cost estimation principles and market analysis
+
+## **🎯 Intelligent Mentoring Cross-Reference System**
+
+**The Smart Translation:**
+When you ask about disciplines outside your expertise, ONESource-ai provides expert technical answers BUT personalizes the mentoring insights back to your actual professional background.
+
+**How Cross-Referencing Works:**
+1. **Your Profile:** System reads your selected disciplines and industry sectors from user profile
+2. **Question Detection:** Identifies what discipline/sector the question is about
+3. **Expert Technical Answer:** Provides full expert-level answer for the asked discipline
+4. **Personalized Mentoring:** Translates guidance back to YOUR expertise areas
+
+**Real Example:**
+- **Your Profile:** Structural Engineer + Commercial Buildings
+- **Question Asked:** "Fire safety requirements for hospitals"
+- **Technical Answer:** Complete fire safety expert guidance for healthcare facilities
+- **Mentoring Insight:** *"As a structural engineer working primarily in commercial buildings, here's how these healthcare fire safety requirements will impact your structural design considerations when working on hospital projects..."*
+
+## **🔄 Multiple Expertise Handling**
+
+**Smart Display for Multiple Specializations:**
+- **Single expertise:** "As a structural engineer working in commercial sector..."
+- **Multiple expertise:** "As a structural/hydraulic/civil engineer working in commercial/healthcare sectors..."
+
+## **⚙️ Behind the Scenes Process**
+
+**Step-by-Step System Operation:**
+1. **Content Analysis:** Keyword detection identifies required expertise (40+ disciplines, 17 sectors)
+2. **User Profile Check:** Reads your selected professional areas
+3. **Prompt Assembly:** Combines expert system prompt + user context + subscription tier features
+4. **Response Generation:** AI responds as expert in asked discipline
+5. **Mentoring Translation:** Personalizes guidance back to your actual expertise
+6. **Tier Gating:** Delivers Phase 1/2/3 intelligence based on subscription level
+
+**This intelligent system ensures you get expert-level answers for any construction topic while receiving mentoring guidance tailored specifically to your professional background.**`
+    },
+    {
+      id: 6,
       question: "How does ONESource-ai handle my privacy when I load documents?",
       category: "privacy",
       answer: `ONESource-ai takes your document privacy seriously:
