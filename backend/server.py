@@ -1236,7 +1236,7 @@ Water system compliance for AU/NZ construction follows the AS/NZS 3500 series an
 • **Commissioning:** System commissioning and water quality verification
 • **Certification:** Form 16 compliance certificate from licensed plumber
 
-🤓 **Mentoring Insight:**
+🧐 **Mentoring Insight:**
 
 **Professional Development Focus:**
 Water system projects require early coordination between hydraulic consultants and your design team. The most common compliance issues arise from inadequate sizing calculations and improper material selections.
