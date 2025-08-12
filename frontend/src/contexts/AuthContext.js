@@ -24,18 +24,33 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setIdToken('mock_demo_token_' + userData.uid);
     } else {
-      // Auto-create a demo user for better UX if none exists
-      const autoDemoUser = {
-        uid: 'demo_user_auto_' + Date.now(),
-        email: 'demo@onesource.ai',
-        displayName: 'Demo User',
-        emailVerified: true
-      };
+      // Create different user types for testing
+      const urlParams = new URLSearchParams(window.location.search);
+      const userType = urlParams.get('user_type') || 'demo';
+      
+      let autoDemoUser;
+      if (userType === 'pro') {
+        autoDemoUser = {
+          uid: 'pro_user_12345',
+          email: 'pro.user@onesource.ai',
+          displayName: 'Pro User (Testing)',
+          emailVerified: true
+        };
+        setIdToken('pro_user_token_12345');
+      } else {
+        // Default demo user
+        autoDemoUser = {
+          uid: 'demo_user_auto_' + Date.now(),
+          email: 'demo@onesource.ai',
+          displayName: 'Demo User',
+          emailVerified: true
+        };
+        setIdToken('mock_demo_token_' + autoDemoUser.uid);
+      }
       
       setUser(autoDemoUser);
-      setIdToken('mock_demo_token_' + autoDemoUser.uid);
       localStorage.setItem('demo_user', JSON.stringify(autoDemoUser));
-      console.log('Auto-created demo user for testing purchases');
+      console.log(`Auto-created ${userType} user for testing:`, autoDemoUser);
     }
   }, []);
 
