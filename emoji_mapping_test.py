@@ -32,10 +32,12 @@ async def test_enhanced_emoji_mapping_consistency():
         mock_headers = {"Authorization": "Bearer mock_dev_token", "Content-Type": "application/json"}
         
         # Use the EXACT question from the review request
-        test_question = "What are the fire safety requirements for a 3-story commercial building?"
+        test_question = "explain how i use this standard step by step for water systems"
         
         print(f"🔍 Testing question: '{test_question}'")
-        print("📋 Comparing response formats between regular and enhanced endpoints...")
+        print("🎯 Expected: 🔧 **Technical Answer:** and 🧠 **Mentoring Insight:** section headers")
+        print("🎯 Expected: AS/NZS 3500 plumbing standards content")
+        print("📋 Verifying if backend sends correct emoji-formatted responses...")
         
         # Test 1: Regular chat endpoint (/api/chat/ask)
         print("\n1️⃣ Testing POST /api/chat/ask (Regular Chat)")
