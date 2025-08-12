@@ -91,6 +91,25 @@ class FirebaseService:
                 else:
                     mock_name = "Alex Thompson"
                 
+                # CRITICAL FIX: Determine subscription tier based on token/uid
+                subscription_tier = "starter"
+                subscription_active = False
+                
+                # Mock different user types based on token patterns
+                if "pro_user" in uid.lower():
+                    subscription_tier = "pro"
+                    subscription_active = True
+                elif "consultant" in uid.lower() or "pro_plus" in uid.lower():
+                    subscription_tier = "consultant"  # Pro-Plus
+                    subscription_active = True
+                elif "day_pass" in uid.lower():
+                    subscription_tier = "day_pass"
+                    subscription_active = True
+                else:
+                    # Default to starter for demo users and others
+                    subscription_tier = "starter"
+                    subscription_active = False
+                
                 return {
                     "uid": uid,
                     "name": mock_name,
@@ -98,9 +117,9 @@ class FirebaseService:
                     "sector": "Commercial",
                     "use_case": "Design compliance checking",
                     "onboarding_completed": True,
-                    "subscription_tier": "starter",
+                    "subscription_tier": subscription_tier,
                     "trial_questions_used": 0,
-                    "subscription_active": False
+                    "subscription_active": subscription_active
                 }
                 
             user_ref = self.db.collection('users').document(uid)
