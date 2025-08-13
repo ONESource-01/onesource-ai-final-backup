@@ -1,7 +1,7 @@
 // src/components/MentoringCard.js
 import React from 'react';
 import { Card, CardContent } from './ui/card';
-import Markdown from './Markdown';
+import { SafeText } from '../utils/SafeText';
 
 export default function MentoringCard({ title, content, className = "" }) {
   return (
@@ -13,9 +13,7 @@ export default function MentoringCard({ title, content, className = "" }) {
             {title || "Mentoring Insight"}
           </h2>
         </div>
-        <div className="prose max-w-none text-gray-800 leading-relaxed">
-          <Markdown source={content} />
-        </div>
+        <SafeText text={content} />
       </CardContent>
     </Card>
   );
