@@ -1007,6 +1007,37 @@ async def unified_chat_ask(
         if was_repaired:
             print(f"⚠️ SCHEMA REPAIR: Response for session {chat_data.session_id} was auto-repaired to v2 format")
         
+        # PHASE 3: Add dynamic follow-on suggestions
+        try:
+            # Extract text content from validated response blocks
+            full_text = ""
+            for block in validated_response.get("blocks", []):
+                if block.get("content"):
+                    full_text += str(block["content"]) + " "
+            
+            # Detect topic and generate suggestions
+            detected_topic = detect_topic(full_text)
+            suggested_actions = suggest_actions(
+                topic=detected_topic,
+                blocks=validated_response.get("blocks", []),
+                full_text=full_text
+            )
+            
+            # Add suggestions to meta if any were generated
+            if suggested_actions:
+                validated_response["meta"]["suggested_actions"] = suggested_actions
+                
+                # Track that suggestions were shown
+                observability = get_observability()
+                for action in suggested_actions:
+                    observability.record_suggested_action_shown(action["label"], detected_topic)
+                
+                print(f"DEBUG: Added {len(suggested_actions)} suggestions for topic '{detected_topic}'")
+            
+        except Exception as suggestions_error:
+            print(f"Warning: Failed to generate suggestions: {suggestions_error}")
+            # Continue without suggestions - not a blocking error
+        
         return validated_response
         
     except Exception as e:
