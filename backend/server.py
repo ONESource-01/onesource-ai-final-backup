@@ -1633,86 +1633,64 @@ async def search_personal_knowledge_bank(query: str, user_id: str, limit: int = 
 
 # Enhanced Chat with Knowledge Integration
 @api_router.post("/chat/ask-enhanced")
-async def ask_question_enhanced(
+async def unified_chat_ask_enhanced(
     question_data: ChatQuestion,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """Enhanced chat - UNIFIED BACKEND with knowledge bank integration"""
+    """UNIFIED ENHANCED CHAT ENDPOINT - uses single code path with knowledge context"""
     try:
-        # Import shared service
-        from shared_chat_service import shared_chat_service
+        # Import unified services
+        from core.chat_service import unified_chat_service
+        from core.context_manager import init_context_manager
+        
+        # Initialize context manager if not already done
+        if not hasattr(unified_chat_service, '_context_initialized'):
+            init_context_manager(db)
+            unified_chat_service._context_initialized = True
         
         uid = current_user["uid"]
         
-        # Search both Community and Personal Knowledge Banks
+        # Search knowledge banks for context
         community_results = await search_community_knowledge_bank(question_data.question, limit=3)
         personal_results = await search_personal_knowledge_bank(question_data.question, uid, limit=2)
         
-        # Build enhanced user context for shared service
+        # Build knowledge context
         knowledge_context = []
         partner_attributions = []
         
-        # Process Community Knowledge Bank results (with partner attribution)
+        # Process Community Knowledge Bank results
         for result in community_results:
-            if result['similarity_score'] > 0.6:  # Only high relevance
+            if result['similarity_score'] > 0.6:
                 doc = result['document']
                 excerpt = doc.get('extracted_text', '')[:500]
                 company_name = result.get('company_attribution', 'Community')
-                
                 partner_attributions.append(company_name)
-                knowledge_context.append(f"From {company_name} (Community Knowledge Bank): {excerpt}")
+                knowledge_context.append(f"From {company_name} (Community): {excerpt}")
         
-        # Process Personal Knowledge Bank results (private content)
+        # Process Personal Knowledge Bank results  
         for result in personal_results:
-            if result['similarity_score'] > 0.6:  # Only high relevance
+            if result['similarity_score'] > 0.6:
                 doc = result['document']
                 excerpt = doc.get('extracted_text', '')[:500]
                 knowledge_context.append(f"From your personal documents: {excerpt}")
         
-        # Create enhanced user context for shared service
-        enhanced_context = {
-            "knowledge_context": knowledge_context,
-            "partner_attributions": partner_attributions,
-            "community_results": len(community_results),
-            "personal_results": len(personal_results)
-        }
+        # Build knowledge context string
+        context_string = "\n".join(knowledge_context) if knowledge_context else None
         
-        # Get conversation history for context
-        try:
-            session_id = question_data.session_id or str(uuid.uuid4())
-            # Get recent conversation history for this session
-            recent_conversations = await db.conversations.find({
-                "session_id": session_id,
-                "user_id": uid
-            }).sort("timestamp", -1).limit(10).to_list(length=10)
-            
-            # Convert to message format for context
-            conversation_history = []
-            for conv in reversed(recent_conversations):
-                conversation_history.append({
-                    "type": "user",
-                    "content": conv.get("question", ""),
-                    "timestamp": conv.get("timestamp")
-                })
-                conversation_history.append({
-                    "type": "ai",
-                    "content": conv.get("response", ""),
-                    "timestamp": conv.get("timestamp")
-                })
-                
-        except Exception as e:
-            print(f"Error retrieving conversation history: {e}")
-            conversation_history = []
+        # Determine tier based on subscription
+        subscription = await firebase_service.check_user_subscription(uid)
+        tier = "pro_plus" if subscription.get("subscription_tier") == "pro_plus" else "pro"
         
-        # **UNIFIED BACKEND CALL WITH CONVERSATION CONTEXT**
-        response_data = shared_chat_service.get_unified_chat_response(
+        # Generate unified response with knowledge context
+        response = await unified_chat_service.generate_response(
             question=question_data.question,
-            session_id=session_id,
-            user_context=enhanced_context,  # Enhanced endpoint includes knowledge context
-            conversation_history=conversation_history
+            session_id=question_data.session_id or str(uuid.uuid4()),
+            tier=tier,
+            user_id=uid,
+            knowledge_context=context_string
         )
         
-        # Update document reference counts for Community Knowledge Bank
+        # Update document reference counts
         for result in community_results[:3]:
             if result['similarity_score'] > 0.6:
                 await db.community_knowledge_bank.update_one(
@@ -1720,7 +1698,6 @@ async def ask_question_enhanced(
                     {"$inc": {"reference_count": 1}}
                 )
         
-        # Update document reference counts for Personal Knowledge Bank
         for result in personal_results[:2]:
             if result['similarity_score'] > 0.6:
                 await db.personal_knowledge_bank.update_one(
@@ -1728,40 +1705,27 @@ async def ask_question_enhanced(
                     {"$inc": {"reference_count": 1}}
                 )
         
-        # Standard conversation logging
-        conversation_record = {
-            "conversation_id": str(uuid.uuid4()),
-            "user_id": uid,
-            "session_id": response_data["session_id"],
-            "question": question_data.question,
-            "response": response_data["response"],  # Direct response from unified service
-            "knowledge_sources_used": len(knowledge_context),
-            "partner_attributions": partner_attributions,
-            "community_sources": len(community_results),
-            "personal_sources": len(personal_results),
-            "timestamp": datetime.utcnow(),
-            "tokens_used": response_data["tokens_used"]
-        }
-        
-        await db.conversations.insert_one(conversation_record)
-        
-        return {
-            "response": response_data["response"],  # Direct unified response (same as regular endpoint)
-            "session_id": response_data["session_id"],
+        # Convert to API response format
+        api_response = {
+            "text": response.text,
+            "emoji_map": [{"name": item.name, "char": item.char} for item in response.emoji_map],
             "knowledge_enhanced": len(knowledge_context) > 0,
             "partner_content_used": len(partner_attributions) > 0,
             "community_sources_used": len(community_results),
             "personal_sources_used": len(personal_results),
-            "tokens_used": response_data["tokens_used"],
-            # Additional enhanced metadata for compatibility
-            "enhanced_features": {
-                "knowledge_sources": len(community_results) + len(personal_results),
-                "partner_sources": partner_attributions,
-                "knowledge_used": len(knowledge_context) > 0
+            "meta": {
+                "endpoint_version": "unified",
+                "tier": response.meta.tier,
+                "tokens_used": response.meta.tokens_used,
+                "session_id": response.meta.session_id,
+                "partner_sources": partner_attributions
             }
         }
         
+        return api_response
+        
     except Exception as e:
+        print(f"Error in unified enhanced chat: {e}")
         raise HTTPException(status_code=500, detail=f"Error processing enhanced question: {str(e)}")
 
 # Feedback Routes
