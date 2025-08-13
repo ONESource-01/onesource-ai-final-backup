@@ -1982,51 +1982,34 @@ async def boost_response(
         api_key = os.environ.get('OPENAI_API_KEY', '')
         if not api_key or len(api_key) < 10:
             # Enhanced mock response for booster using Enhanced Emoji Mapping
-            boosted_response = f"""
-# 🔧 **Technical Answer**
+            boosted_response = f"""Here is your boosted response.
+
+🔧 **Technical Answer**
 
 **Comprehensive code compliance analysis for your {question}:**
 
-## 📊 **Code Requirements**
-• Multi-standard cross-referencing (AS/NZS series)
-• Primary structural requirements verified
-• Fire safety protocols aligned with BCA
-• Accessibility standards (DDA) compliance
+**Primary Requirements:**
+- NCC 2025 compliance with specific clause references
+- AS/NZS standards integration and cross-referencing  
+- State/territory jurisdictional requirements
+- Professional certification and approval pathways
 
-## ✅ **Compliance Verification**
-• Advanced risk assessment protocols completed
-• Professional implementation guidelines established
-• Site-specific considerations identified
+**Implementation Approach:**
+1. **Regulatory Assessment:** Complete compliance pathway analysis
+2. **Professional Coordination:** Multi-disciplinary team engagement
+3. **Documentation Strategy:** Comprehensive approval package development
+4. **Quality Assurance:** Systematic compliance verification
 
-# 🤓 **Mentoring Insight**
+🧐 **Mentoring Insight:**
 
-**Professional expertise considerations for this project:**
+**Professional Strategy:**
+This enhanced analysis demonstrates the systematic approach available with upgraded membership. Focus on early regulatory engagement and comprehensive documentation strategies for optimal project outcomes.
 
-## ⚙️ **Workflow Recommendations**
-• Staged construction approach recommended
-• Quality control checkpoints established
-• Professional certification pathways outlined
+📋 **Next Steps:**
 
-## 📄 **Documentation Needed**
-• Detailed material specifications provided
-• Installation methodology guidelines
-• Testing and verification protocols
-
-# 📋 **Next Steps**
-
-## 🏛️ **Authority Requirements**
-1. **Phase 1:** Initial compliance verification
-2. **Phase 2:** Detailed design development  
-3. **Phase 3:** Professional review and approval
-
-## 🔄 **Alternative Solutions**
-• Environmental impact assessment options
-• Regulatory approval timeline variations
-• Professional liability considerations
-
----
-*This enhanced analysis demonstrates the comprehensive expertise available with {target_tier.upper().replace('_', '-')} membership.*
-            """
+1. Professional consultation for compliance strategy
+2. Multi-standard compliance documentation  
+3. Authority coordination and approval processes"""
         else:
             try:
                 from openai import OpenAI
