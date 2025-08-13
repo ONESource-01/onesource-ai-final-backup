@@ -791,19 +791,25 @@ const ChatInterface = () => {
                 Your AI assistant for AU/NZ construction compliance and standards. 
                 Ask about building codes, design requirements, or best practices.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-                <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setInputMessage("What are the fire safety requirements for high-rise buildings in Australia?")}>
-                  <CardContent className="p-0">
-                    <p className="text-sm font-medium" style={{ color: '#0f2f57' }}>Fire Safety Standards</p>
-                    <p className="text-xs mt-1" style={{ color: '#95a6b7' }}>Requirements for high-rise buildings</p>
-                  </CardContent>
-                </Card>
-                <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setInputMessage("What are the structural requirements for earthquake-resistant construction in New Zealand?")}>
-                  <CardContent className="p-0">
-                    <p className="text-sm font-medium" style={{ color: '#0f2f57' }}>Seismic Design</p>
-                    <p className="text-xs mt-1" style={{ color: '#95a6b7' }}>Earthquake-resistant construction</p>
-                  </CardContent>
-                </Card>
+              
+              {/* Phase 3: Dynamic Landing Examples */}
+              <div className="max-w-2xl w-full">
+                <LandingExamples 
+                  onExampleClick={(example) => {
+                    setInputMessage(example);
+                    // Focus on input after a brief delay to let the message populate
+                    setTimeout(() => {
+                      const inputElement = document.querySelector('textarea[placeholder*="Ask about"]');
+                      if (inputElement) {
+                        inputElement.focus();
+                      }
+                    }, 100);
+                  }}
+                  onDismiss={(reason) => {
+                    console.log('Examples dismissed:', reason);
+                  }}
+                  userTopics={[]} // TODO: Extract from recent conversation history
+                />
               </div>
             </div>
           ) : (
