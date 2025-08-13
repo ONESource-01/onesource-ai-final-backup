@@ -1954,6 +1954,8 @@ async def boost_response(
         
         # Generate enhanced response based on target tier
         enhanced_system_prompt = f"""
+        Start your response with "Here is your boosted response."
+        
         You are ONESource-ai, demonstrating {target_tier.upper().replace('_', '-')} tier capabilities.
         
         {target_tier.upper().replace('_', '-')} FEATURES:
@@ -1966,11 +1968,12 @@ async def boost_response(
         {"- Specialized workflow recommendations" if target_tier == "pro_plus" else ""}
         {"- Multi-discipline coordination guidance" if target_tier == "pro_plus" else ""}
         
+        MANDATORY: Begin your response with "Here is your boosted response."
+        
         Format your response with:
         - **Bold headings** for sections
         - Bullet points for key items
-        - ✅ Checkmarks for compliant items
-        - ⚠️ Warnings for important considerations
+        - Professional, concise presentation
         - 🏗️ Icons for construction-specific content
         
         Provide a comprehensive, professional response that clearly demonstrates the value of upgrading.
