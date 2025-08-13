@@ -244,12 +244,16 @@ const ChatInterface = () => {
       const aiMessage = {
         id: Date.now() + 1,
         type: 'ai',
-        content: response.data.response?.technical || response.data.response || 'No response received',
+        content: response.data.blocks?.[0]?.content || response.data.response?.technical || response.data.response || 'No response received',
         timestamp: new Date(),
         sources: response.data.sources || [],
         confidence: response.data.confidence || null,
         mentoring: response.data.response?.mentoring || null,
-        format: response.data.response?.format || 'single'
+        format: response.data.response?.format || 'single',
+        // V2 schema fields
+        title: response.data.title || null,
+        summary: response.data.summary || null,
+        schema_version: response.data.meta?.schema || 'unknown'
       };
 
       console.log("🚀 AI MESSAGE CREATED:", aiMessage);
