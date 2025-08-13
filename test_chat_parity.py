@@ -80,7 +80,7 @@ class ParityTester:
         r2 = await self.make_request("/chat/ask-enhanced", sample_payload)
         
         # Check structure parity (schema v2 keys exist)
-        required_keys = ["text", "emoji_map", "meta"]
+        required_keys = ["title", "summary", "blocks", "meta"]
         
         r1_has_keys = all(key in r1 for key in required_keys)
         r2_has_keys = all(key in r2 for key in required_keys)
