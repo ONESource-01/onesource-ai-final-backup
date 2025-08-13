@@ -1,7 +1,10 @@
 import os
 import sys
 # Add parent directory to Python path to access core module
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(backend_dir)
+sys.path.append(parent_dir)
+sys.path.append(backend_dir)
 
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
