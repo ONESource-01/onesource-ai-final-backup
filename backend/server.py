@@ -41,6 +41,9 @@ from core.observability import get_observability, record_request_metrics
 # Import sample v2 endpoints for testing
 from sample_v2_endpoint import router as sample_router
 
+# Import prompts endpoints for Phase 3
+from prompts_endpoints import router as prompts_router
+
 # Advanced AI Intelligence System
 class AIIntelligencePhases:
     """3-Phase AI Intelligence System for Construction Industry"""
