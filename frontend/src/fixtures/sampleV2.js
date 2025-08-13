@@ -20,7 +20,7 @@ export const sampleV2 = {
     { type: "list", content: "- Provide certification\n- Verify product datasheets" }
   ],
   meta: { emoji: "🧐", schema: "v2", mapped: true, schema_version: "2.0.0" }
-} as const;
+};
 
 // Enhanced sample with more complex table and multiple sections
 export const sampleV2Enhanced = {
