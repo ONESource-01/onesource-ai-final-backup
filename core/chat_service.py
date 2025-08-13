@@ -215,13 +215,13 @@ class ChatService:
             
             # Step 3: Extract topics for context building
             context_topics = topics or {}
-            if context_manager and conversation_history:
-                extracted_topics = context_manager.extract_context_topics(conversation_history)
+            if current_context_manager and conversation_history:
+                extracted_topics = current_context_manager.extract_context_topics(conversation_history)
                 context_topics.update(extracted_topics)
             
             context_hint = ""
-            if context_manager and context_topics:
-                context_hint = context_manager.build_context_hint_for_prompt(question, context_topics)
+            if current_context_manager and context_topics:
+                context_hint = current_context_manager.build_context_hint_for_prompt(question, context_topics)
             
             # Step 4: Build unified context using shared orchestrator
             unified_context = self.build_conversation_context(
