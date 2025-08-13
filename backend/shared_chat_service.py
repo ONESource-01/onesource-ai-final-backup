@@ -76,122 +76,81 @@ When referencing personal documents, refer to them as "based on your uploaded do
         if any(term in question.lower() for term in ['water', 'plumbing', 'hydraulic']):
             return """🔧 **Technical Answer:**
 
-Water system compliance for AU/NZ construction follows the AS/NZS 3500 series and NCC Section F requirements. Here's your step-by-step implementation guide:
+Water system compliance for AU/NZ construction follows the National Construction Code (NCC) 2025, specifically Volume Three, Section 3.3 (Water Supply and Plumbing). Here's your implementation guide:
 
-## **Primary Standards & Compliance Framework**
+**Primary Requirements:**
+- NCC 2025, Volume Three, Section 3.3 (Water Supply and Plumbing)
+- AS/NZS 3500.1:2021 (Plumbing and Drainage - Water Services)
 
-| **Standard** | **Application** | **Key Requirements** |
-|-------------|----------------|---------------------|
-| **AS/NZS 3500.1** | Cold water systems | Design, installation, commissioning |
-| **AS/NZS 3500.2** | Hot water systems | Temperature control, energy efficiency |
-| **AS/NZS 3500.4** | Heated water systems | Solar, heat pump, gas systems |
-| **NCC Volume 2 Part 2.4** | Residential compliance | Mandatory compliance pathway |
-
-**Step-by-Step Implementation:**
-
-1. **Design Phase:** Hydraulic consultant engagement for comprehensive system design
-2. **Authority Coordination:** Water authority approvals and connection applications
-3. **Material Selection:** AS/NZS 3500 series compliant fixtures and fittings
-4. **Installation Oversight:** Licensed plumber supervision and testing protocols
-5. **Commissioning:** Performance verification and compliance documentation
+**Implementation Steps:**
+1. **Determine Water Demand:** Calculate total demand by considering fixtures (taps, showers, toilets) and flow rates
+2. **Calculate Peak Demand:** Use peak demand formula to estimate maximum flow rate required
+3. **Pipe Sizing:** Refer to AS/NZS 3500.1:2021 for pipe sizing tables correlating flow rates with pipe diameters
+4. **Consider Pressure Loss:** Account for friction in pipes using Darcy-Weisbach equation
+5. **Water Supply Pressure:** Ensure adequate incoming water supply pressure meets calculated demand
 
 🧐 **Mentoring Insight:**
 
-**Professional Development Focus:**
-Water system projects require early coordination between hydraulic consultants and your design team. The most common compliance issues arise from inadequate sizing calculations and improper material selections.
-
-**Project Risk Management:**
-Consider engaging your hydraulic engineer during concept design rather than detailed design. This prevents costly rework when system requirements affect architectural layouts. Many projects experience delays due to late-stage hydraulic design conflicts with structural elements.
-
-**Compliance Strategy:**
-Focus on the mandatory provisions in NCC Section F1.2 and F1.5. These drive most approval requirements. Alternative compliance pathways through AS/NZS 3500.1 provide flexibility for complex projects while maintaining compliance certainty.
+Understanding fluid dynamics principles and pipe sizing impact on system performance is crucial for effective plumbing design. Consider professional development courses focused on hydraulic design and plumbing systems to enhance your skills. Networking with experienced plumbers can provide valuable insights into practical applications.
 
 📋 **Next Steps:**
 
-1. **Design Coordination:** Schedule hydraulic consultant engagement for system sizing
-2. **Authority Consultation:** Confirm local water authority requirements and connection approvals  
-3. **Material Procurement:** Source AS/NZS 3500 compliant materials and fittings
-4. **Installation Planning:** Coordinate licensed plumber availability for installation phases"""
+1. Gather data on all water fixtures in the house
+2. Calculate the total water demand and peak flow rates
+3. Refer to AS/NZS 3500.1 for pipe sizing tables
+4. Assess incoming water pressure and calculate potential pressure losses
+5. Select appropriate pipe sizes based on your calculations"""
 
         # Check for fire safety questions
         if any(term in question.lower() for term in ['fire', 'safety']):
             return """🔧 **Technical Answer:**
 
-Fire safety requirements for high-rise buildings in Australia follow the NCC Volume 1 and AS 1851 standards. Here's your comprehensive compliance guide:
+Fire safety requirements for high-rise buildings in Australia are governed by the National Construction Code (NCC) 2025, Volume 1, Part C (Fire Resistance) and Part E (Fire Safety). Key requirements include:
 
-## **Core Fire Safety Framework**
+**Primary Standards:**
+- NCC 2025, Volume 1, Parts C & E (Fire safety provisions)
+- AS 1851 (Fire protection system maintenance)
 
-| **Standard** | **Application** | **Key Requirements** |
-|-------------|----------------|---------------------|
-| **NCC Volume 1 Section C** | Fire resistance, egress | Mandatory performance requirements |
-| **AS 1851** | Fire protection maintenance | System testing and maintenance |
-| **AS 2419** | Fire hydrant installations | Water supply and hydrant systems |
-| **AS/NZS 3786** | Smoke alarms | Detection and alarm systems |
-
-**Implementation Requirements:**
-
+**Core Requirements:**
 1. **Fire Resistance Levels (FRL):** Minimum 120/120/120 for structural elements above 25m
-2. **Egress Systems:** Two independent escape routes, maximum travel distances
+2. **Egress Systems:** Two independent escape routes with maximum travel distances
 3. **Fire Services:** Sprinkler systems, hydrant installations, fire brigade access
-4. **Smoke Management:** Pressurization systems, natural ventilation provisions
-5. **Detection Systems:** Early warning systems, emergency lighting
+4. **Smoke Management:** Pressurization systems and natural ventilation provisions
+5. **Detection Systems:** Early warning systems and emergency lighting
 
 🧐 **Mentoring Insight:**
 
-**Strategic Planning:**
-Fire safety compliance requires early integration with architectural and structural design. The most effective approach involves engaging fire safety engineers during concept design to avoid costly retrospective modifications.
-
-**Regulatory Coordination:**
-Building certifiers and fire authorities often have different interpretation approaches. Schedule preliminary meetings to clarify specific requirements and avoid approval delays.
-
-**Risk Management:**
-Consider performance-based solutions for complex buildings. These provide design flexibility while maintaining equivalent safety outcomes, often resulting in more cost-effective solutions.
+Fire safety compliance requires early integration with architectural and structural design teams. The most effective approach involves engaging fire safety engineers during concept design to avoid costly retrofitting. Building strong relationships with fire authorities and building certifiers can significantly streamline approval processes.
 
 📋 **Next Steps:**
 
-1. **Fire Engineer Engagement:** Schedule early consultation for performance-based solutions
-2. **Authority Coordination:** Preliminary discussions with building certifier and fire authority
-3. **System Integration:** Coordinate fire services with structural and mechanical systems
-4. **Documentation Planning:** Develop comprehensive fire safety management plan"""
+1. Fire Engineer Engagement: Schedule early consultation for performance-based solutions
+2. Authority Coordination: Preliminary discussions with building certifier and fire authority
+3. System Integration: Coordinate fire services with structural and mechanical systems"""
 
-        # Default general construction compliance response with Enhanced Emoji Mapping
+        # Default general construction compliance response
         return """🔧 **Technical Answer:**
 
-For comprehensive AU/NZ construction compliance, your primary focus should be on the National Construction Code (NCC) Volume 1 (commercial) or Volume 2 (residential), combined with relevant AS/NZS standards:
+For AU/NZ construction compliance, your primary reference is the National Construction Code (NCC) 2025. The NCC provides performance requirements and deemed-to-satisfy provisions for:
 
-## **Core Compliance Framework**
-
-| **Standard** | **Application** | **Key Requirements** |
-|-------------|----------------|---------------------|
-| **NCC Volume 1** | Commercial buildings | Performance requirements, fire safety |
-| **NCC Volume 2** | Residential buildings | Deemed-to-satisfy provisions |
-| **AS/NZS 1170 series** | Structural design loads | Wind, earthquake, snow loads |
-| **AS/NZS 3600** | Concrete structures | Design and construction |
+- **Volume 1:** Commercial buildings (Class 2-9 buildings)
+- **Volume 2:** Residential buildings (Class 1 and 10 buildings)
 
 **Implementation Approach:**
 1. **Project Classification:** Determine building class and compliance pathway
-2. **Design Development:** Engage relevant specialists for coordinated approach
+2. **Design Development:** Engage relevant specialists for coordinated approach  
 3. **Authority Coordination:** Early consultation with building certifier
-4. **Documentation:** Comprehensive compliance documentation package
-5. **Construction Phase:** Quality assurance and compliance verification
+4. **Construction Phase:** Quality assurance and compliance verification
 
 🧐 **Mentoring Insight:**
 
-**Strategic Project Approach:**
-Effective compliance management begins with understanding your project's risk profile and regulatory pathway. The most successful projects establish compliance frameworks during concept design rather than attempting retrospective compliance.
-
-**Professional Development:**
-Stay current with NCC amendments and industry best practices. Consider specialized training in areas most relevant to your project types. Building strong relationships with building certifiers and relevant authorities can significantly streamline approval processes.
-
-**Risk Mitigation:**
-Document all compliance decisions and maintain comprehensive project records. This protects both your professional position and provides clear audit trails for regulatory reviews.
+Effective compliance management begins with understanding your project's risk profile during concept design rather than attempting retrospective compliance. Consider specialized professional development in areas most relevant to your project types.
 
 📋 **Next Steps:**
 
-1. **Compliance Assessment:** Review project against relevant NCC provisions
-2. **Specialist Engagement:** Identify and engage required consultants early
-3. **Authority Consultation:** Schedule preliminary discussions with building certifier
-4. **Documentation Planning:** Develop comprehensive compliance documentation strategy"""
+1. Compliance Assessment: Review project against relevant NCC provisions
+2. Specialist Engagement: Identify and engage required consultants early
+3. Authority Consultation: Schedule preliminary discussions with building certifier"""
 
     def _get_unified_mock_response_with_context(self, question: str, user_context: Optional[Dict] = None) -> str:
         """
