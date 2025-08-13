@@ -3035,7 +3035,7 @@ async def get_observability_dashboard():
 app.include_router(api_router)
 app.include_router(sample_router)  # V2 sample endpoints for testing
 app.include_router(prompts_router)  # Phase 3: Dynamic prompts & suggestions
-app.include_router(health_router)  # Phase 4: Health checks & version info
+app.include_router(health_router, prefix="/api")  # Phase 4: Health checks & version info
 
 app.add_middleware(
     CORSMiddleware,
