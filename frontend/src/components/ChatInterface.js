@@ -107,9 +107,9 @@ const ChatInterface = () => {
         // For regular payloads, treat as a new question
         setInputMessage(action.payload);
         
-        // Auto-submit after a brief delay to show the populated message
+        // Auto-submit after a brief delay to allow state update
         setTimeout(() => {
-          sendMessage(action.payload);
+          sendMessage();
         }, 100);
         
       } catch (error) {
