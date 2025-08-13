@@ -1695,8 +1695,8 @@ async def unified_chat_ask_enhanced(
         subscription = await firebase_service.check_user_subscription(uid)
         tier = "pro_plus" if subscription.get("subscription_tier") == "pro_plus" else "pro"
         
-        # Generate unified response - SAME CORE LOGIC AS REGULAR ENDPOINT
-        response = await unified_chat_service.generate_response(
+        # Generate unified response using SHARED ORCHESTRATOR - SAME AS REGULAR ENDPOINT
+        response = await unified_chat_service.generate_unified_response(
             question=question_data.question,
             session_id=question_data.session_id or str(uuid.uuid4()),
             tier=tier,
