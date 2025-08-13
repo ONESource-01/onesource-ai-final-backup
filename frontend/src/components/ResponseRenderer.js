@@ -1,36 +1,12 @@
-// src/components/ResponseRenderer.tsx
+// src/components/ResponseRenderer.js
 import React from "react";
 // If you use shadcn/ui, uncomment these:
 // import { Card, CardContent } from "@/components/ui/card";
 // import { Separator } from "@/components/ui/separator";
 import Markdown from "./Markdown";
-import TablePro, { TableProProps } from "./TablePro";
+import TablePro from "./TablePro";
 
-type Block =
-  | { type: "markdown"; content: string }
-  | { type: "list"; content: string }        // markdown lists supported
-  | { type: "code"; content: string; language?: string }
-  | { type: "table"; headers: string[]; rows: (string | number | React.ReactNode)[][]; dense?: boolean; caption?: string }
-  | { type: "callout"; content: string }
-  | { type: "image"; src: string; alt: string; caption?: string };
-
-type Meta = {
-  emoji: string;
-  schema: "v2";
-  mapped: boolean;
-  schema_version?: string;
-  // Optional for Phase 3:
-  suggested_actions?: { label: string; payload: string }[];
-};
-
-export type ChatV2 = {
-  title: string;
-  summary?: string;
-  blocks: Block[];
-  meta: Meta;
-};
-
-export default function ResponseRenderer({ response }: { response: ChatV2 }) {
+export default function ResponseRenderer({ response }) {
   const { title, summary, blocks, meta } = response;
 
   return (
