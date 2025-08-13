@@ -1091,8 +1091,11 @@ async def ask_question(
     request: Request,
     current_user: Optional[Dict[str, Any]] = Depends(get_current_user_optional)
 ):
-    """Ask a construction industry question"""
+    """Ask a construction industry question - UNIFIED BACKEND"""
     try:
+        # Import shared service
+        from shared_chat_service import shared_chat_service
+        
         # Validate question is construction-related
         if not await construction_ai.validate_construction_question(chat_data.question):
             raise HTTPException(
@@ -1104,9 +1107,6 @@ async def ask_question(
         if not current_user:
             # Anonymous user - check if within trial limit
             session_id = chat_data.session_id or str(uuid.uuid4())
-            
-            # For anonymous users, we can't really track across sessions
-            # So we'll allow the question but encourage sign-up
             user_profile = None
             trial_warning = True
         else:
