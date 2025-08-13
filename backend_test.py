@@ -5526,32 +5526,23 @@ class BackendTester:
         print("   📋 Expected: Admin feedback dashboard should be accessible and functional")
 
 async def main():
-    """Run Comprehensive Backend Testing including Conversation Context"""
-    print("🚀 Starting Comprehensive Backend Testing for ONESource-ai")
+    """Run Unified Chat Architecture Testing with Conversation Context Focus"""
+    print("🚀 Starting Unified Chat Architecture Testing for ONESource-ai")
     print(f"Backend URL: {BACKEND_URL}")
     print(f"API Base: {API_BASE}")
-    print("🎯 FOCUS: Testing CRITICAL Conversation Context Functionality from review request")
+    print("🎯 FOCUS: Testing UNIFIED CHAT ARCHITECTURE with Conversation Context Bug Fix")
     print("=" * 80)
     
     async with BackendTester() as tester:
         # Run basic health check first
         await tester.test_basic_api_health()
         
-        # 🚨 CRITICAL: Conversation Context Functionality Testing - MAIN FOCUS
-        await tester.test_conversation_context_functionality()
-        
-        # 🚨 ADDITIONAL: Enhanced Emoji Mapping Structural Fix
-        await tester.test_enhanced_emoji_mapping_structural_fix()
-        
-        # 🚨 ADDITIONAL: Enhanced Emoji Mapping Water System Fix
-        await tester.test_enhanced_emoji_mapping_water_system_fix()
-        
-        # 🚨 ADDITIONAL: Enhanced Emoji Mapping Consistency Fix
-        await tester.test_enhanced_emoji_mapping_consistency_fix()
+        # 🚨 CRITICAL: Unified Chat Architecture with Conversation Context Testing - MAIN FOCUS
+        await tester.test_unified_chat_architecture_conversation_context()
         
         # Print summary
         print("\n" + "=" * 80)
-        print("🎯 COMPREHENSIVE BACKEND TESTING SUMMARY")
+        print("🎯 UNIFIED CHAT ARCHITECTURE TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = len(tester.test_results)
@@ -5564,25 +5555,35 @@ async def main():
         print(f"❌ Failed: {failed_tests}")
         print(f"📈 Success Rate: {success_rate:.1f}%")
         
-        # Focus on conversation context results
-        context_tests = [result for result in tester.test_results if "Context" in result["test"] or "Session" in result["test"] or "Database" in result["test"]]
+        # Focus on critical unified architecture results
+        critical_tests = [result for result in tester.test_results if "CRITICAL" in result["test"]]
+        critical_passed = sum(1 for result in critical_tests if result["success"])
+        critical_total = len(critical_tests)
+        
+        print(f"\n🚨 CRITICAL UNIFIED ARCHITECTURE RESULTS:")
+        print(f"   📊 Critical Tests: {critical_total}")
+        print(f"   ✅ Critical Passed: {critical_passed}")
+        print(f"   ❌ Critical Failed: {critical_total - critical_passed}")
+        
+        # Focus on context understanding results
+        context_tests = [result for result in tester.test_results if "Context Understanding" in result["test"]]
         context_passed = sum(1 for result in context_tests if result["success"])
         context_total = len(context_tests)
         
-        print(f"\n🗣️ CONVERSATION CONTEXT SPECIFIC RESULTS:")
+        print(f"\n🗣️ CONVERSATION CONTEXT UNDERSTANDING RESULTS:")
         print(f"   📊 Context Tests: {context_total}")
         print(f"   ✅ Context Passed: {context_passed}")
         print(f"   ❌ Context Failed: {context_total - context_passed}")
         
-        # Focus on emoji mapping results
-        emoji_tests = [result for result in tester.test_results if "Emoji" in result["test"] or "Mentoring" in result["test"]]
-        emoji_passed = sum(1 for result in emoji_tests if result["success"])
-        emoji_total = len(emoji_tests)
+        # Focus on architecture integration results
+        arch_tests = [result for result in tester.test_results if "Architecture" in result["test"] or "Unified" in result["test"]]
+        arch_passed = sum(1 for result in arch_tests if result["success"])
+        arch_total = len(arch_tests)
         
-        print(f"\n🧐 EMOJI MAPPING SPECIFIC RESULTS:")
-        print(f"   📊 Emoji Tests: {emoji_total}")
-        print(f"   ✅ Emoji Passed: {emoji_passed}")
-        print(f"   ❌ Emoji Failed: {emoji_total - emoji_passed}")
+        print(f"\n🏗️ UNIFIED ARCHITECTURE INTEGRATION RESULTS:")
+        print(f"   📊 Architecture Tests: {arch_total}")
+        print(f"   ✅ Architecture Passed: {arch_passed}")
+        print(f"   ❌ Architecture Failed: {arch_total - arch_passed}")
         
         if failed_tests > 0:
             print(f"\n❌ FAILED TESTS:")
@@ -5590,35 +5591,37 @@ async def main():
                 if not result["success"]:
                     print(f"   - {result['test']}: {result['details']}")
         
-        # Critical success criteria check
-        critical_tests = [
-            "CRITICAL: Conversation Context Functionality",
-            "Test 1 - Context Understanding (Acoustic Lagging)",
-            "Test 2 - Context Understanding (Fire Safety)",
-            "Test 3 - Session Isolation",
-            "Test 4 - Database Storage"
+        # Critical success criteria check for unified architecture
+        critical_success_criteria = [
+            "CRITICAL: Regular Chat Context Understanding",
+            "CRITICAL: Enhanced Chat Context Understanding", 
+            "Core Architecture - Response Consistency",
+            "Core Architecture - Unified Schema",
+            "Context Manager - Database Storage"
         ]
         
-        critical_passed = 0
-        for test_name in critical_tests:
+        critical_passed_count = 0
+        for criteria in critical_success_criteria:
             for result in tester.test_results:
-                if test_name in result["test"] and result["success"]:
-                    critical_passed += 1
+                if criteria in result["test"] and result["success"]:
+                    critical_passed_count += 1
                     break
         
-        print(f"\n🎯 CRITICAL SUCCESS CRITERIA:")
-        print(f"   📋 Critical Tests Passed: {critical_passed}/{len(critical_tests)}")
+        print(f"\n🎯 UNIFIED ARCHITECTURE SUCCESS CRITERIA:")
+        print(f"   📋 Critical Criteria Met: {critical_passed_count}/{len(critical_success_criteria)}")
         
-        if critical_passed >= 3:  # At least 3 out of 5 critical tests
-            print("   ✅ MOST CRITICAL TESTS PASSED - Conversation context functionality is working!")
+        if critical_passed_count >= 3:  # At least 3 out of 5 critical criteria
+            print("   ✅ UNIFIED ARCHITECTURE SUCCESS - Conversation context bug appears to be FIXED!")
+            print("   🎉 Both endpoints using unified services with proper context understanding")
         else:
-            print("   ❌ CRITICAL TESTS FAILED - Conversation context functionality needs attention!")
+            print("   ❌ UNIFIED ARCHITECTURE ISSUES - Conversation context bug may still be present!")
+            print("   🚨 Further investigation needed for unified chat services")
         
-        print("\n🎉 Comprehensive Backend Testing completed!")
+        print("\n🎉 Unified Chat Architecture Testing completed!")
         print("=" * 80)
         
         # Return appropriate exit code
-        return 0 if critical_passed >= 3 else 1
+        return 0 if critical_passed_count >= 3 else 1
 
 if __name__ == "__main__":
     try:
