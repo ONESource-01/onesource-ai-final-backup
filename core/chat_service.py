@@ -10,6 +10,7 @@ from datetime import datetime
 from core.schema import ChatResponse, Meta, EmojiItem
 from core.formatter import unified_formatter
 from core.context_manager import context_manager, init_context_manager
+from core.stores.conversation_store import get_conversation_store
 
 
 class ChatService:
