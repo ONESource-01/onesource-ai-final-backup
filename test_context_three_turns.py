@@ -41,7 +41,14 @@ async def ask(question: str, session_id: str, endpoint: str = "/chat/ask"):
             async with session.post(url, json=data, headers=headers) as response:
                 if response.status == 200:
                     result = await response.json()
-                    return result.get("text", result.get("response", ""))
+                    # Handle v2 schema format (blocks) and legacy format (text)
+                    if "blocks" in result and result["blocks"]:
+                        # v2 schema - extract content from blocks
+                        content = "\n".join([block.get("content", "") for block in result["blocks"]])
+                        return content
+                    else:
+                        # Legacy format - return text or response
+                        return result.get("text", result.get("response", ""))
                 else:
                     error_text = await response.text()
                     raise Exception(f"HTTP {response.status}: {error_text}")
