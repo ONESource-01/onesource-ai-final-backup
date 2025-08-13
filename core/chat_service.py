@@ -164,7 +164,8 @@ class ChatService:
         session_id: str,
         tier: Literal["starter", "pro", "pro_plus"],
         user_id: Optional[str] = None,
-        knowledge_context: Optional[str] = None
+        knowledge_context: Optional[str] = None,
+        topics: Optional[Dict[str, str]] = None
     ) -> ChatResponse:
         """
         MAIN UNIFIED FUNCTION - used by both endpoints
@@ -176,48 +177,55 @@ class ChatService:
         prompt_hash = "none"
         history_turns = 0
         
-        # Step 1: Pre-save conversation stub (FIXES CONTEXT BUG)
-        if context_manager:
-            print(f"DEBUG: Pre-saving conversation stub for session {session_id}")
-            conversation_id = await context_manager.pre_save_conversation_stub(
-                session_id, user_id, question
-            )
-            print(f"DEBUG: Pre-saved conversation with ID {conversation_id}")
-        else:
-            conversation_id = "no_context_manager"
-            print("DEBUG: No context manager available")
-        
         try:
-            # Step 2: Get conversation context
+            # Step 1: Get conversation history from context manager
             conversation_history = []
-            topics = {}
-            context_hint = ""
-            
             if context_manager:
                 conversation_history = await context_manager.get_conversation_context(session_id)
-                topics = context_manager.extract_context_topics(conversation_history)
-                context_hint = context_manager.build_context_hint_for_prompt(question, topics)
-                
-                # Update instrumentation
                 history_turns = len(conversation_history)
-                
-                # Debug context retrieval
-                print(f"DEBUG: Session {session_id} - Found {len(conversation_history)} conversations")
-                print(f"DEBUG: Extracted topics: {topics}")
-                print(f"DEBUG: Context hint generated: {bool(context_hint)}")
             
-            # Step 3: Build unified context using shared orchestrator
-            messages = [{"role": "user", "content": question}]
+            # Step 2: Build message history for LLM context (CRITICAL FIX)
+            # Convert stored conversations to LLM message format
+            messages = []
+            for conv in conversation_history:
+                # Add user message
+                if conv.get("question"):
+                    messages.append({"role": "user", "content": conv["question"]})
+                
+                # Add assistant message
+                if conv.get("response"):
+                    response_text = conv["response"]
+                    if isinstance(response_text, dict):
+                        response_text = response_text.get("text", str(response_text))
+                    messages.append({"role": "assistant", "content": str(response_text)})
+            
+            # Add current question to message history
+            messages.append({"role": "user", "content": question})
+            
+            # LOGGING: Dispatch
+            print(f"DISPATCH: endpoint=unified, tier={tier}, session_id={session_id}, user_id={user_id}, has_knowledge={bool(knowledge_context)}, msg_count_before={len(messages)-1}")
+            
+            # Step 3: Extract topics for context building
+            context_topics = topics or {}
+            if context_manager and conversation_history:
+                extracted_topics = context_manager.extract_context_topics(conversation_history)
+                context_topics.update(extracted_topics)
+            
+            context_hint = ""
+            if context_manager and context_topics:
+                context_hint = context_manager.build_context_hint_for_prompt(question, context_topics)
+            
+            # Step 4: Build unified context using shared orchestrator
             unified_context = self.build_conversation_context(
                 user_id=user_id or "anonymous",
-                conversation_id=conversation_id,
+                conversation_id=session_id,  # Use session_id as conversation_id
                 messages=messages,
-                topics=topics,
+                topics=context_topics,
                 tier=tier,
                 extra_knowledge={"knowledge_context": knowledge_context} if knowledge_context else None
             )
             
-            # Step 4: Build system prompt with tier and context
+            # Step 5: Build system prompt with tier and context
             base_prompt = load_system_prompt(tier)
             
             # Add knowledge context if provided (for enhanced endpoint)
@@ -234,27 +242,40 @@ class ChatService:
             # INSTRUMENTATION: Log all critical parameters
             print(f"INSTRUMENT: endpoint=unified, session_id={session_id}, prompt_hash={prompt_hash}, history_turns={history_turns}, tier={tier}, temperature=0.3")
             
-            # Step 5: Generate AI response
+            # Step 6: Generate AI response
             # Ensure OpenAI client is initialized with latest environment
             self._init_openai_client()
             
             if self.openai_client:
-                raw_response = await self._call_openai_api(question, base_prompt, conversation_history)
+                raw_response = await self._call_openai_api_with_history(question, base_prompt, messages)
                 tokens_used = 800  # Estimate for real API calls
             else:
                 # Use context-aware fallback that maintains same structure
                 print("WARNING: No OpenAI client available, using context-aware fallback")
-                raw_response = self._generate_context_aware_fallback(question, tier, topics)
+                raw_response = self._generate_context_aware_fallback(question, tier, context_topics)
                 tokens_used = 400  # Estimate for fallback responses
             
-            # Step 6: Apply unified formatting using shared formatter
+            # Step 7: Apply unified formatting using shared formatter
             formatted_response = self.format_enhanced_response(
                 llm_text=raw_response,
                 feature_flags=unified_context["feature_flags"],
-                topics=topics
+                topics=context_topics
             )
             
-            # Step 7: Create unified response
+            # Step 8: CRITICAL - Persist conversation history (ATOMIC UPSERT)
+            if context_manager:
+                conversation_id = await context_manager.pre_save_conversation_stub(
+                    session_id, user_id, question
+                )
+                await context_manager.update_conversation_response(
+                    conversation_id, formatted_response["text"], tokens_used
+                )
+                
+                # LOGGING: After save
+                final_msg_count = len(messages)  # Original messages + current question
+                print(f"AFTER_SAVE: session_id={session_id}, msg_count_after={final_msg_count}, history_persisted=True")
+            
+            # Step 9: Create unified response
             response = ChatResponse(
                 text=formatted_response["text"],
                 emoji_map=[EmojiItem(name=item["name"], char=item["char"]) for item in formatted_response["emoji_map"]],
@@ -265,14 +286,6 @@ class ChatService:
                     tokens_used=tokens_used
                 )
             )
-            
-            # Step 8: Update conversation with final response
-            if context_manager:
-                print(f"DEBUG: Updating conversation {conversation_id} with response length {len(formatted_response['text'])}")
-                await context_manager.update_conversation_response(
-                    conversation_id, formatted_response["text"], tokens_used
-                )
-                print(f"DEBUG: Conversation {conversation_id} updated successfully")
             
             return response
             
@@ -302,12 +315,6 @@ Technical issues can occur with complex systems. Consider providing more specifi
                 topics={}
             )
             
-            # CRITICAL: Update conversation even for fallback responses
-            if context_manager:
-                await context_manager.update_conversation_response(
-                    conversation_id, fallback_response["text"], 200
-                )
-            
             return ChatResponse(
                 text=fallback_response["text"],
                 emoji_map=[EmojiItem(name=item["name"], char=item["char"]) for item in fallback_response["emoji_map"]],
@@ -319,19 +326,21 @@ Technical issues can occur with complex systems. Consider providing more specifi
                 )
             )
     
-    async def _call_openai_api(self, question: str, system_prompt: str, conversation_history: list) -> str:
-        """Call OpenAI API with conversation context"""
+    async def _call_openai_api_with_history(self, question: str, system_prompt: str, message_history: List[Dict[str, str]]) -> str:
+        """Call OpenAI API with FULL conversation history"""
         try:
-            # Build messages with conversation context
+            # Build messages with system prompt + FULL history
             messages = [{"role": "system", "content": system_prompt}]
             
-            # Add conversation history if available
-            if context_manager and conversation_history:
-                history_messages = context_manager.build_context_for_ai(conversation_history)
-                messages.extend(history_messages)
+            # Add ALL message history (canonicalized and token-trimmed)
+            canonicalized_history = self._canonicalize_messages(message_history)
             
-            # Add current question
-            messages.append({"role": "user", "content": question})
+            # Token trimming: keep at least last 6-8 turns symmetrically
+            if len(canonicalized_history) > 16:  # 8 user + 8 assistant turns
+                # Keep first 2 and last 14 messages to maintain context
+                canonicalized_history = canonicalized_history[:2] + canonicalized_history[-14:]
+            
+            messages.extend(canonicalized_history)
             
             response = self.openai_client.chat.completions.create(
                 model="gpt-4o-mini",
