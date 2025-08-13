@@ -1,8 +1,8 @@
-// src/utils/csv.ts
+// src/utils/csv.js
 export function exportToCsv(
-  filename: string,
-  headers: string[],
-  rows: (string | number | React.ReactNode)[][]
+  filename,
+  headers,
+  rows
 ) {
   const encode = (v: any) => {
     const s = typeof v === "string" || typeof v === "number" ? String(v) : "";
