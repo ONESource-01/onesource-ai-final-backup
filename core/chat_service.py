@@ -120,8 +120,8 @@ class UnifiedChatService:
                 raw_response = await self._call_openai_api(question, base_prompt, conversation_history)
                 tokens_used = 800  # Estimate for real API calls
             else:
-                raw_response = self._generate_mock_response(question, tier, topics)
-                tokens_used = 600  # Estimate for mock responses
+                # Force error instead of mock for tests
+                raise Exception("OpenAI client not available - tests must not use mock responses")
             
             # Step 5: Apply unified formatting (ENFORCES ALL RULES)
             formatted_text, emoji_map = unified_formatter.format_response(raw_response)
