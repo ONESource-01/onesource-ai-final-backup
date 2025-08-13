@@ -816,11 +816,7 @@ Selecting the correct experience level ensures you receive responses that match 
                             ) : paragraph.startsWith('•') ? (
                               <div className="ml-4 mb-1">{paragraph}</div>
                             ) : paragraph.trim() ? (
-                              <p dangerouslySetInnerHTML={{
-                                __html: paragraph
-                                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                  .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                              }} />
+                              <SafeText text={paragraph} />
                             ) : null}
                           </div>
                         ))}
