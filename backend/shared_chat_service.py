@@ -166,6 +166,37 @@ Document all compliance decisions and maintain comprehensive project records. Th
 3. **Authority Consultation:** Schedule preliminary discussions with building certifier
 4. **Documentation Planning:** Develop comprehensive compliance documentation strategy"""
 
+    def _get_unified_mock_response_with_context(self, question: str, user_context: Optional[Dict] = None) -> str:
+        """
+        Unified mock response system with knowledge context integration
+        Returns consistent format regardless of question content
+        """
+        
+        # Get base mock response
+        base_response = self._get_unified_mock_response(question)
+        
+        # If knowledge context is provided, enhance the response
+        if user_context and user_context.get("knowledge_context"):
+            knowledge_context = user_context["knowledge_context"]
+            partner_attributions = user_context.get("partner_attributions", [])
+            
+            # Add knowledge context to the beginning of Technical Answer
+            enhanced_technical = base_response.replace(
+                "🔧 **Technical Answer:**",
+                f"🔧 **Technical Answer:**\n\n**Based on your knowledge bank content:**\n{knowledge_context[0][:200] + '...' if knowledge_context else 'No specific knowledge base content found.'}\n\n**Standard guidance:**"
+            )
+            
+            # Add partner attribution if available
+            if partner_attributions:
+                enhanced_technical = enhanced_technical.replace(
+                    "**Standard guidance:**",
+                    f"**Community partner insights from {', '.join(set(partner_attributions))}**\n\n**Standard guidance:**"
+                )
+            
+            return enhanced_technical
+        
+        return base_response
+
     def _apply_unified_emoji_mapping(self, text: str) -> str:
         """
         Apply unified emoji mapping rules to ensure consistency
