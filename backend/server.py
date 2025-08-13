@@ -1765,11 +1765,39 @@ async def ask_question_enhanced(
             "personal_results": len(personal_results)
         }
         
-        # **UNIFIED BACKEND CALL - NO LEGACY LOGIC**
+        # Get conversation history for context
+        try:
+            session_id = question_data.session_id or str(uuid.uuid4())
+            # Get recent conversation history for this session
+            recent_conversations = await db.conversations.find({
+                "session_id": session_id,
+                "user_id": uid
+            }).sort("timestamp", -1).limit(10).to_list(length=10)
+            
+            # Convert to message format for context
+            conversation_history = []
+            for conv in reversed(recent_conversations):
+                conversation_history.append({
+                    "type": "user",
+                    "content": conv.get("question", ""),
+                    "timestamp": conv.get("timestamp")
+                })
+                conversation_history.append({
+                    "type": "ai",
+                    "content": conv.get("response", ""),
+                    "timestamp": conv.get("timestamp")
+                })
+                
+        except Exception as e:
+            print(f"Error retrieving conversation history: {e}")
+            conversation_history = []
+        
+        # **UNIFIED BACKEND CALL WITH CONVERSATION CONTEXT**
         response_data = shared_chat_service.get_unified_chat_response(
             question=question_data.question,
-            session_id=question_data.session_id or str(uuid.uuid4()),
-            user_context=enhanced_context  # Enhanced endpoint includes knowledge context
+            session_id=session_id,
+            user_context=enhanced_context,  # Enhanced endpoint includes knowledge context
+            conversation_history=conversation_history
         )
         
         # Update document reference counts for Community Knowledge Bank
