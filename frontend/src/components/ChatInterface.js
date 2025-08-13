@@ -755,17 +755,9 @@ const ChatInterface = () => {
                             ) : (
                               /* Legacy fallback for non-V2 responses */
                               <div className="prose max-w-none">
-                                <div 
-                                  className="text-gray-800 text-sm"
-                                  style={{ 
-                                    lineHeight: '1.3',
-                                    marginBottom: '0px',
-                                    paddingBottom: '0px'
-                                  }}
-                                  dangerouslySetInnerHTML={{
-                                    __html: message.content
-                                  }}
-                                />
+                                <div className="text-gray-800 text-sm leading-relaxed">
+                                  {message.content}
+                                </div>
                               </div>
                             )}
 
