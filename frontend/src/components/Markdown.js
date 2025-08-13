@@ -15,14 +15,14 @@ export default function Markdown({ source }) {
         table({ children }) {
           // Simple extraction for common markdown tables.
           // For complex tables, consider a rehype plugin that yields arrays directly.
-          const headerRow = (children as any)?.props?.children?.[0];
-          const body = (children as any)?.props?.children?.slice?.(1) ?? [];
+          const headerRow = children?.props?.children?.[0];
+          const body = children?.props?.children?.slice?.(1) ?? [];
 
-          const headers: string[] =
-            headerRow?.props?.children?.map((th: any) => th?.props?.children?.[0]?.props?.value ?? "") ?? [];
+          const headers =
+            headerRow?.props?.children?.map((th) => th?.props?.children?.[0]?.props?.value ?? "") ?? [];
 
-          const rows = body.map((tr: any) =>
-            tr?.props?.children?.map((td: any) => td?.props?.children?.[0]?.props?.value ?? "")
+          const rows = body.map((tr) =>
+            tr?.props?.children?.map((td) => td?.props?.children?.[0]?.props?.value ?? "")
           );
 
           return <TablePro headers={headers} rows={rows} caption="Markdown table" />;
