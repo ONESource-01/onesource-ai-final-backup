@@ -1659,11 +1659,11 @@ async def unified_chat_ask_enhanced(
         from core.chat_service import unified_chat_service
         from core.context_manager import init_context_manager
         
-        # Initialize context manager if not already done
-        if not hasattr(unified_chat_service, '_context_initialized'):
-            context_mgr = init_context_manager(db)
-            unified_chat_service._context_manager = context_mgr  # Store on service instance
-            unified_chat_service._context_initialized = True
+        # Initialize Redis conversation store if not already done
+        if not hasattr(unified_chat_service, '_conversation_store_initialized'):
+            from core.stores.conversation_store import init_conversation_store
+            init_conversation_store()
+            unified_chat_service._conversation_store_initialized = True
         
         uid = current_user["uid"]
         
