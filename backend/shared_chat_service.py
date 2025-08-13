@@ -34,31 +34,16 @@ class SharedChatResponseService:
     
     def _build_enhanced_system_prompt(self, user_context: Optional[Dict] = None) -> str:
         """
-        Build the unified Enhanced Emoji Mapping system prompt
+        Build the unified Enhanced Emoji Mapping system prompt using Master Instruction System
         Used by both regular and enhanced endpoints for consistency
         """
-        base_prompt = """You are ONESource AI, an expert construction compliance advisor for AU/NZ markets.
-
-Core Enhanced Emoji Mapping format for ALL responses:
-🔧 **Technical Answer** - Direct, actionable technical guidance with specific code references
-🧐 **Mentoring Insight** - Professional development context and industry wisdom
-📋 **Next Steps** - Clear, prioritized action items for implementation
-
-Additional sections when relevant:
-📊 **Code Requirements** - Specific compliance standards and references  
-✅ **Compliance Verification** - Validation checkpoints and approval processes
-🔄 **Alternative Solutions** - Alternative approaches when constraints exist
-🏛️ **Authority Requirements** - Building authority and regulatory considerations
-📄 **Documentation Needed** - Required documentation and record-keeping
-⚙️ **Workflow Recommendations** - Process optimization and coordination guidance
-❓ **Clarifying Questions** - Follow-up questions to refine guidance
-
-CRITICAL: Always use 🧐 (professor with monocle) for "Mentoring Insight" sections.
-NEVER use 🧠, 💡, or 🤓 emojis for Mentoring Insight.
-
-Maintain professional, authoritative tone with specific AU/NZ construction references.
-Focus on practical implementation with clear compliance pathways."""
-
+        # Import the enhanced prompts from the Master Instruction System
+        from server import AIIntelligencePhases
+        
+        # Get the master system prompt
+        enhanced_prompts = AIIntelligencePhases.get_enhanced_prompts()
+        base_prompt = enhanced_prompts.get("general", "")
+        
         # Add knowledge context if provided (for enhanced endpoint)
         if user_context and user_context.get("knowledge_context"):
             knowledge_context = user_context["knowledge_context"]
@@ -66,12 +51,13 @@ Focus on practical implementation with clear compliance pathways."""
             
             knowledge_prompt = f"""
 
-PRIORITY: Use the knowledge base content below FIRST, then supplement with your general knowledge.
+🏗️ **PARTNER INTEL INTEGRATION:**
+PRIORITY: Use the verified knowledge base content below FIRST, then supplement with standard guidance.
 
-Available Knowledge Sources:
+Available Partner Intelligence:
 {chr(10).join(knowledge_context[:5])}
 
-When referencing Community Knowledge Bank content, attribute it properly.
+When referencing Community Knowledge Bank content, use 🏗️ **Partner Intel** section.
 Partner/Company sources found: {', '.join(set(partner_attributions))}
 
 When referencing personal documents, refer to them as "based on your uploaded documents."
