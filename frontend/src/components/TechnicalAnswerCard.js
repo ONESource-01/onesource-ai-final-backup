@@ -1,7 +1,7 @@
 // src/components/TechnicalAnswerCard.js
 import React from 'react';
 import { Card, CardContent } from './ui/card';
-import Markdown from './Markdown';
+import { SafeText } from '../utils/SafeText';
 
 export default function TechnicalAnswerCard({ title, content, className = "" }) {
   return (
@@ -13,9 +13,7 @@ export default function TechnicalAnswerCard({ title, content, className = "" }) 
             {title || "Technical Answer"}
           </h2>
         </div>
-        <div className="prose max-w-none text-gray-800 leading-relaxed">
-          <Markdown source={content} />
-        </div>
+        <SafeText text={content} />
       </CardContent>
     </Card>
   );
