@@ -1,6 +1,7 @@
 // src/components/MentoringCard.js
 import React from 'react';
 import { Card, CardContent } from './ui/card';
+import Markdown from './Markdown';
 
 export default function MentoringCard({ title, content, className = "" }) {
   return (
@@ -13,7 +14,7 @@ export default function MentoringCard({ title, content, className = "" }) {
           </h2>
         </div>
         <div className="prose max-w-none text-gray-800 leading-relaxed">
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <Markdown source={content} />
         </div>
       </CardContent>
     </Card>
