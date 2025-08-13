@@ -107,14 +107,17 @@ user_problem_statement: Build ONESource-ai - a specialized AI assistant for the 
   - task: "Implement Conversation Context System for Follow-up Questions"
     implemented: true
     working: false
-    file: "backend/shared_chat_service.py"
+    file: "core/context_manager.py, core/chat_service.py"
     stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "testing"
         comment: "🚨 CRITICAL CONVERSATION CONTEXT BUG CONFIRMED! Comprehensive testing reveals the exact issue reported by the user where follow-up questions don't understand previous context. ❌ TEST 1 FAILED: Asked 'Tell me about acoustic lagging requirements' then 'when do I need to install it?' - the system did NOT understand 'it' refers to acoustic lagging. Response was generic asking for clarification instead of referencing previous discussion. ❌ TEST 2 FAILED: Asked 'What are fire safety requirements?' then 'how do I implement this?' - the system did NOT understand 'this' refers to fire safety requirements. ✅ SESSION ISOLATION WORKING: Different session_ids properly isolated (no context bleeding). ✅ DATABASE STORAGE WORKING: Conversations are being stored in MongoDB and history retrieval works. 🔍 ROOT CAUSE ANALYSIS: The shared_chat_service.py has conversation context logic implemented but it's not working properly. The conversation history is being retrieved but not being used effectively to understand contextual pronouns like 'it', 'this', 'that' in follow-up questions. The system falls back to asking for clarification instead of referencing previous context. This is a critical UX issue preventing launch as users have to repeat context in every question instead of having natural conversations."
+      - working: false
+        agent: "main"
+        comment: "🔧 ARCHITECTURE REBUILD IN PROGRESS: Implementing new unified core architecture to fix conversation context issues. Created new core/context_manager.py and core/chat_service.py with improved context handling. Fixed linting error (Optional import already correct). Now integrating unified services into main server.py endpoints to replace legacy shared_chat_service.py logic. This should resolve the critical conversation context bug through proper context building and entity resolution."
 
 backend:
   - task: "Implement Knowledge Vault Document Upload System (POST /api/knowledge/upload-document)"
