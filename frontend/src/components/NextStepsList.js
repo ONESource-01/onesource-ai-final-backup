@@ -1,7 +1,7 @@
 // src/components/NextStepsList.js  
 import React from 'react';
 import { Card, CardContent } from './ui/card';
-import Markdown from './Markdown';
+import { SafeText } from '../utils/SafeText';
 
 export default function NextStepsList({ title, content, steps = [], className = "" }) {
   // Parse steps from content if not provided as array
@@ -23,8 +23,8 @@ export default function NextStepsList({ title, content, steps = [], className = 
               <span className="flex-shrink-0 w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center text-sm font-medium">
                 {index + 1}
               </span>
-              <div className="prose max-w-none text-gray-800 leading-relaxed">
-                <Markdown source={step} />
+              <div className="flex-1">
+                <SafeText text={step} />
               </div>
             </div>
           ))}
