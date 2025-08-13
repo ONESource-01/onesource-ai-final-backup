@@ -1730,16 +1730,16 @@ async def unified_chat_ask_enhanced(
                     {"$inc": {"reference_count": 1}}
                 )
         
-        # Convert to API response format
+        # Convert to API response format with SCHEMA VALIDATION
         api_response = {
             "text": response.text,
             "emoji_map": [{"name": item.name, "char": item.char} for item in response.emoji_map],
+            "mentoring_insight": response.mentoring_insight,
             "knowledge_enhanced": len(knowledge_context) > 0,
             "partner_content_used": len(partner_attributions) > 0,
             "community_sources_used": len(community_results),
             "personal_sources_used": len(personal_results),
             "meta": {
-                "endpoint_version": "unified",
                 "tier": response.meta.tier,
                 "tokens_used": response.meta.tokens_used,
                 "session_id": response.meta.session_id,
@@ -1747,7 +1747,14 @@ async def unified_chat_ask_enhanced(
             }
         }
         
-        return api_response
+        # SCHEMA GUARD: Validate and repair response to v2 format  
+        from middleware.schema_guard import validate_chat_response
+        validated_response, was_repaired = validate_chat_response(api_response)
+        
+        if was_repaired:
+            print(f"⚠️ SCHEMA REPAIR: Enhanced response for session {question_data.session_id} was auto-repaired to v2 format")
+        
+        return validated_response
         
     except Exception as e:
         print(f"Error in unified enhanced chat: {e}")
