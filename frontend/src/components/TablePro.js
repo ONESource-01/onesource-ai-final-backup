@@ -1,18 +1,6 @@
-// src/components/TablePro.tsx
+// src/components/TablePro.js
 import React from "react";
 import { exportToCsv } from "../utils/csv";
-
-export type TableProProps = {
-  caption?: string;
-  headers: string[];
-  rows: (string | number | React.ReactNode)[][];
-  dense?: boolean;
-  // Feature flags
-  zebra?: boolean;
-  stickyHeader?: boolean;
-  allowCopy?: boolean;
-  allowCsv?: boolean;
-};
 
 export default function TablePro({
   caption,
@@ -23,7 +11,7 @@ export default function TablePro({
   stickyHeader = true,
   allowCopy = true,
   allowCsv = true,
-}: TableProProps) {
+}) {
   const id = React.useId();
 
   const handleCopy = async () => {
