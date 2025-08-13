@@ -124,6 +124,9 @@ class UnifiedChatService:
             print(f"INSTRUMENT: endpoint=unified, session_id={session_id}, prompt_hash={prompt_hash}, history_turns={history_turns}, tier={tier}, temperature=0.3")
             
             # Step 4: Generate AI response
+            # Ensure OpenAI client is initialized with latest environment
+            self._init_openai_client()
+            
             if self.openai_client:
                 raw_response = await self._call_openai_api(question, base_prompt, conversation_history)
                 tokens_used = 800  # Estimate for real API calls
