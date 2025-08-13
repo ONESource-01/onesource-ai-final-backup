@@ -157,7 +157,7 @@ class UnifiedChatService:
             if "must not use mock" in str(e):
                 raise e
             
-            # Fallback response with proper formatting
+            # Generate fallback response
             fallback_text = f"""## 🔧 **Technical Answer**
 
 I apologize, but I encountered an error processing your question about {question}. Please try rephrasing your question or contact support if the issue persists.
@@ -173,6 +173,12 @@ Technical issues can occur with complex systems. Consider providing more specifi
 3. Try asking about a specific construction topic"""
             
             formatted_text, emoji_map = unified_formatter.format_response(fallback_text)
+            
+            # CRITICAL: Update conversation even for fallback responses
+            if context_manager:
+                await context_manager.update_conversation_response(
+                    conversation_id, formatted_text, 200
+                )
             
             return ChatResponse(
                 text=formatted_text,
