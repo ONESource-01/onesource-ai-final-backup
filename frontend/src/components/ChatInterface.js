@@ -1057,7 +1057,7 @@ const ChatInterface = () => {
                 onKeyDown={handleKeyPress}
                 placeholder="Ask about building codes, standards, or construction best practices..."
                 disabled={loading || (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0)}
-                className="pr-20 py-3 resize-none"
+                className="pr-24 py-3 resize-none"
                 style={{ minHeight: '48px' }}
               />
               
