@@ -113,11 +113,19 @@ class ParityTester:
         r1 = await self.make_request("/chat/ask", sample_payload)
         r2 = await self.make_request("/chat/ask-enhanced", sample_payload)
         
-        # Check for Enhanced Emoji Mapping sections
+        # Check for Enhanced Emoji Mapping sections in blocks content
+        r1_content = ""
+        r2_content = ""
+        
+        if "blocks" in r1 and r1["blocks"]:
+            r1_content = " ".join([block.get("content", "") for block in r1["blocks"]])
+        if "blocks" in r2 and r2["blocks"]:
+            r2_content = " ".join([block.get("content", "") for block in r2["blocks"]])
+        
         required_sections = ["🔧 **Technical Answer**", "🧐 **Mentoring Insight**", "📋 **Next Steps**"]
         
-        r1_sections = [section for section in required_sections if section in r1.get("text", "")]
-        r2_sections = [section for section in required_sections if section in r2.get("text", "")]
+        r1_sections = [section for section in required_sections if section in r1_content]
+        r2_sections = [section for section in required_sections if section in r2_content]
         
         if len(r1_sections) >= 2 and len(r2_sections) >= 2:
             self.log_test("Enhanced Emoji Mapping", True, f"Both endpoints have Enhanced Emoji Mapping sections")
