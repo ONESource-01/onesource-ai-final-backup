@@ -951,12 +951,12 @@ async def unified_chat_ask(
         
         print("DEBUG: Imported unified services successfully")
         
-        # Initialize context manager if not already done
-        if not hasattr(unified_chat_service, '_context_initialized'):
-            context_mgr = init_context_manager(db)
-            unified_chat_service._context_manager = context_mgr  # Store on service instance
-            unified_chat_service._context_initialized = True
-            print("DEBUG: Context manager initialized and stored on service")
+        # Initialize Redis conversation store if not already done
+        if not hasattr(unified_chat_service, '_conversation_store_initialized'):
+            from core.stores.conversation_store import init_conversation_store
+            init_conversation_store()
+            unified_chat_service._conversation_store_initialized = True
+            print("DEBUG: Redis conversation store initialized")
         
         # Determine user info
         user_id = current_user["uid"] if current_user else None
