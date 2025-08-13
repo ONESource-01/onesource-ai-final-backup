@@ -932,138 +932,50 @@ async def get_subscription_status(current_user: Dict[str, Any] = Depends(get_cur
 
 # AI Chat Routes
 @api_router.post("/chat/ask")
-async def ask_question(
+async def unified_chat_ask(
     chat_data: ChatQuestion,
     request: Request,
     current_user: Optional[Dict[str, Any]] = Depends(get_current_user_optional)
 ):
-    """Ask a construction industry question - UNIFIED BACKEND"""
+    """UNIFIED CHAT ENDPOINT - uses single code path"""
     try:
-        # Import shared service
-        from shared_chat_service import shared_chat_service
+        # Import unified services
+        from core.chat_service import unified_chat_service
+        from core.context_manager import init_context_manager
         
-        # Validate question is construction-related
-        if not await construction_ai.validate_construction_question(chat_data.question):
-            raise HTTPException(
-                status_code=400, 
-                detail="Questions must be related to AU/NZ construction industry"
-            )
+        # Initialize context manager if not already done
+        if not hasattr(unified_chat_service, '_context_initialized'):
+            init_context_manager(db)
+            unified_chat_service._context_initialized = True
         
-        # Check trial limits for unauthenticated users
-        if not current_user:
-            # Anonymous user - check if within trial limit
-            session_id = chat_data.session_id or str(uuid.uuid4())
-            user_profile = None
-            trial_warning = True
-        else:
-            # Authenticated user - check subscription status
-            uid = current_user["uid"]
-            subscription = await firebase_service.check_user_subscription(uid)
-            trial_questions_used = subscription["trial_questions_used"]
-            
-            # Check if user can ask questions
-            if (subscription["subscription_tier"] == "starter" and 
-                not subscription["subscription_active"]):
-                
-                # Get today's date for daily limit checking
-                today = datetime.utcnow().date()
-                
-                # Get or create today's usage tracking
-                daily_usage_key = f"daily_questions_{today.strftime('%Y%m%d')}"
-                daily_questions_used = subscription.get(daily_usage_key, 0)
-                
-                if daily_questions_used >= 3:
-                    raise HTTPException(
-                        status_code=403,
-                        detail={
-                            "type": "daily_limit_reached",
-                            "message": "You've reached your daily limit of 3 questions. Upgrade to ask unlimited questions.",
-                            "questions_used": daily_questions_used,
-                            "daily_limit": 3
-                        }
-                    )
-                
-                trial_warning = True
-                remaining_questions = 3 - (daily_questions_used + 1)
-                session_id = chat_data.session_id or str(uuid.uuid4())
-                user_profile = None
-            else:
-                trial_warning = False
-                remaining_questions = None
-                session_id = chat_data.session_id or str(uuid.uuid4())
-                user_profile = None
+        # Determine user info
+        user_id = current_user["uid"] if current_user else None
+        tier = "starter"  # Regular endpoint always uses starter tier
         
-        # Get conversation history for context
-        try:
-            # Get recent conversation history for this session to maintain context
-            recent_conversations = await db.conversations.find({
-                "session_id": session_id
-            }).sort("timestamp", -1).limit(10).to_list(length=10)
-            
-            # Convert to message format for context
-            conversation_history = []
-            for conv in reversed(recent_conversations):  # Reverse to get chronological order
-                # Add user message
-                conversation_history.append({
-                    "type": "user",
-                    "content": conv.get("question", ""),
-                    "timestamp": conv.get("timestamp")
-                })
-                # Add AI response
-                response_content = conv.get("response", "")
-                if isinstance(response_content, dict):
-                    response_content = response_content.get("technical", "") or str(response_content)
-                conversation_history.append({
-                    "type": "ai", 
-                    "content": response_content,
-                    "timestamp": conv.get("timestamp")
-                })
-                
-        except Exception as e:
-            print(f"Error retrieving conversation history: {e}")
-            conversation_history = []
-        
-        # **UNIFIED BACKEND CALL WITH CONVERSATION CONTEXT**
-        response_data = shared_chat_service.get_unified_chat_response(
+        # Generate unified response
+        response = await unified_chat_service.generate_response(
             question=chat_data.question,
-            session_id=session_id,
-            user_context=None,  # Regular endpoint doesn't use enhanced features
-            conversation_history=conversation_history
+            session_id=chat_data.session_id or str(uuid.uuid4()),
+            tier=tier,
+            user_id=user_id
         )
         
-        # Add trial and subscription information  
-        if trial_warning and not current_user:
-            response_data["subscription_status"] = {
-                "is_trial": True,
-                "subscription_tier": "starter",
-                "subscription_active": False,
-                "trial_info": {
-                    "questions_remaining": 2,  # Decremented after this question
-                    "questions_used": 1
-                }
+        # Convert to API response format
+        api_response = {
+            "text": response.text,
+            "emoji_map": [{"name": item.name, "char": item.char} for item in response.emoji_map],
+            "meta": {
+                "endpoint_version": "unified",
+                "tier": response.meta.tier,
+                "tokens_used": response.meta.tokens_used,
+                "session_id": response.meta.session_id
             }
-        elif trial_warning and current_user:
-            response_data["subscription_status"] = {
-                "is_trial": True,
-                "subscription_tier": "starter", 
-                "subscription_active": False,
-                "trial_info": {
-                    "questions_remaining": remaining_questions,
-                    "questions_used": 3 - remaining_questions
-                }
-            }
-        elif current_user:
-            # Get actual subscription status for authenticated users
-            uid = current_user["uid"]
-            subscription = await firebase_service.check_user_subscription(uid)
-            response_data["subscription_status"] = subscription
+        }
         
-        return response_data
+        return api_response
         
-    except HTTPException:
-        raise
     except Exception as e:
-        print(f"Error in ask_question: {e}")
+        print(f"Error in unified chat ask: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 # Document Processing and AI Functions
