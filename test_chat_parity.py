@@ -152,15 +152,15 @@ class ParityTester:
         
         r = await self.make_request("/chat/ask", sample_payload)
         
-        # Should have valid structure even without specific topics
+        # Should have valid v2 structure even without specific topics
         has_meta = "meta" in r
-        has_text = "text" in r and len(r["text"]) > 50
-        has_emoji_map = "emoji_map" in r and isinstance(r["emoji_map"], list)
+        has_title = "title" in r and len(r["title"]) > 0
+        has_blocks = "blocks" in r and isinstance(r["blocks"], list) and len(r["blocks"]) > 0
         
-        if has_meta and has_text and has_emoji_map:
+        if has_meta and has_title and has_blocks:
             self.log_test("No Topics Failsafe", True, "Endpoint handles empty topics gracefully")
         else:
-            self.log_test("No Topics Failsafe", False, f"Failsafe issues - meta: {has_meta}, text: {has_text}, emoji_map: {has_emoji_map}")
+            self.log_test("No Topics Failsafe", False, f"Failsafe issues - meta: {has_meta}, title: {has_title}, blocks: {has_blocks}")
 
     async def test_schema_enforced(self):
         """Test 4: Schema enforcement"""
