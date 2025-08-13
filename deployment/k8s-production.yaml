@@ -1,0 +1,481 @@
+# Phase 4: Kubernetes Production Deployment Configuration
+# Production-ready Kubernetes manifests with proper resource limits, health checks, and monitoring
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: onesource
+  labels:
+    name: onesource
+    environment: production
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: onesource-config
+  namespace: onesource
+data:
+  # Feature Flags
+  USE_UNIFIED_PIPELINE: "1"
+  CONV_STORE_PRIMARY: "redis"
+  CONV_DUAL_WRITE: "0"
+  FEATURE_DYNAMIC_PROMPTS: "1"
+  FEATURE_SUGGESTED_ACTIONS: "1"
+  
+  # Configuration
+  ENVIRONMENT: "production"
+  CONV_TTL_SECONDS: "2592000"
+  CONV_MAX_TURNS: "16"
+  SCHEMA_REPAIR_RATE_ALERT: "0.005"
+  REDIS_SOCKET_TIMEOUT_MS: "200"
+  REDIS_CONNECT_TIMEOUT_MS: "100"
+  LLM_TIMEOUT_MS: "20000"
+  RENDER_P95_BUDGET_MS: "150"
+  
+  # Security
+  LOG_REDACTION_ENABLED: "1"
+  RATE_LIMIT_PER_USER: "30"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: onesource-backend
+  namespace: onesource
+  labels:
+    app: onesource
+    component: backend
+    version: v2.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: onesource
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: onesource
+        component: backend
+        version: v2.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: backend
+        image: onesource/backend:v2.0.0
+        ports:
+        - containerPort: 8001
+          name: http
+          protocol: TCP
+        
+        env:
+        - name: GIT_COMMIT
+          value: "${GIT_COMMIT}"
+        - name: BUILD_TIME
+          value: "${BUILD_TIME}"
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        - name: MONGO_URL
+          value: "mongodb://mongodb-service:27017/onesource"
+          
+        envFrom:
+        - configMapRef:
+            name: onesource-config
+            
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+            
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+          
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 15"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: onesource-backend-service
+  namespace: onesource
+  labels:
+    app: onesource
+    component: backend
+spec:
+  selector:
+    app: onesource
+    component: backend
+  ports:
+  - name: http
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: onesource-frontend
+  namespace: onesource
+  labels:
+    app: onesource
+    component: frontend
+    version: v2.0.0
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: onesource
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: onesource
+        component: frontend
+        version: v2.0.0
+    spec:
+      containers:
+      - name: frontend
+        image: onesource/frontend:v2.0.0
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+          
+        env:
+        - name: REACT_APP_BACKEND_URL
+          value: "https://api.onesource.ai"
+        - name: NODE_ENV
+          value: "production"
+          
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+            
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: onesource-frontend-service
+  namespace: onesource
+  labels:
+    app: onesource
+    component: frontend
+spec:
+  selector:
+    app: onesource
+    component: frontend
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: onesource
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+          name: redis
+        
+        command: 
+        - redis-server
+        - --maxmemory
+        - 1gb
+        - --maxmemory-policy
+        - allkeys-lru
+        - --save
+        - ""
+        
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+            
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+          
+      volumes:
+      - name: redis-data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: onesource
+  labels:
+    app: redis
+spec:
+  selector:
+    app: redis
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: onesource
+  labels:
+    app: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:7
+        ports:
+        - containerPort: 27017
+          name: mongodb
+          
+        env:
+        - name: MONGO_INITDB_DATABASE
+          value: "onesource"
+          
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+            
+        livenessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - db.adminCommand('ping')
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --eval
+            - db.adminCommand('ping')
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+          
+      volumes:
+      - name: mongodb-data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  namespace: onesource
+  labels:
+    app: mongodb
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - name: mongodb
+    port: 27017
+    targetPort: 27017
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: onesource-ingress
+  namespace: onesource
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/rate-limit-rpm: "1800"  # 30 req/min per IP
+    
+    # CORS for API
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://onesource.ai"
+    
+spec:
+  tls:
+  - hosts:
+    - onesource.ai
+    - api.onesource.ai
+    secretName: onesource-tls
+    
+  rules:
+  - host: onesource.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: onesource-frontend-service
+            port:
+              number: 3000
+              
+  - host: api.onesource.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: onesource-backend-service
+            port:
+              number: 8001
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: onesource-backend-pdb
+  namespace: onesource
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: onesource
+      component: backend
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: onesource-backend-hpa
+  namespace: onesource
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: onesource-backend
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

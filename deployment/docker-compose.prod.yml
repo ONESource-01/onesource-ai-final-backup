@@ -1,0 +1,216 @@
+# Phase 4: Production Docker Compose Configuration
+# Production-ready services with health checks and proper resource limits
+
+version: '3.8'
+
+services:
+  # ONESource AI Backend Service
+  onesource-backend:
+    image: onesource/backend:${VERSION:-latest}
+    container_name: onesource-backend
+    restart: unless-stopped
+    
+    environment:
+      # Phase 4 Feature Flags
+      USE_UNIFIED_PIPELINE: ${USE_UNIFIED_PIPELINE:-1}
+      CONV_STORE_PRIMARY: ${CONV_STORE_PRIMARY:-redis}
+      CONV_DUAL_WRITE: ${CONV_DUAL_WRITE:-0}
+      FEATURE_DYNAMIC_PROMPTS: ${FEATURE_DYNAMIC_PROMPTS:-1}
+      FEATURE_SUGGESTED_ACTIONS: ${FEATURE_SUGGESTED_ACTIONS:-1}
+      
+      # Configuration
+      ENVIRONMENT: production
+      CONV_TTL_SECONDS: ${CONV_TTL_SECONDS:-2592000}
+      CONV_MAX_TURNS: ${CONV_MAX_TURNS:-16}
+      SCHEMA_REPAIR_RATE_ALERT: ${SCHEMA_REPAIR_RATE_ALERT:-0.005}
+      REDIS_SOCKET_TIMEOUT_MS: ${REDIS_SOCKET_TIMEOUT_MS:-200}
+      REDIS_CONNECT_TIMEOUT_MS: ${REDIS_CONNECT_TIMEOUT_MS:-100}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-20000}
+      RENDER_P95_BUDGET_MS: ${RENDER_P95_BUDGET_MS:-150}
+      
+      # Security
+      LOG_REDACTION_ENABLED: ${LOG_REDACTION_ENABLED:-1}
+      RATE_LIMIT_PER_USER: ${RATE_LIMIT_PER_USER:-30}
+      
+      # Build info
+      GIT_COMMIT: ${GIT_COMMIT:-unknown}
+      BUILD_TIME: ${BUILD_TIME:-unknown}
+      
+      # External services
+      REDIS_URL: redis://redis:6379
+      MONGO_URL: mongodb://mongodb:27017/onesource
+      
+    ports:
+      - "8001:8001"
+      
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+        
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+          
+  # ONESource AI Frontend Service  
+  onesource-frontend:
+    image: onesource/frontend:${VERSION:-latest}
+    container_name: onesource-frontend
+    restart: unless-stopped
+    
+    environment:
+      REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://localhost:8001}
+      NODE_ENV: production
+      
+    ports:
+      - "3000:3000"
+      
+    depends_on:
+      - onesource-backend
+      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # Redis - Primary Conversation Store
+  redis:
+    image: redis:7-alpine
+    container_name: onesource-redis
+    restart: unless-stopped
+    
+    command: redis-server --maxmemory 1gb --maxmemory-policy allkeys-lru --save ""
+    
+    ports:
+      - "6379:6379"
+      
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.1'
+          memory: 512M
+          
+    volumes:
+      - redis_data:/data
+
+  # MongoDB - Fallback Conversation Store
+  mongodb:
+    image: mongo:7
+    container_name: onesource-mongodb
+    restart: unless-stopped
+    
+    environment:
+      MONGO_INITDB_DATABASE: onesource
+      
+    ports:
+      - "27017:27017"
+      
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.25'  
+          memory: 512M
+          
+    volumes:
+      - mongodb_data:/data/db
+
+  # Prometheus Monitoring (Optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: onesource-prometheus
+    restart: unless-stopped
+    
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+      
+    ports:
+      - "9090:9090"
+      
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+      
+    depends_on:
+      - onesource-backend
+
+  # Grafana Dashboards (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: onesource-grafana
+    restart: unless-stopped
+    
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_USERS_ALLOW_SIGN_UP: false
+      
+    ports:
+      - "3001:3000"
+      
+    volumes:
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+      
+    depends_on:
+      - prometheus
+
+volumes:
+  redis_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  default:
+    name: onesource-network
