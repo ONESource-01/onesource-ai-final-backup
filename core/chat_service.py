@@ -66,6 +66,11 @@ class UnifiedChatService:
         Same logic for all tiers and endpoints - NO EXCEPTIONS
         """
         
+        # INSTRUMENTATION: Log critical parameters
+        import hashlib
+        prompt_hash = "none"
+        history_turns = 0
+        
         # Step 1: Pre-save conversation stub (FIXES CONTEXT BUG)
         if context_manager:
             conversation_id = await context_manager.pre_save_conversation_stub(
