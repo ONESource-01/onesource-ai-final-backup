@@ -203,6 +203,134 @@ Effective compliance management begins with understanding your project's risk pr
         
         return text
 
+    def _build_conversation_context(self, conversation_history: List[Dict]) -> str:
+        """Build conversation context summary from recent messages"""
+        try:
+            if not conversation_history or len(conversation_history) == 0:
+                return ""
+            
+            # Get last 3 conversation pairs for context
+            recent_history = conversation_history[-6:]  # Last 3 Q&A pairs
+            
+            context_parts = []
+            for i in range(0, len(recent_history), 2):
+                if i + 1 < len(recent_history):
+                    user_msg = recent_history[i]
+                    ai_msg = recent_history[i + 1]
+                    
+                    if user_msg.get('type') == 'user' and ai_msg.get('type') == 'ai':
+                        # Extract key topics from previous AI response
+                        ai_content = ai_msg.get('content', '')
+                        user_question = user_msg.get('content', '')
+                        
+                        # Simple topic extraction
+                        topic_keywords = []
+                        if 'acoustic' in ai_content.lower() or 'acoustic' in user_question.lower():
+                            topic_keywords.append('acoustic lagging')
+                        if 'fire' in ai_content.lower() or 'fire' in user_question.lower():
+                            topic_keywords.append('fire safety')
+                        if 'structural' in ai_content.lower() or 'structural' in user_question.lower():
+                            topic_keywords.append('structural requirements')
+                        if 'water' in ai_content.lower() or 'water' in user_question.lower():
+                            topic_keywords.append('water systems')
+                            
+                        if topic_keywords:
+                            context_parts.append(f"Previous discussion about: {', '.join(topic_keywords)}")
+            
+            return "\n".join(context_parts[-2:])  # Last 2 context items
+            
+        except Exception as e:
+            print(f"Error building conversation context: {e}")
+            return ""
+
+    def _make_unified_openai_call_with_history(self, question: str, system_prompt: str, conversation_history: Optional[List[Dict]] = None) -> str:
+        """
+        Make unified OpenAI API call with conversation history for context
+        """
+        try:
+            # Build message history for OpenAI API
+            messages = [{"role": "system", "content": system_prompt}]
+            
+            # Add recent conversation history
+            if conversation_history:
+                recent_history = conversation_history[-4:]  # Last 2 Q&A pairs
+                for msg in recent_history:
+                    if msg.get('type') == 'user':
+                        messages.append({"role": "user", "content": msg.get('content', '')})
+                    elif msg.get('type') == 'ai':
+                        # Truncate AI responses for context (keep it concise)
+                        ai_content = msg.get('content', '')[:500]
+                        messages.append({"role": "assistant", "content": ai_content})
+            
+            # Add current question
+            messages.append({"role": "user", "content": question})
+            
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                temperature=0,  # Consistent temperature for testing
+                top_p=1,        # Consistent top_p
+                max_tokens=2000
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"Error getting OpenAI response with history: {e}")
+            # Return mock response as fallback
+            return self._get_unified_mock_response_with_conversation(question, None, conversation_history)
+
+    def _get_unified_mock_response_with_conversation(self, question: str, user_context: Optional[Dict] = None, conversation_history: Optional[List[Dict]] = None) -> str:
+        """
+        Mock response that understands conversation context
+        """
+        # Check for follow-up questions with context
+        if conversation_history and len(conversation_history) >= 2:
+            # Get recent context
+            recent_msgs = conversation_history[-4:]  # Last 2 Q&A pairs
+            previous_topics = []
+            
+            for msg in recent_msgs:
+                content = msg.get('content', '').lower()
+                if 'acoustic' in content:
+                    previous_topics.append('acoustic lagging')
+                elif 'fire' in content:
+                    previous_topics.append('fire safety')
+                elif 'structural' in content:
+                    previous_topics.append('structural requirements')
+                elif 'water' in content:
+                    previous_topics.append('water systems')
+            
+            # Handle contextual follow-up questions
+            if any(word in question.lower() for word in ['when', 'where', 'how', 'why', 'what', 'it', 'this', 'that']) and previous_topics:
+                topic = previous_topics[-1]  # Most recent topic
+                
+                if 'acoustic' in topic:
+                    return f"""🔧 **Technical Answer:**
+
+Based on our previous discussion about {topic}, installation timing depends on the construction phase:
+
+**Optimal Installation Timing:**
+- **Pre-drylining Phase:** Install acoustic lagging before wall linings go up
+- **During Services Installation:** Coordinate with electrical and mechanical trades
+- **After Structural Completion:** Ensure all structural work is complete first
+
+**Key Timing Considerations:**
+1. **Access Requirements:** Install while ceiling/wall cavities are accessible
+2. **Trade Coordination:** Schedule after rough-in services, before finishing trades
+3. **Weather Protection:** Ensure materials are protected from moisture during installation
+
+🧐 **Mentoring Insight:**
+
+Timing acoustic installation correctly is critical for both performance and cost-effectiveness. Late installation often requires partial dismantling of completed work, significantly increasing project costs and delays.
+
+📋 **Next Steps:**
+
+1. Coordinate with construction program for optimal installation timing
+2. Confirm material delivery aligns with installation window
+3. Schedule acoustic specialist during appropriate construction phase"""
+        
+        # Get base response for new topics
+        return self._get_unified_mock_response_with_context(question, user_context)
+
     def _make_unified_openai_call(self, question: str, system_prompt: str) -> str:
         """
         Make unified OpenAI API call with identical parameters for both endpoints
