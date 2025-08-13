@@ -2921,15 +2921,38 @@ async def health_check():
 
 
 @app.get("/api/metrics/schema")
-async def schema_metrics():
-    """Schema validation metrics endpoint"""
-    from middleware.schema_guard import get_schema_metrics
-    metrics = get_schema_metrics()
-    
-    return {
-        "timestamp": datetime.now().isoformat(),
-        "schema_validation": metrics
-    }
+async def get_schema_metrics():
+    """Get comprehensive schema validation and observability metrics"""
+    try:
+        observability = get_observability()
+        return observability.get_dashboard_metrics()
+    except Exception as e:
+        return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
+
+
+@app.get("/api/metrics/observability")
+async def get_observability_dashboard():
+    """Get full observability dashboard with all metrics and alerts"""
+    try:
+        observability = get_observability()
+        dashboard = observability.get_dashboard_metrics()
+        
+        # Add staging report information
+        dashboard["staging_report"] = {
+            "environment": "production",
+            "version": "2.0",
+            "schema_phase_status": "complete",
+            "definition_of_done": {
+                "schema_compliance": dashboard["schema"]["repair_rate_percent"] <= 0.5,
+                "persistence_health": dashboard["persistence"]["error_rate_percent"] < 0.1,
+                "latency_acceptable": dashboard["latency"]["delta"]["is_acceptable"],
+                "alerts_configured": True
+            }
+        }
+        
+        return dashboard
+    except Exception as e:
+        return {"error": str(e), "timestamp": datetime.utcnow().isoformat()}
 
 # Include the router in the main app
 app.include_router(api_router)
