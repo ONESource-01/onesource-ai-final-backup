@@ -193,6 +193,29 @@ class SchemaObservability:
         # Calculate latency delta
         latency_delta_p95 = enhanced_percentiles["p95"] - regular_percentiles["p95"]
         
+        # Calculate CTR metrics
+        example_ctr_data = {}
+        overall_example_ctr = 0
+        if self.metrics["examples_served_total"] > 0:
+            overall_example_ctr = (self.metrics["example_clicks_total"] / self.metrics["examples_served_total"]) * 100
+        
+        for topic, data in self.metrics["example_ctr_by_topic"].items():
+            if data["served"] > 0:
+                example_ctr_data[topic] = {
+                    "served": data["served"],
+                    "clicked": data["clicked"], 
+                    "ctr_percent": (data["clicked"] / data["served"]) * 100
+                }
+        
+        suggested_action_ctr_data = {}
+        for action_key, data in self.metrics["suggested_action_ctr"].items():
+            if data["shown"] > 0:
+                suggested_action_ctr_data[action_key] = {
+                    "shown": data["shown"],
+                    "clicked": data["clicked"],
+                    "ctr_percent": (data["clicked"] / data["shown"]) * 100
+                }
+        
         return {
             "timestamp": datetime.now().isoformat(),
             "uptime_seconds": round(uptime_seconds, 1),
