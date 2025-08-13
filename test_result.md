@@ -57,8 +57,8 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 ## agent_communication:
-##     -agent: "main"  # or "testing" or "user"
-##     -message: "Communication message between agents"
+##     -agent: "main"
+##     -message: "CRITICAL FRONTEND-BACKEND COMMUNICATION ISSUE RESOLVED PARTIALLY. ROOT CAUSE IDENTIFIED: Redis service was not running, causing all /api/chat/ask requests to fail with 500 errors. FIXED: Installed and started Redis service. Backend now returns 200 responses with proper AI content. NEW ISSUE: Frontend is not correctly parsing/displaying the AI response content - shows 'No response received' instead of actual AI response text. The API response contains proper JSON with blocks/content structure but frontend parsing logic needs investigation."
 
 # Protocol Guidelines for Main agent
 #
