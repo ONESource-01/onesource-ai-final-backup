@@ -111,7 +111,7 @@ class TestSchemaNegativeChaos:
         
         # Should still be valid v2
         try:
-            ChatResponse(**repaired)
+            validate_chat_response(repaired)
             print("✅ Oversized response successfully handled and validates")
         except Exception as e:
             pytest.fail(f"Oversized response failed validation: {e}")
