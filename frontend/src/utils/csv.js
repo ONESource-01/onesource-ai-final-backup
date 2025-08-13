@@ -11,7 +11,7 @@ export function exportToCsv(
     return needsQuotes ? `"${escaped}"` : escaped;
   };
 
-  const chunks: string[] = [];
+  const chunks = [];
   chunks.push(headers.map(encode).join(","));
   for (let i = 0; i < rows.length; i++) {
     chunks.push(rows[i].map(encode).join(","));
