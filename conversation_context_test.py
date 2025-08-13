@@ -147,7 +147,7 @@ class ConversationContextTester:
         first_success, first_response, first_status = await self.make_request("POST", "/chat/ask", first_data, mock_headers)
         
         if first_success and isinstance(first_response, dict):
-            response_content = first_response.get("text") or first_response.get("response", "")
+            response_content = first_response.get("text", "")
             first_response_content = str(response_content)
             print(f"   ✅ First response received: {len(first_response_content)} characters")
             print(f"   📄 First response preview: {first_response_content[:200]}...")
