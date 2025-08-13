@@ -1,4 +1,4 @@
-// src/fixtures/sampleV2.ts
+// src/fixtures/sampleV2.js
 // Sample v2 API payload for e2e tests and development
 export const sampleV2 = {
   title: "## 🛠 Technical Answer",
