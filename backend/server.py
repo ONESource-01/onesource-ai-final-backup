@@ -976,19 +976,26 @@ async def unified_chat_ask(
         
         print(f"DEBUG: Unified chat service returned response length: {len(response.text)}")
         
-        # Convert to API response format
+        # Convert to API response format with SCHEMA VALIDATION
         api_response = {
             "text": response.text,
             "emoji_map": [{"name": item.name, "char": item.char} for item in response.emoji_map],
+            "mentoring_insight": response.mentoring_insight,
             "meta": {
-                "endpoint_version": "unified",
                 "tier": response.meta.tier,
+                "session_id": response.meta.session_id,
                 "tokens_used": response.meta.tokens_used,
-                "session_id": response.meta.session_id
             }
         }
         
-        return api_response
+        # SCHEMA GUARD: Validate and repair response to v2 format
+        from middleware.schema_guard import validate_chat_response
+        validated_response, was_repaired = validate_chat_response(api_response)
+        
+        if was_repaired:
+            print(f"⚠️ SCHEMA REPAIR: Response for session {chat_data.session_id} was auto-repaired to v2 format")
+        
+        return validated_response
         
     except Exception as e:
         print(f"Error in unified chat ask: {e}")
