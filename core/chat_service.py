@@ -178,10 +178,18 @@ class ChatService:
         history_turns = 0
         
         try:
-            # Step 1: Get conversation history from context manager
+            # Step 1: Get conversation history from context manager (USE INITIALIZED MANAGER)
             conversation_history = []
-            if context_manager:
-                conversation_history = await context_manager.get_conversation_context(session_id)
+            current_context_manager = None
+            
+            # Get the initialized context manager from the service attribute
+            if hasattr(unified_chat_service, '_context_manager'):
+                current_context_manager = unified_chat_service._context_manager
+            elif context_manager:
+                current_context_manager = context_manager
+                
+            if current_context_manager:
+                conversation_history = await current_context_manager.get_conversation_context(session_id)
                 history_turns = len(conversation_history)
             
             # Step 2: Build message history for LLM context (CRITICAL FIX)
