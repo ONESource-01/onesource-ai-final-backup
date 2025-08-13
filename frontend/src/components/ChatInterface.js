@@ -895,20 +895,25 @@ const ChatInterface = () => {
                           </div>
                         ) : (
                           <div className="space-y-3">
-                            {/* AI Response Content - ULTRA-TIGHT spacing like Emergent */}
-                            <div className="prose max-w-none">
-                              <div 
-                                className="text-gray-800 text-sm"
-                                style={{ 
-                                  lineHeight: '1.3',
-                                  marginBottom: '0px',
-                                  paddingBottom: '0px'
-                                }}
-                                dangerouslySetInnerHTML={{
-                                  __html: formatAIResponse(message.content)
-                                }}
-                              />
-                            </div>
+                            {/* V2 Schema Renderer - The One True Path */}
+                            {message.v2Response && message.schema_version === 'v2' ? (
+                              <V2Renderer response={message.v2Response} />
+                            ) : (
+                              /* Legacy fallback for non-V2 responses */
+                              <div className="prose max-w-none">
+                                <div 
+                                  className="text-gray-800 text-sm"
+                                  style={{ 
+                                    lineHeight: '1.3',
+                                    marginBottom: '0px',
+                                    paddingBottom: '0px'
+                                  }}
+                                  dangerouslySetInnerHTML={{
+                                    __html: formatAIResponse(message.content)
+                                  }}
+                                />
+                              </div>
+                            )}
 
                             {/* Booster Badge */}
                             {message.isBooster && (
