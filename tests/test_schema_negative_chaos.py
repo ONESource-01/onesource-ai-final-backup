@@ -107,7 +107,7 @@ class TestSchemaNegativeChaos:
         }
         
         # Test schema guard handles large content
-        repaired, was_repaired = validate_chat_response(oversized_response)
+        repaired, was_repaired = schema_guard.ensure_v2_schema(oversized_response)
         
         # Should still be valid v2
         try:
