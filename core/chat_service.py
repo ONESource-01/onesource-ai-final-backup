@@ -221,6 +221,125 @@ Technical issues can occur with complex systems. Consider providing more specifi
             print(f"Error calling OpenAI API: {e}")
             return self._generate_mock_response(question, "starter", {})
     
+    def _generate_context_aware_fallback(self, question: str, tier: str, topics: Dict[str, str]) -> str:
+        """Generate context-aware fallback response when OpenAI is not available"""
+        
+        # Context-aware responses for follow-up questions
+        if topics and any(indicator in question.lower() for indicator in ['it', 'this', 'that', 'when do', 'where do', 'how do']):
+            recent_topic = list(topics.values())[-1]
+            
+            if 'acoustic' in recent_topic:
+                return f"""## 🔧 **Technical Answer**
+
+Based on our previous discussion about {recent_topic}, installation timing is critical for optimal performance.
+
+**Installation Schedule:**
+- **Pre-drylining Phase:** Install acoustic lagging before wall linings
+- **Services Coordination:** After mechanical rough-in, before final finishes
+- **NCC Compliance:** Must meet performance requirements in NCC Section F
+
+**Key Timing Factors:**
+1. Access requirements while cavities are open
+2. Trade coordination with electrical and mechanical
+3. Weather protection during installation
+
+## 🧐 **Mentoring Insight**
+
+Timing acoustic installation correctly prevents costly rework and ensures performance compliance. Early coordination with trades is essential for project success.
+
+## 📋 **Next Steps**
+
+1. Coordinate installation timing with construction program
+2. Confirm material delivery schedule
+3. Schedule acoustic specialist for installation phase"""
+            
+            elif 'fire' in recent_topic:
+                return f"""## 🔧 **Technical Answer**
+
+Based on our previous discussion about {recent_topic}, implementation requires careful planning and compliance verification.
+
+**Implementation Steps:**
+- **Design Phase:** Integrate fire safety systems into building design
+- **Approval Phase:** Submit plans to relevant authority (BCA/NCC compliance)
+- **Installation Phase:** Install systems according to AS standards
+- **Testing Phase:** Commission and test all fire safety systems
+
+## 🧐 **Mentoring Insight**
+
+Fire safety implementation is highly regulated and requires professional oversight. Early engagement with fire safety engineers and authorities is essential.
+
+## 📋 **Next Steps**
+
+1. Engage qualified fire safety engineer
+2. Submit preliminary designs for authority review
+3. Schedule installation during appropriate construction phase"""
+        
+        # Topic-specific responses for new questions
+        if any(term in question.lower() for term in ['acoustic', 'lagging']):
+            return """## 🔧 **Technical Answer**
+
+Acoustic lagging requirements follow NCC Section F (Sound Transmission) and AS/NZS 3671 (Acoustic lagging for mechanical systems).
+
+**Key Requirements:**
+- **Performance Standards:** Meet NCC Volume One Section F requirements
+- **Material Specifications:** Use materials certified to AS/NZS standards
+- **Installation Methods:** Follow manufacturer specifications and AS guidelines
+- **Testing:** Verify performance through acoustic testing
+
+## 🧐 **Mentoring Insight**
+
+Acoustic performance is critical for building comfort and compliance. Professional acoustic engineering advice ensures optimal outcomes.
+
+## 📋 **Next Steps**
+
+1. Review NCC Section F requirements for your building type
+2. Engage qualified acoustic engineer
+3. Select appropriate acoustic lagging materials"""
+
+        # Fire safety topic-specific response
+        if any(term in question.lower() for term in ['fire', 'safety']):
+            return """## 🔧 **Technical Answer**
+
+Fire safety requirements are governed by the NCC Volume One and relevant Australian Standards.
+
+**Core Requirements:**
+- **Fire Detection:** Smoke detectors per AS 1670.1
+- **Fire Suppression:** Sprinkler systems per AS 2118
+- **Fire Egress:** Exit provisions per NCC Section D
+- **Fire Resistance:** Building elements per NCC Section C
+
+## 🧐 **Mentoring Insight**
+
+Fire safety is the highest priority in construction compliance. Professional fire engineering ensures life safety and regulatory compliance.
+
+## 📋 **Next Steps**
+
+1. Review NCC Volume One requirements
+2. Engage qualified fire safety engineer
+3. Develop fire safety strategy for your project"""
+        
+        # General construction response
+        return f"""## 🔧 **Technical Answer**
+
+Your question about "{question}" relates to important Australian construction standards and practices.
+
+**General Guidance:**
+- Consult relevant NCC provisions for your building type
+- Reference appropriate Australian Standards (AS/NZS series)
+- Engage qualified professionals for specific design requirements
+- Verify compliance with local authority requirements
+
+## 🧐 **Mentoring Insight**
+
+Construction projects require careful coordination between multiple disciplines and regulatory compliance at every stage.
+
+## 📋 **Next Steps**
+
+1. Review relevant NCC provisions
+2. Consult appropriate Australian Standards
+3. Engage qualified construction professionals
+4. Verify requirements with local building authority"""
+
     def _generate_mock_response(self, question: str, tier: str, topics: Dict[str, str]) -> str:
         """Generate mock response with context awareness"""
         
