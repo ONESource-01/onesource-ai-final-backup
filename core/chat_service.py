@@ -197,6 +197,11 @@ Technical issues can occur with complex systems. Consider providing more specifi
     def _generate_mock_response(self, question: str, tier: str, topics: Dict[str, str]) -> str:
         """Generate mock response with context awareness"""
         
+        # CRITICAL: Disable mocks for context tests - must use real prompt building
+        USE_MOCK = False
+        if not USE_MOCK:
+            raise Exception("Mock responses disabled - test environment must use real OpenAI API or proper fallback")
+        
         # Context-aware responses for follow-up questions
         if topics and any(indicator in question.lower() for indicator in ['it', 'this', 'that', 'when do', 'where do', 'how do']):
             recent_topic = list(topics.values())[-1]
