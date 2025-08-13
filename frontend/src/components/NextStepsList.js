@@ -1,6 +1,7 @@
 // src/components/NextStepsList.js  
 import React from 'react';
 import { Card, CardContent } from './ui/card';
+import Markdown from './Markdown';
 
 export default function NextStepsList({ title, content, steps = [], className = "" }) {
   // Parse steps from content if not provided as array
@@ -23,7 +24,7 @@ export default function NextStepsList({ title, content, steps = [], className = 
                 {index + 1}
               </span>
               <div className="prose max-w-none text-gray-800 leading-relaxed">
-                <div dangerouslySetInnerHTML={{ __html: step }} />
+                <Markdown source={step} />
               </div>
             </div>
           ))}
