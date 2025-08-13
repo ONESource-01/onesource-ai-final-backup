@@ -817,6 +817,328 @@ class BackendTester:
             self.log_test("🎯 BREAKTHROUGH: Enhanced Emoji Mapping Structural Fix", False, 
                         "Enhanced Emoji Mapping consistency not achieved - structural fix incomplete")
 
+    async def test_conversation_context_functionality(self):
+        """🚨 CRITICAL: Test Conversation Context Functionality from Review Request"""
+        print("\n🚨 === CONVERSATION CONTEXT FUNCTIONALITY TESTING ===")
+        print("Testing the CRITICAL conversation context bug where follow-up questions don't understand previous context")
+        print("🎯 ISSUE: User reported follow-up questions don't understand previous context")
+        print("🎯 EXAMPLE: 'Tell me about acoustic lagging' → 'when do I need to install it?' should understand 'it' = acoustic lagging")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test 1 - Conversation Context Chain (Acoustic Lagging)
+        print("\n1️⃣ TEST 1 - CONVERSATION CONTEXT CHAIN (ACOUSTIC LAGGING)")
+        print("Testing: First question about acoustic lagging, then follow-up asking 'when do I need to install it?'")
+        
+        session_id_a = "context_test_A"
+        
+        # First question
+        print(f"\n🔍 Step 1: Asking about acoustic lagging with session_id '{session_id_a}'")
+        first_question = "Tell me about acoustic lagging requirements"
+        first_data = {
+            "question": first_question,
+            "session_id": session_id_a
+        }
+        
+        first_success, first_response, first_status = await self.make_request("POST", "/chat/ask", first_data, mock_headers)
+        
+        if first_success and isinstance(first_response, dict) and "response" in first_response:
+            first_response_content = str(first_response["response"])
+            print(f"   ✅ First response received: {len(first_response_content)} characters")
+            print(f"   📄 First response preview: {first_response_content[:200]}...")
+            
+            # Check if response mentions acoustic lagging
+            has_acoustic_content = any(term in first_response_content.lower() for term in ['acoustic', 'lagging', 'sound', 'noise'])
+            if has_acoustic_content:
+                self.log_test("Test 1 - First Question (Acoustic Lagging)", True, "Response contains acoustic lagging content")
+            else:
+                self.log_test("Test 1 - First Question (Acoustic Lagging)", False, "Response missing acoustic lagging content")
+            
+            # Wait a moment to ensure conversation is stored
+            await asyncio.sleep(1)
+            
+            # Follow-up question with contextual reference
+            print(f"\n🔍 Step 2: Follow-up question with SAME session_id '{session_id_a}'")
+            followup_question = "when do I need to install it?"
+            followup_data = {
+                "question": followup_question,
+                "session_id": session_id_a  # SAME session_id
+            }
+            
+            followup_success, followup_response, followup_status = await self.make_request("POST", "/chat/ask", followup_data, mock_headers)
+            
+            if followup_success and isinstance(followup_response, dict) and "response" in followup_response:
+                followup_response_content = str(followup_response["response"])
+                print(f"   ✅ Follow-up response received: {len(followup_response_content)} characters")
+                print(f"   📄 Follow-up response preview: {followup_response_content[:300]}...")
+                
+                # CRITICAL CHECK: Should understand "it" refers to acoustic lagging
+                context_indicators = [
+                    "acoustic" in followup_response_content.lower(),
+                    "lagging" in followup_response_content.lower(),
+                    "previous" in followup_response_content.lower(),
+                    "discussion" in followup_response_content.lower(),
+                    "based on our" in followup_response_content.lower()
+                ]
+                
+                understands_context = any(context_indicators)
+                
+                print(f"   🧐 Context understanding indicators:")
+                print(f"      - Contains 'acoustic': {'acoustic' in followup_response_content.lower()}")
+                print(f"      - Contains 'lagging': {'lagging' in followup_response_content.lower()}")
+                print(f"      - Contains 'previous': {'previous' in followup_response_content.lower()}")
+                print(f"      - Contains 'discussion': {'discussion' in followup_response_content.lower()}")
+                print(f"      - Contains 'based on our': {'based on our' in followup_response_content.lower()}")
+                
+                if understands_context:
+                    self.log_test("✅ Test 1 - Context Understanding (Acoustic Lagging)", True, 
+                                "Follow-up question understands 'it' refers to acoustic lagging from previous context")
+                else:
+                    self.log_test("❌ Test 1 - Context Understanding (Acoustic Lagging)", False, 
+                                "Follow-up question does NOT understand context - asks for clarification instead")
+                
+                # Check for expected phrase
+                expected_phrase = "based on our previous discussion about acoustic lagging"
+                if expected_phrase.lower() in followup_response_content.lower():
+                    self.log_test("✅ Test 1 - Expected Context Phrase", True, 
+                                "Response contains expected phrase about previous discussion")
+                else:
+                    self.log_test("❌ Test 1 - Expected Context Phrase", False, 
+                                "Response missing expected phrase about previous discussion")
+                
+            else:
+                self.log_test("❌ Test 1 - Follow-up Response", False, f"Failed to get follow-up response: {followup_status}")
+        else:
+            self.log_test("❌ Test 1 - First Response", False, f"Failed to get first response: {first_status}")
+        
+        # Test 2 - Different Context Chain (Fire Safety)
+        print("\n2️⃣ TEST 2 - DIFFERENT CONTEXT CHAIN (FIRE SAFETY)")
+        print("Testing: First question about fire safety, then follow-up asking 'how do I implement this?'")
+        
+        session_id_b = "context_test_B"
+        
+        # First question
+        print(f"\n🔍 Step 1: Asking about fire safety with session_id '{session_id_b}'")
+        fire_question = "What are fire safety requirements?"
+        fire_data = {
+            "question": fire_question,
+            "session_id": session_id_b
+        }
+        
+        fire_success, fire_response, fire_status = await self.make_request("POST", "/chat/ask", fire_data, mock_headers)
+        
+        if fire_success and isinstance(fire_response, dict) and "response" in fire_response:
+            fire_response_content = str(fire_response["response"])
+            print(f"   ✅ Fire safety response received: {len(fire_response_content)} characters")
+            
+            # Check if response mentions fire safety
+            has_fire_content = any(term in fire_response_content.lower() for term in ['fire', 'safety', 'sprinkler', 'alarm'])
+            if has_fire_content:
+                self.log_test("Test 2 - First Question (Fire Safety)", True, "Response contains fire safety content")
+            else:
+                self.log_test("Test 2 - First Question (Fire Safety)", False, "Response missing fire safety content")
+            
+            # Wait a moment to ensure conversation is stored
+            await asyncio.sleep(1)
+            
+            # Follow-up question with contextual reference
+            print(f"\n🔍 Step 2: Follow-up question with SAME session_id '{session_id_b}'")
+            implement_question = "how do I implement this?"
+            implement_data = {
+                "question": implement_question,
+                "session_id": session_id_b  # SAME session_id
+            }
+            
+            implement_success, implement_response, implement_status = await self.make_request("POST", "/chat/ask", implement_data, mock_headers)
+            
+            if implement_success and isinstance(implement_response, dict) and "response" in implement_response:
+                implement_response_content = str(implement_response["response"])
+                print(f"   ✅ Implementation response received: {len(implement_response_content)} characters")
+                print(f"   📄 Implementation response preview: {implement_response_content[:300]}...")
+                
+                # CRITICAL CHECK: Should understand "this" refers to fire safety requirements
+                fire_context_indicators = [
+                    "fire" in implement_response_content.lower(),
+                    "safety" in implement_response_content.lower(),
+                    "previous" in implement_response_content.lower(),
+                    "discussion" in implement_response_content.lower(),
+                    "based on our" in implement_response_content.lower()
+                ]
+                
+                understands_fire_context = any(fire_context_indicators)
+                
+                if understands_fire_context:
+                    self.log_test("✅ Test 2 - Context Understanding (Fire Safety)", True, 
+                                "Follow-up question understands 'this' refers to fire safety requirements")
+                else:
+                    self.log_test("❌ Test 2 - Context Understanding (Fire Safety)", False, 
+                                "Follow-up question does NOT understand fire safety context")
+                
+            else:
+                self.log_test("❌ Test 2 - Follow-up Response", False, f"Failed to get implementation response: {implement_status}")
+        else:
+            self.log_test("❌ Test 2 - First Response", False, f"Failed to get fire safety response: {fire_status}")
+        
+        # Test 3 - Session Isolation
+        print("\n3️⃣ TEST 3 - SESSION ISOLATION")
+        print("Testing: Different session_ids should NOT share context")
+        
+        session_id_c = "context_test_C"
+        session_id_d = "context_test_D"  # Different session
+        
+        # First question in session C
+        print(f"\n🔍 Step 1: Asking about structural requirements with session_id '{session_id_c}'")
+        structural_question = "Tell me about structural requirements"
+        structural_data = {
+            "question": structural_question,
+            "session_id": session_id_c
+        }
+        
+        structural_success, structural_response, structural_status = await self.make_request("POST", "/chat/ask", structural_data, mock_headers)
+        
+        if structural_success:
+            print(f"   ✅ Structural response received in session {session_id_c}")
+            
+            # Wait a moment
+            await asyncio.sleep(1)
+            
+            # Follow-up question in DIFFERENT session
+            print(f"\n🔍 Step 2: Follow-up question with DIFFERENT session_id '{session_id_d}'")
+            isolation_question = "when do I need to install it?"
+            isolation_data = {
+                "question": isolation_question,
+                "session_id": session_id_d  # DIFFERENT session_id
+            }
+            
+            isolation_success, isolation_response, isolation_status = await self.make_request("POST", "/chat/ask", isolation_data, mock_headers)
+            
+            if isolation_success and isinstance(isolation_response, dict) and "response" in isolation_response:
+                isolation_response_content = str(isolation_response["response"])
+                print(f"   ✅ Isolation response received: {len(isolation_response_content)} characters")
+                print(f"   📄 Isolation response preview: {isolation_response_content[:300]}...")
+                
+                # CRITICAL CHECK: Should NOT understand context from different session
+                should_not_understand = [
+                    "structural" not in isolation_response_content.lower(),
+                    "previous" not in isolation_response_content.lower(),
+                    "discussion" not in isolation_response_content.lower(),
+                    "based on our" not in isolation_response_content.lower()
+                ]
+                
+                properly_isolated = all(should_not_understand)
+                
+                if properly_isolated:
+                    self.log_test("✅ Test 3 - Session Isolation", True, 
+                                "Different sessions properly isolated - no context sharing")
+                else:
+                    self.log_test("❌ Test 3 - Session Isolation", False, 
+                                "Sessions NOT properly isolated - context bleeding between sessions")
+                
+            else:
+                self.log_test("❌ Test 3 - Isolation Response", False, f"Failed to get isolation response: {isolation_status}")
+        else:
+            self.log_test("❌ Test 3 - Structural Response", False, f"Failed to get structural response: {structural_status}")
+        
+        # Test 4 - Database Conversation Storage
+        print("\n4️⃣ TEST 4 - DATABASE CONVERSATION STORAGE")
+        print("Testing: Verify conversations are stored in MongoDB and history retrieval works")
+        
+        # Test conversation history retrieval
+        print(f"\n🔍 Testing conversation history retrieval")
+        history_success, history_response, history_status = await self.make_request("GET", "/chat/history?limit=10", headers=mock_headers)
+        
+        if history_success and isinstance(history_response, dict):
+            if "sessions" in history_response:
+                sessions = history_response["sessions"]
+                print(f"   ✅ History retrieval successful: {len(sessions)} sessions found")
+                
+                # Check if our test sessions are present
+                test_sessions = [session_id_a, session_id_b, session_id_c, session_id_d]
+                found_sessions = []
+                
+                for session in sessions:
+                    session_id = session.get("session_id", "")
+                    if session_id in test_sessions:
+                        found_sessions.append(session_id)
+                        print(f"   📋 Found test session: {session_id}")
+                
+                if len(found_sessions) >= 2:  # At least 2 of our test sessions
+                    self.log_test("✅ Test 4 - Database Storage", True, 
+                                f"Conversations properly stored in database - found {len(found_sessions)} test sessions")
+                else:
+                    self.log_test("❌ Test 4 - Database Storage", False, 
+                                f"Conversations not properly stored - only found {len(found_sessions)} test sessions")
+                
+                # Test specific session retrieval
+                if found_sessions:
+                    test_session_id = found_sessions[0]
+                    print(f"\n🔍 Testing specific session retrieval for session: {test_session_id}")
+                    
+                    session_success, session_response, session_status = await self.make_request(
+                        "GET", f"/chat/session/{test_session_id}", headers=mock_headers)
+                    
+                    if session_success and isinstance(session_response, dict):
+                        if "messages" in session_response:
+                            messages = session_response["messages"]
+                            print(f"   ✅ Session retrieval successful: {len(messages)} messages found")
+                            
+                            # Check message structure
+                            if messages and len(messages) > 0:
+                                first_message = messages[0]
+                                required_fields = ["message_id", "type", "content", "timestamp"]
+                                has_required_fields = all(field in first_message for field in required_fields)
+                                
+                                if has_required_fields:
+                                    self.log_test("✅ Test 4 - Session Retrieval", True, 
+                                                "Session messages have proper structure with required fields")
+                                else:
+                                    self.log_test("❌ Test 4 - Session Retrieval", False, 
+                                                "Session messages missing required fields")
+                            else:
+                                self.log_test("⚠️ Test 4 - Session Messages", False, 
+                                            "Session exists but contains no messages")
+                        else:
+                            self.log_test("❌ Test 4 - Session Response", False, 
+                                        "Session response missing 'messages' field")
+                    else:
+                        self.log_test("❌ Test 4 - Session Retrieval", False, 
+                                    f"Failed to retrieve specific session: {session_status}")
+                
+            elif "chat_history" in history_response:
+                # Alternative response format
+                chat_history = history_response["chat_history"]
+                print(f"   ✅ History retrieval successful: {len(chat_history)} sessions found")
+                self.log_test("✅ Test 4 - Database Storage", True, 
+                            f"Conversations stored in database - found {len(chat_history)} sessions")
+            else:
+                self.log_test("❌ Test 4 - History Response", False, 
+                            "History response missing 'sessions' or 'chat_history' field")
+        else:
+            self.log_test("❌ Test 4 - History Retrieval", False, f"Failed to retrieve history: {history_status}")
+        
+        print("\n🎯 CONVERSATION CONTEXT TESTING SUMMARY:")
+        
+        # Count context-related test results
+        context_tests = [r for r in self.test_results if "Context" in r["test"] or "Session" in r["test"] or "Database" in r["test"]]
+        context_passed = [r for r in context_tests if r["success"]]
+        
+        print(f"   📊 Context Tests: {len(context_passed)}/{len(context_tests)} passed")
+        
+        if len(context_passed) == len(context_tests):
+            print("🎉 ✅ ALL CONVERSATION CONTEXT TESTS PASSED!")
+            print("   ✅ Follow-up questions understand previous context")
+            print("   ✅ Session isolation works properly")
+            print("   ✅ Database storage and retrieval functional")
+            self.log_test("🎯 CRITICAL: Conversation Context Functionality", True, 
+                        "All conversation context tests passed - functionality working correctly")
+        else:
+            failed_context_tests = [r for r in context_tests if not r["success"]]
+            print("❌ CONVERSATION CONTEXT ISSUES FOUND:")
+            for test in failed_context_tests:
+                print(f"   ❌ {test['test']}: {test['details']}")
+            self.log_test("🎯 CRITICAL: Conversation Context Functionality", False, 
+                        f"Conversation context issues found - {len(failed_context_tests)} tests failed")
+
     async def test_enhanced_emoji_mapping_consistency_fix(self):
         """🚨 CRITICAL: Test Enhanced Emoji Mapping Consistency Fix from Review Request"""
         print("\n🚨 === ENHANCED EMOJI MAPPING CONSISTENCY FIX VERIFICATION ===")
