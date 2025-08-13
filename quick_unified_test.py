@@ -11,7 +11,7 @@ import json
 async def test_unified_backend():
     """Quick test to verify both endpoints use unified backend"""
     
-    backend_url = "https://onesource-ai-1.preview.emergentagent.com"
+    backend_url = "https://unified-chat-core.preview.emergentagent.com"
     test_question = "What are fire safety requirements for high-rise buildings in Australia?"
     
     async with aiohttp.ClientSession() as session:
