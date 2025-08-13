@@ -321,6 +321,24 @@ Document all compliance decisions and maintain comprehensive project records. Th
                 ai_response = self._get_unified_mock_response_with_context(question, user_context)
                 tokens_used = 750  # Estimate for mock calls
             
+            # Force consistency by ensuring response contains required sections
+            # This is critical for unified backend behavior
+            if "🧐 **Mentoring Insight" not in ai_response:
+                # Add missing Mentoring Insight section to ensure consistency
+                if "📋 **Next Steps" in ai_response:
+                    ai_response = ai_response.replace(
+                        "📋 **Next Steps",
+                        "\n🧐 **Mentoring Insight:**\n\nKey project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes.\n\n📋 **Next Steps"
+                    )
+                elif "📊 **Code Requirements" in ai_response:
+                    ai_response = ai_response.replace(
+                        "📊 **Code Requirements",
+                        "\n🧐 **Mentoring Insight:**\n\nStrategic approach involves early specialist engagement and systematic compliance documentation throughout the project lifecycle.\n\n📊 **Code Requirements"
+                    )
+                else:
+                    # Add at the end if no other sections found
+                    ai_response += "\n\n🧐 **Mentoring Insight:**\n\nConsider project timing, specialist coordination, and systematic compliance documentation for optimal project outcomes."
+            
             # Step 3: Apply unified emoji mapping
             ai_response = self._apply_unified_emoji_mapping(ai_response)
             
