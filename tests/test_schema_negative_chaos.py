@@ -220,7 +220,7 @@ class TestSchemaNegativeChaos:
                 "status": "success"
             }
             
-            repaired, was_repaired = validate_chat_response(test_response)
+            repaired, was_repaired = schema_guard.ensure_v2_schema(test_response)
             
             # Verify validation
             try:
