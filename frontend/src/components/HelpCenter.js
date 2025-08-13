@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { Alert, AlertDescription } from "./ui/alert";
+import { SafeText } from '../utils/SafeText';
 import { 
   Search, MessageSquare, Mail, Phone, FileText, Video, 
   HelpCircle, Book, Shield, Users, Copyright, Database,
