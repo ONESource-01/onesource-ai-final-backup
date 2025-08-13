@@ -5204,18 +5204,21 @@ class BackendTester:
         print("   📋 Expected: Admin feedback dashboard should be accessible and functional")
 
 async def main():
-    """Run Enhanced Emoji Mapping Consistency Fix Testing"""
-    print("🚀 Starting Enhanced Emoji Mapping Consistency Fix Testing for ONESource-ai")
+    """Run Comprehensive Backend Testing including Conversation Context"""
+    print("🚀 Starting Comprehensive Backend Testing for ONESource-ai")
     print(f"Backend URL: {BACKEND_URL}")
     print(f"API Base: {API_BASE}")
-    print("🎯 FOCUS: Testing the CRITICAL Enhanced Emoji Mapping Structural Fix from review request")
+    print("🎯 FOCUS: Testing CRITICAL Conversation Context Functionality from review request")
     print("=" * 80)
     
     async with BackendTester() as tester:
         # Run basic health check first
         await tester.test_basic_api_health()
         
-        # 🚨 MAIN FOCUS: Enhanced Emoji Mapping Structural Fix - PRIORITY TEST
+        # 🚨 CRITICAL: Conversation Context Functionality Testing - MAIN FOCUS
+        await tester.test_conversation_context_functionality()
+        
+        # 🚨 ADDITIONAL: Enhanced Emoji Mapping Structural Fix
         await tester.test_enhanced_emoji_mapping_structural_fix()
         
         # 🚨 ADDITIONAL: Enhanced Emoji Mapping Water System Fix
