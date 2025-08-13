@@ -173,21 +173,22 @@ class ParityTester:
         
         r = await self.make_request("/chat/ask", sample_payload)
         
-        # Check for required response structure
-        has_text = isinstance(r.get("text"), str) and len(r["text"]) > 0
-        has_emoji_map = isinstance(r.get("emoji_map"), list)
+        # Check for required v2 response structure
+        has_title = isinstance(r.get("title"), str) and len(r["title"]) > 0
+        has_blocks = isinstance(r.get("blocks"), list) and len(r["blocks"]) > 0
         has_meta = isinstance(r.get("meta"), dict)
         
-        # Check meta contains expected fields
+        # Check meta contains expected fields for v2
         meta_has_fields = False
         if has_meta:
-            meta_fields = ["tier", "tokens_used", "session_id"]
+            meta_fields = ["schema", "mapped", "emoji"]
             meta_has_fields = all(field in r["meta"] for field in meta_fields)
+            schema_is_v2 = r["meta"].get("schema") == "v2"
         
-        if has_text and has_emoji_map and has_meta and meta_has_fields:
-            self.log_test("Schema Enforcement", True, "Response follows enforced schema")
+        if has_title and has_blocks and has_meta and meta_has_fields and schema_is_v2:
+            self.log_test("Schema Enforcement", True, "Response follows enforced v2 schema")
         else:
-            self.log_test("Schema Enforcement", False, f"Schema issues - text: {has_text}, emoji_map: {has_emoji_map}, meta: {has_meta}, meta_fields: {meta_has_fields}")
+            self.log_test("Schema Enforcement", False, f"Schema issues - title: {has_title}, blocks: {has_blocks}, meta: {has_meta}, meta_fields: {meta_has_fields}, v2: {schema_is_v2 if has_meta else False}")
 
     async def test_context_parity(self):
         """Test 5: Context handling parity - CRITICAL TEST"""
