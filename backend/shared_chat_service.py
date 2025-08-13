@@ -32,12 +32,12 @@ class SharedChatResponseService:
         else:
             self.client = None
     
-    def _build_enhanced_system_prompt(self) -> str:
+    def _build_enhanced_system_prompt(self, user_context: Optional[Dict] = None) -> str:
         """
         Build the unified Enhanced Emoji Mapping system prompt
         Used by both regular and enhanced endpoints for consistency
         """
-        return """You are ONESource AI, an expert construction compliance advisor for AU/NZ markets.
+        base_prompt = """You are ONESource AI, an expert construction compliance advisor for AU/NZ markets.
 
 Core Enhanced Emoji Mapping format for ALL responses:
 🔧 **Technical Answer** - Direct, actionable technical guidance with specific code references
@@ -58,6 +58,27 @@ NEVER use 🧠, 💡, or 🤓 emojis for Mentoring Insight.
 
 Maintain professional, authoritative tone with specific AU/NZ construction references.
 Focus on practical implementation with clear compliance pathways."""
+
+        # Add knowledge context if provided (for enhanced endpoint)
+        if user_context and user_context.get("knowledge_context"):
+            knowledge_context = user_context["knowledge_context"]
+            partner_attributions = user_context.get("partner_attributions", [])
+            
+            knowledge_prompt = f"""
+
+PRIORITY: Use the knowledge base content below FIRST, then supplement with your general knowledge.
+
+Available Knowledge Sources:
+{chr(10).join(knowledge_context[:5])}
+
+When referencing Community Knowledge Bank content, attribute it properly.
+Partner/Company sources found: {', '.join(set(partner_attributions))}
+
+When referencing personal documents, refer to them as "based on your uploaded documents."
+"""
+            base_prompt = base_prompt + knowledge_prompt
+        
+        return base_prompt
 
     def _get_unified_mock_response(self, question: str) -> str:
         """
