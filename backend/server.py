@@ -956,12 +956,13 @@ async def unified_chat_ask(
         user_id = current_user["uid"] if current_user else None
         tier = "starter"  # Regular endpoint always uses starter tier
         
-        # Generate unified response
+        # Generate unified response - NO ENDPOINT-SPECIFIC LOGIC
         response = await unified_chat_service.generate_response(
             question=chat_data.question,
             session_id=chat_data.session_id or str(uuid.uuid4()),
             tier=tier,
-            user_id=user_id
+            user_id=user_id,
+            knowledge_context=None  # Regular endpoint has no enhanced knowledge
         )
         
         # Convert to API response format
