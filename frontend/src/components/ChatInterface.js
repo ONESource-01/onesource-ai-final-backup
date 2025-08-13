@@ -1056,9 +1056,17 @@ const ChatInterface = () => {
                 onKeyDown={handleKeyPress}
                 placeholder="Ask about building codes, standards, or construction best practices..."
                 disabled={loading || (subscriptionStatus?.is_trial && trialInfo?.questions_remaining <= 0)}
-                className="pr-12 py-3 resize-none"
+                className="pr-20 py-3 resize-none"
                 style={{ minHeight: '48px' }}
               />
+              
+              {/* Context Info Tooltip */}
+              <div 
+                className="absolute right-14 top-3 text-gray-400 hover:text-gray-600 cursor-help"
+                title="Conversations remember context for 30 days per session"
+              >
+                <Info className="h-4 w-4" />
+              </div>
               
               <Button
                 onClick={sendMessage}
