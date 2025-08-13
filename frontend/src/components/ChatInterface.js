@@ -38,6 +38,7 @@ const ChatInterface = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
   const [userPreferences, setUserPreferences] = useState(null);
+  const [showNewSessionCallout, setShowNewSessionCallout] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Set page title for this component
