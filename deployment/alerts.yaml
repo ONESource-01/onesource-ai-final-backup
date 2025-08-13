@@ -1,0 +1,114 @@
+# Phase 4: Production Alerts Configuration
+# Prometheus-style alert rules for ONESource AI monitoring
+
+groups:
+  - name: onesource-schema-alerts
+    interval: 30s
+    rules:
+      - alert: SchemaFailuresHigh
+        expr: rate(schema_validation_failures_total[10m]) > 0
+        for: 10m
+        labels:
+          severity: page
+          service: onesource-ai
+          component: schema-guard
+        annotations:
+          summary: "Schema validation failures detected"
+          description: "Schema validation failures have been occurring for {{ $labels.instance }} for more than 10 minutes. Current rate: {{ $value | printf \"%.2f\" }} failures/sec"
+          runbook_url: "https://docs.onesource.ai/runbooks/schema_guard.md"
+          
+      - alert: SchemaRepairsHigh
+        expr: (rate(schema_repairs_total[24h]) / rate(responses_validated_total[24h])) > 0.005
+        for: 60m
+        labels:
+          severity: warn
+          service: onesource-ai
+          component: schema-guard
+        annotations:
+          summary: "High schema repair rate detected"
+          description: "Schema repair rate is {{ $value | printf \"%.3f\" }} ({{ ($value * 100) | printf \"%.2f\" }}%) over 24h, exceeding 0.5% threshold"
+          runbook_url: "https://docs.onesource.ai/runbooks/schema_guard.md"
+          
+      - alert: PersistenceErrorsHigh
+        expr: rate(history_persist_errors_total[10m]) > 0.001
+        for: 15m
+        labels:
+          severity: page
+          service: onesource-ai
+          component: conversation-store
+        annotations:
+          summary: "High conversation persistence error rate"
+          description: "Persistence errors at {{ $value | printf \"%.4f\" }} errors/sec for {{ $labels.instance }}, exceeding 0.1% threshold"
+          runbook_url: "https://docs.onesource.ai/runbooks/redis.md"
+          
+      - alert: LatencyDeltaHigh
+        expr: (latency_p95_seconds{endpoint="/api/chat/ask-enhanced"} - latency_p95_seconds{endpoint="/api/chat/ask"}) > 0.1
+        for: 15m
+        labels:
+          severity: warn
+          service: onesource-ai
+          component: chat-service  
+        annotations:
+          summary: "High latency delta between chat endpoints"
+          description: "Enhanced chat endpoint P95 latency is {{ $value | printf \"%.2f\" }}s higher than regular chat, exceeding 100ms threshold"
+          
+  - name: onesource-service-alerts
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: (rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])) > 0.003
+        for: 5m
+        labels:
+          severity: page
+          service: onesource-ai
+        annotations:
+          summary: "High 5xx error rate"
+          description: "5xx error rate is {{ $value | printf \"%.3f\" }} ({{ ($value * 100) | printf \"%.2f\" }}%) for {{ $labels.instance }}"
+          
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2.0
+        for: 10m
+        labels:
+          severity: warn
+          service: onesource-ai
+        annotations:
+          summary: "High request latency"
+          description: "P95 latency is {{ $value | printf \"%.2f\" }}s for {{ $labels.instance }}"
+          
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: page
+          service: onesource-ai
+          component: redis
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance {{ $labels.instance }} is not reachable"
+          runbook_url: "https://docs.onesource.ai/runbooks/redis.md"
+          
+  - name: onesource-business-alerts
+    interval: 60s
+    rules:
+      - alert: LowUserEngagement
+        expr: rate(example_clicks_total[24h]) / rate(examples_served_total[24h]) < 0.01
+        for: 7d
+        labels:
+          severity: warn
+          service: onesource-ai
+          component: dynamic-prompts
+        annotations:
+          summary: "Low example click-through rate"
+          description: "Example CTR has been below 1% for 7 days: {{ ($value * 100) | printf \"%.2f\" }}%"
+          
+      - alert: ConversationContextFailure
+        expr: rate(msg_count_before{turn=">=2"}[1h]) / rate(requests_total{turn=">=2"}[1h]) < 0.999
+        for: 30m
+        labels:
+          severity: page
+          service: onesource-ai
+          component: conversation-store
+        annotations:
+          summary: "Conversation context not working"
+          description: "Multi-turn conversations missing context: {{ ($value * 100) | printf \"%.2f\" }}% success rate"
+          runbook_url: "https://docs.onesource.ai/runbooks/redis.md"
