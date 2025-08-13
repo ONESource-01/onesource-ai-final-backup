@@ -29,7 +29,7 @@ async def liveness_probe():
         start_time = time.time()
         
         # Check critical imports work
-        from core.chat_service import get_unified_chat_service
+        from core.chat_service import unified_chat_service
         from middleware.schema_guard import schema_guard
         
         response_time_ms = (time.time() - start_time) * 1000
