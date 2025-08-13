@@ -40,6 +40,7 @@ class ConversationContextManager:
         
         try:
             await self.collection.insert_one(stub)
+            print(f"DEBUG: Pre-saved conversation stub - session_id: {session_id}, question: '{question[:50]}...'")
             return conversation_id
         except Exception as e:
             print(f"Error pre-saving conversation stub: {e}")
