@@ -5525,6 +5525,322 @@ class BackendTester:
         print("   ✅ Verified JSON serialization works without MongoDB ObjectId issues")
         print("   📋 Expected: Admin feedback dashboard should be accessible and functional")
 
+    async def test_unified_chat_architecture_conversation_context(self):
+        """🚨 CRITICAL: Test Unified Chat Architecture with Conversation Context Bug Fix"""
+        print("\n🚨 === UNIFIED CHAT ARCHITECTURE CONVERSATION CONTEXT TESTING ===")
+        print("Testing the CRITICAL conversation context bug fix with unified architecture")
+        print("🎯 FOCUS: Both endpoints should use unified_chat_service from core/chat_service.py")
+        print("🎯 ISSUE: Follow-up questions should understand contextual references (it, this, that)")
+        print("🎯 ARCHITECTURE: Verify unified core services integration")
+        
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test 1 - Regular Chat Endpoint with Acoustic Lagging Context (from review request)
+        print("\n1️⃣ TEST 1 - REGULAR CHAT ENDPOINT (POST /api/chat/ask) - ACOUSTIC LAGGING CONTEXT")
+        print("Testing exact conversation flow from review request:")
+        print("   First ask: 'Tell me about acoustic lagging requirements'")
+        print("   Follow-up: 'when do I need to install it?' (testing if it understands 'it' = acoustic lagging)")
+        
+        session_id_regular = "unified_context_test_regular"
+        
+        # Step 1: First question about acoustic lagging
+        print(f"\n🔍 Step 1: First question with session_id '{session_id_regular}'")
+        first_question = "Tell me about acoustic lagging requirements"
+        first_data = {
+            "question": first_question,
+            "session_id": session_id_regular
+        }
+        
+        first_success, first_response, first_status = await self.make_request("POST", "/chat/ask", first_data, mock_headers)
+        
+        if first_success and isinstance(first_response, dict):
+            # Check response structure for unified architecture
+            has_text_field = "text" in first_response
+            has_emoji_map = "emoji_map" in first_response
+            has_meta = "meta" in first_response
+            
+            if has_text_field:
+                first_response_content = str(first_response["text"])
+                print(f"   ✅ First response received: {len(first_response_content)} characters")
+                print(f"   📄 Response preview: {first_response_content[:300]}...")
+                
+                # Check for Enhanced Emoji Mapping consistency
+                has_tech_answer = "🔧 **Technical Answer**" in first_response_content
+                has_mentoring_insight = "🧐 **Mentoring Insight**" in first_response_content
+                
+                print(f"   🔧 Has Technical Answer: {has_tech_answer}")
+                print(f"   🧐 Has Mentoring Insight: {has_mentoring_insight}")
+                
+                if has_tech_answer and has_mentoring_insight:
+                    self.log_test("Regular Chat - Enhanced Emoji Mapping", True, "Response uses Enhanced Emoji Mapping format")
+                else:
+                    self.log_test("Regular Chat - Enhanced Emoji Mapping", False, "Response missing Enhanced Emoji Mapping sections")
+                
+                # Check for acoustic content
+                has_acoustic_content = any(term in first_response_content.lower() for term in ['acoustic', 'lagging', 'sound'])
+                if has_acoustic_content:
+                    self.log_test("Regular Chat - Acoustic Content", True, "Response contains acoustic lagging content")
+                else:
+                    self.log_test("Regular Chat - Acoustic Content", False, "Response missing acoustic lagging content")
+                
+            else:
+                # Check legacy response format
+                first_response_content = str(first_response.get("response", ""))
+                print(f"   ⚠️ Legacy response format detected: {len(first_response_content)} characters")
+            
+            # Check unified architecture response structure
+            if has_text_field and has_emoji_map and has_meta:
+                self.log_test("Regular Chat - Unified Architecture Response", True, "Response uses unified architecture format (text, emoji_map, meta)")
+            else:
+                self.log_test("Regular Chat - Unified Architecture Response", False, "Response not using unified architecture format")
+            
+            # Wait for conversation to be stored
+            await asyncio.sleep(2)
+            
+            # Step 2: Follow-up question with contextual reference
+            print(f"\n🔍 Step 2: Follow-up question with SAME session_id '{session_id_regular}'")
+            followup_question = "when do I need to install it?"
+            followup_data = {
+                "question": followup_question,
+                "session_id": session_id_regular  # SAME session_id for context
+            }
+            
+            followup_success, followup_response, followup_status = await self.make_request("POST", "/chat/ask", followup_data, mock_headers)
+            
+            if followup_success and isinstance(followup_response, dict):
+                followup_content = str(followup_response.get("text", followup_response.get("response", "")))
+                print(f"   ✅ Follow-up response received: {len(followup_content)} characters")
+                print(f"   📄 Follow-up preview: {followup_content[:400]}...")
+                
+                # CRITICAL CHECK: Should understand "it" refers to acoustic lagging
+                context_indicators = [
+                    "acoustic" in followup_content.lower(),
+                    "lagging" in followup_content.lower(),
+                    "previous" in followup_content.lower(),
+                    "discussion" in followup_content.lower(),
+                    "based on our" in followup_content.lower(),
+                    "installation" in followup_content.lower() and "acoustic" in followup_content.lower()
+                ]
+                
+                understands_context = any(context_indicators)
+                
+                print(f"   🧐 Context understanding analysis:")
+                print(f"      - Contains 'acoustic': {'acoustic' in followup_content.lower()}")
+                print(f"      - Contains 'lagging': {'lagging' in followup_content.lower()}")
+                print(f"      - Contains 'previous': {'previous' in followup_content.lower()}")
+                print(f"      - Contains 'discussion': {'discussion' in followup_content.lower()}")
+                print(f"      - Contains 'based on our': {'based on our' in followup_content.lower()}")
+                print(f"      - Contains acoustic + installation: {'installation' in followup_content.lower() and 'acoustic' in followup_content.lower()}")
+                
+                if understands_context:
+                    self.log_test("✅ CRITICAL: Regular Chat Context Understanding", True, 
+                                "Follow-up question understands 'it' refers to acoustic lagging from previous context")
+                else:
+                    self.log_test("❌ CRITICAL: Regular Chat Context Understanding", False, 
+                                "Follow-up question does NOT understand context - conversation context bug still present")
+                
+            else:
+                self.log_test("❌ Regular Chat - Follow-up Response", False, f"Failed to get follow-up response: {followup_status}")
+        else:
+            self.log_test("❌ Regular Chat - First Response", False, f"Failed to get first response: {first_status}")
+        
+        # Test 2 - Enhanced Chat Endpoint with Fire Safety Context (from review request)
+        print("\n2️⃣ TEST 2 - ENHANCED CHAT ENDPOINT (POST /api/chat/ask-enhanced) - FIRE SAFETY CONTEXT")
+        print("Testing exact conversation flow from review request:")
+        print("   First ask: 'What are fire safety requirements?'")
+        print("   Follow-up: 'how do I implement this?' (testing if it understands 'this' = fire safety)")
+        
+        session_id_enhanced = "unified_context_test_enhanced"
+        
+        # Step 1: First question about fire safety
+        print(f"\n🔍 Step 1: First question with session_id '{session_id_enhanced}'")
+        fire_question = "What are fire safety requirements?"
+        fire_data = {
+            "question": fire_question,
+            "session_id": session_id_enhanced
+        }
+        
+        fire_success, fire_response, fire_status = await self.make_request("POST", "/chat/ask-enhanced", fire_data, mock_headers)
+        
+        if fire_success and isinstance(fire_response, dict):
+            # Check response structure for unified architecture
+            has_text_field = "text" in fire_response
+            has_emoji_map = "emoji_map" in fire_response
+            has_meta = "meta" in fire_response
+            
+            if has_text_field:
+                fire_response_content = str(fire_response["text"])
+                print(f"   ✅ Fire safety response received: {len(fire_response_content)} characters")
+                
+                # Check for Enhanced Emoji Mapping consistency
+                has_tech_answer = "🔧 **Technical Answer**" in fire_response_content
+                has_mentoring_insight = "🧐 **Mentoring Insight**" in fire_response_content
+                
+                print(f"   🔧 Has Technical Answer: {has_tech_answer}")
+                print(f"   🧐 Has Mentoring Insight: {has_mentoring_insight}")
+                
+                if has_tech_answer and has_mentoring_insight:
+                    self.log_test("Enhanced Chat - Enhanced Emoji Mapping", True, "Response uses Enhanced Emoji Mapping format")
+                else:
+                    self.log_test("Enhanced Chat - Enhanced Emoji Mapping", False, "Response missing Enhanced Emoji Mapping sections")
+                
+                # Check for fire safety content
+                has_fire_content = any(term in fire_response_content.lower() for term in ['fire', 'safety', 'sprinkler', 'alarm'])
+                if has_fire_content:
+                    self.log_test("Enhanced Chat - Fire Safety Content", True, "Response contains fire safety content")
+                else:
+                    self.log_test("Enhanced Chat - Fire Safety Content", False, "Response missing fire safety content")
+                
+            else:
+                # Check legacy response format
+                fire_response_content = str(fire_response.get("response", ""))
+                print(f"   ⚠️ Legacy response format detected: {len(fire_response_content)} characters")
+            
+            # Check unified architecture response structure
+            if has_text_field and has_emoji_map and has_meta:
+                self.log_test("Enhanced Chat - Unified Architecture Response", True, "Response uses unified architecture format")
+            else:
+                self.log_test("Enhanced Chat - Unified Architecture Response", False, "Response not using unified architecture format")
+            
+            # Wait for conversation to be stored
+            await asyncio.sleep(2)
+            
+            # Step 2: Follow-up question with contextual reference
+            print(f"\n🔍 Step 2: Follow-up question with SAME session_id '{session_id_enhanced}'")
+            implement_question = "how do I implement this?"
+            implement_data = {
+                "question": implement_question,
+                "session_id": session_id_enhanced  # SAME session_id for context
+            }
+            
+            implement_success, implement_response, implement_status = await self.make_request("POST", "/chat/ask-enhanced", implement_data, mock_headers)
+            
+            if implement_success and isinstance(implement_response, dict):
+                implement_content = str(implement_response.get("text", implement_response.get("response", "")))
+                print(f"   ✅ Implementation response received: {len(implement_content)} characters")
+                print(f"   📄 Implementation preview: {implement_content[:400]}...")
+                
+                # CRITICAL CHECK: Should understand "this" refers to fire safety requirements
+                fire_context_indicators = [
+                    "fire" in implement_content.lower(),
+                    "safety" in implement_content.lower(),
+                    "previous" in implement_content.lower(),
+                    "discussion" in implement_content.lower(),
+                    "based on our" in implement_content.lower(),
+                    "implementation" in implement_content.lower() and "fire" in implement_content.lower()
+                ]
+                
+                understands_fire_context = any(fire_context_indicators)
+                
+                print(f"   🧐 Fire safety context analysis:")
+                print(f"      - Contains 'fire': {'fire' in implement_content.lower()}")
+                print(f"      - Contains 'safety': {'safety' in implement_content.lower()}")
+                print(f"      - Contains 'previous': {'previous' in implement_content.lower()}")
+                print(f"      - Contains 'discussion': {'discussion' in implement_content.lower()}")
+                print(f"      - Contains 'based on our': {'based on our' in implement_content.lower()}")
+                print(f"      - Contains fire + implementation: {'implementation' in implement_content.lower() and 'fire' in implement_content.lower()}")
+                
+                if understands_fire_context:
+                    self.log_test("✅ CRITICAL: Enhanced Chat Context Understanding", True, 
+                                "Follow-up question understands 'this' refers to fire safety requirements")
+                else:
+                    self.log_test("❌ CRITICAL: Enhanced Chat Context Understanding", False, 
+                                "Follow-up question does NOT understand fire safety context")
+                
+            else:
+                self.log_test("❌ Enhanced Chat - Follow-up Response", False, f"Failed to get implementation response: {implement_status}")
+        else:
+            self.log_test("❌ Enhanced Chat - First Response", False, f"Failed to get fire safety response: {fire_status}")
+        
+        # Test 3 - Core Architecture Integration Verification
+        print("\n3️⃣ TEST 3 - CORE ARCHITECTURE INTEGRATION VERIFICATION")
+        print("Testing that both endpoints use unified_chat_service from core/chat_service.py")
+        
+        # Test response consistency between endpoints
+        test_question = "What are concrete strength requirements?"
+        test_session_regular = "arch_test_regular"
+        test_session_enhanced = "arch_test_enhanced"
+        
+        # Regular endpoint
+        regular_data = {"question": test_question, "session_id": test_session_regular}
+        regular_success, regular_response, regular_status = await self.make_request("POST", "/chat/ask", regular_data, mock_headers)
+        
+        # Enhanced endpoint  
+        enhanced_data = {"question": test_question, "session_id": test_session_enhanced}
+        enhanced_success, enhanced_response, enhanced_status = await self.make_request("POST", "/chat/ask-enhanced", enhanced_data, mock_headers)
+        
+        if regular_success and enhanced_success:
+            regular_content = str(regular_response.get("text", regular_response.get("response", "")))
+            enhanced_content = str(enhanced_response.get("text", enhanced_response.get("response", "")))
+            
+            # Check for unified formatting consistency
+            regular_has_emoji_mapping = "🔧 **Technical Answer**" in regular_content and "🧐 **Mentoring Insight**" in regular_content
+            enhanced_has_emoji_mapping = "🔧 **Technical Answer**" in enhanced_content and "🧐 **Mentoring Insight**" in enhanced_content
+            
+            if regular_has_emoji_mapping and enhanced_has_emoji_mapping:
+                self.log_test("✅ Core Architecture - Response Consistency", True, 
+                            "Both endpoints use consistent Enhanced Emoji Mapping format")
+            else:
+                self.log_test("❌ Core Architecture - Response Consistency", False, 
+                            f"Inconsistent formatting: Regular={regular_has_emoji_mapping}, Enhanced={enhanced_has_emoji_mapping}")
+            
+            # Check response structure consistency
+            regular_unified_format = "text" in regular_response and "emoji_map" in regular_response
+            enhanced_unified_format = "text" in enhanced_response and "emoji_map" in enhanced_response
+            
+            if regular_unified_format and enhanced_unified_format:
+                self.log_test("✅ Core Architecture - Unified Schema", True, 
+                            "Both endpoints use unified response schema")
+            else:
+                self.log_test("❌ Core Architecture - Unified Schema", False, 
+                            f"Schema inconsistency: Regular={regular_unified_format}, Enhanced={enhanced_unified_format}")
+        else:
+            self.log_test("❌ Core Architecture - Integration Test", False, 
+                        f"Failed to test both endpoints: Regular={regular_status}, Enhanced={enhanced_status}")
+        
+        # Test 4 - Context Manager Initialization Verification
+        print("\n4️⃣ TEST 4 - CONTEXT MANAGER INITIALIZATION VERIFICATION")
+        print("Testing that context_manager is properly initialized and working")
+        
+        # Test conversation history retrieval to verify context manager
+        history_success, history_response, history_status = await self.make_request("GET", "/chat/history?limit=5", headers=mock_headers)
+        
+        if history_success and isinstance(history_response, dict):
+            if "sessions" in history_response or "chat_history" in history_response:
+                sessions = history_response.get("sessions", history_response.get("chat_history", []))
+                print(f"   ✅ Context manager working: {len(sessions)} conversation sessions found")
+                
+                # Check if our test sessions are present
+                test_sessions = [session_id_regular, session_id_enhanced]
+                found_sessions = []
+                
+                for session in sessions:
+                    session_id = session.get("session_id", "")
+                    if session_id in test_sessions:
+                        found_sessions.append(session_id)
+                        print(f"   📋 Found test session: {session_id}")
+                
+                if len(found_sessions) >= 1:
+                    self.log_test("✅ Context Manager - Database Storage", True, 
+                                f"Context manager properly storing conversations - found {len(found_sessions)} test sessions")
+                else:
+                    self.log_test("❌ Context Manager - Database Storage", False, 
+                                "Context manager not storing conversations properly")
+                
+            else:
+                self.log_test("❌ Context Manager - Response Format", False, 
+                            "History response missing expected session data")
+        else:
+            self.log_test("❌ Context Manager - History Retrieval", False, 
+                        f"Failed to retrieve conversation history: {history_status}")
+        
+        print("\n🎯 UNIFIED CHAT ARCHITECTURE TESTING SUMMARY:")
+        print("✅ Tested regular chat endpoint with acoustic lagging context")
+        print("✅ Tested enhanced chat endpoint with fire safety context")
+        print("✅ Verified core architecture integration")
+        print("✅ Verified context manager initialization")
+        print("🔍 Results show whether unified architecture fixes conversation context bug")
+
 async def main():
     """Run Unified Chat Architecture Testing with Conversation Context Focus"""
     print("🚀 Starting Unified Chat Architecture Testing for ONESource-ai")
