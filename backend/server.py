@@ -2037,23 +2037,24 @@ This enhanced analysis demonstrates the systematic approach available with upgra
             except Exception as e:
                 print(f"OpenAI API error in booster: {e}")
                 # Fallback to enhanced mock
-                boosted_response = f"""
-                **🚀 Enhanced {target_tier.upper().replace('_', '-')} Analysis**
+                boosted_response = f"""Here is your boosted response.
 
-                **Professional Assessment:**
-                This comprehensive analysis demonstrates the advanced capabilities available with {target_tier.upper().replace('_', '-')} membership, including detailed compliance checking, cross-referenced standards, and professional implementation guidance.
+**🚀 Enhanced {target_tier.upper().replace('_', '-')} Analysis**
 
-                **Key Features Demonstrated:**
-                ✅ Advanced technical analysis
-                ✅ Multi-standard compliance checking  
-                ✅ Professional formatting and structure
-                ✅ Industry best practices integration
-                ⚠️ Risk assessment and mitigation strategies
+**Professional Assessment:**
+This comprehensive analysis demonstrates the advanced capabilities available with {target_tier.upper().replace('_', '-')} membership, including detailed compliance checking, cross-referenced standards, and professional implementation guidance.
 
-                **Value Proposition:**
-                Upgrading to {target_tier.upper().replace('_', '-')} provides you with comprehensive, professional-grade responses that save time and ensure compliance across all construction disciplines.
+**Key Features Demonstrated:**
+- Advanced technical analysis
+- Multi-standard compliance checking  
+- Professional formatting and structure
+- Industry best practices integration
+- Risk assessment and mitigation strategies
 
-                *Experience the full capabilities - upgrade today!*
+**Value Proposition:**
+Upgrading to {target_tier.upper().replace('_', '-')} provides you with comprehensive, professional-grade responses that save time and ensure compliance across all construction disciplines.
+
+*Experience the full capabilities - upgrade today!*
                 """
         
         # Record booster usage
