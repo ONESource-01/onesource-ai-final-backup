@@ -943,18 +943,25 @@ async def unified_chat_ask(
 ):
     """UNIFIED CHAT ENDPOINT - uses single code path"""
     try:
+        print(f"DEBUG: Regular chat endpoint called with session_id: {chat_data.session_id}, question: {chat_data.question[:50]}...")
+        
         # Import unified services
         from core.chat_service import unified_chat_service
         from core.context_manager import init_context_manager
+        
+        print("DEBUG: Imported unified services successfully")
         
         # Initialize context manager if not already done
         if not hasattr(unified_chat_service, '_context_initialized'):
             init_context_manager(db)
             unified_chat_service._context_initialized = True
+            print("DEBUG: Context manager initialized")
         
         # Determine user info
         user_id = current_user["uid"] if current_user else None
         tier = "starter"  # Regular endpoint always uses starter tier
+        
+        print(f"DEBUG: Calling unified chat service with tier={tier}, user_id={user_id}")
         
         # Generate unified response - NO ENDPOINT-SPECIFIC LOGIC
         response = await unified_chat_service.generate_response(
@@ -964,6 +971,8 @@ async def unified_chat_ask(
             user_id=user_id,
             knowledge_context=None  # Regular endpoint has no enhanced knowledge
         )
+        
+        print(f"DEBUG: Unified chat service returned response length: {len(response.text)}")
         
         # Convert to API response format
         api_response = {
