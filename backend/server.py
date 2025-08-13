@@ -993,11 +993,42 @@ async def ask_question(
                 session_id = chat_data.session_id or str(uuid.uuid4())
                 user_profile = None
         
-        # **UNIFIED BACKEND CALL - NO LEGACY LOGIC**
+        # Get conversation history for context
+        try:
+            # Get recent conversation history for this session to maintain context
+            recent_conversations = await db.conversations.find({
+                "session_id": session_id
+            }).sort("timestamp", -1).limit(10).to_list(length=10)
+            
+            # Convert to message format for context
+            conversation_history = []
+            for conv in reversed(recent_conversations):  # Reverse to get chronological order
+                # Add user message
+                conversation_history.append({
+                    "type": "user",
+                    "content": conv.get("question", ""),
+                    "timestamp": conv.get("timestamp")
+                })
+                # Add AI response
+                response_content = conv.get("response", "")
+                if isinstance(response_content, dict):
+                    response_content = response_content.get("technical", "") or str(response_content)
+                conversation_history.append({
+                    "type": "ai", 
+                    "content": response_content,
+                    "timestamp": conv.get("timestamp")
+                })
+                
+        except Exception as e:
+            print(f"Error retrieving conversation history: {e}")
+            conversation_history = []
+        
+        # **UNIFIED BACKEND CALL WITH CONVERSATION CONTEXT**
         response_data = shared_chat_service.get_unified_chat_response(
             question=chat_data.question,
             session_id=session_id,
-            user_context=None  # Regular endpoint doesn't use enhanced features
+            user_context=None,  # Regular endpoint doesn't use enhanced features
+            conversation_history=conversation_history
         )
         
         # Add trial and subscription information  
