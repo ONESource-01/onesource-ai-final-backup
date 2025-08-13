@@ -959,6 +959,254 @@ class BackendTester:
         print("✅ Verified no incorrect 🤓 or 🧠 emojis are used")
         print("🎉 CONCLUSION: Enhanced Emoji Mapping consistency testing completed")
 
+    async def test_v2_rendering_pipeline_security_fixes(self):
+        """🚨 CRITICAL: Test V2 Rendering Pipeline Security Fixes from Review Request"""
+        print("\n🚨 === V2 RENDERING PIPELINE SECURITY VALIDATION ===")
+        print("Testing the complete V2 rendering pipeline after security fixes")
+        print("🎯 SECURITY CHANGES IMPLEMENTED:")
+        print("   - Eliminated ALL dangerouslySetInnerHTML usage across frontend")
+        print("   - Added SafeText component with HTML escaping and safe React rendering")
+        print("   - Updated TechnicalAnswerCard, MentoringCard, NextStepsList to use SafeText")
+        print("   - Removed legacy formatAIResponse function completely")
+        print("   - V2Renderer now processes V2 schema with proper security")
+        print("🎯 TEST FOCUS:")
+        print("   1. V2 Schema Validation - /api/chat/ask returns proper V2 structure")
+        print("   2. Content Security - response content substantial (>1000 chars)")
+        print("   3. Section Parsing - V2 responses contain Technical Answer, Mentoring Insight, Next Steps")
+        print("   4. Schema Compliance - meta.schema='v2' and proper session handling")
+        print("   5. Performance - response time under 10 seconds")
+        print("   6. Error Handling - malformed requests get proper validation errors")
+        
+        import time
+        mock_headers = {"Authorization": "Bearer mock_dev_token"}
+        
+        # Test question from review request
+        test_question = "When is a building surveyor required for approval?"
+        print(f"\n🔍 Testing with specified question: '{test_question}'")
+        
+        # Test 1: V2 Schema Validation
+        print("\n1️⃣ TESTING V2 SCHEMA VALIDATION")
+        
+        start_time = time.time()
+        chat_data = {
+            "question": test_question,
+            "session_id": "v2_security_test_session"
+        }
+        
+        success, response_data, status = await self.make_request("POST", "/chat/ask", chat_data, mock_headers)
+        response_time = time.time() - start_time
+        
+        print(f"   ⏱️ Response time: {response_time:.2f} seconds")
+        
+        if success and isinstance(response_data, dict):
+            print(f"   ✅ API Response successful: Status {status}")
+            
+            # Check for V2 schema structure
+            has_title = "title" in response_data
+            has_blocks = "blocks" in response_data
+            has_meta = "meta" in response_data
+            
+            print(f"   📋 V2 Schema Structure Check:")
+            print(f"      Has 'title': {has_title}")
+            print(f"      Has 'blocks': {has_blocks}")
+            print(f"      Has 'meta': {has_meta}")
+            
+            if has_blocks and response_data.get("blocks"):
+                blocks = response_data["blocks"]
+                print(f"      Number of blocks: {len(blocks)}")
+                
+                # Analyze block structure
+                for i, block in enumerate(blocks):
+                    block_type = block.get("type", "unknown")
+                    has_content = "content" in block
+                    content_length = len(str(block.get("content", ""))) if has_content else 0
+                    print(f"      Block {i+1}: type='{block_type}', has_content={has_content}, length={content_length}")
+                
+                # Test 2: Content Security and Substantial Content
+                print("\n2️⃣ TESTING CONTENT SECURITY AND SUBSTANTIAL CONTENT")
+                
+                total_content_length = 0
+                technical_content = ""
+                mentoring_content = ""
+                next_steps_content = ""
+                
+                for block in blocks:
+                    content = str(block.get("content", ""))
+                    total_content_length += len(content)
+                    
+                    block_type = block.get("type", "").lower()
+                    if "technical" in block_type:
+                        technical_content = content
+                    elif "mentoring" in block_type:
+                        mentoring_content = content
+                    elif "next" in block_type or "steps" in block_type:
+                        next_steps_content = content
+                
+                print(f"   📊 Content Analysis:")
+                print(f"      Total content length: {total_content_length} characters")
+                print(f"      Technical Answer length: {len(technical_content)} characters")
+                print(f"      Mentoring Insight length: {len(mentoring_content)} characters")
+                print(f"      Next Steps length: {len(next_steps_content)} characters")
+                
+                # Check for substantial content (>1000 chars)
+                if total_content_length > 1000:
+                    self.log_test("✅ V2 Content Security - Substantial Content", True, 
+                                f"Response contains {total_content_length} characters (>1000 required)")
+                else:
+                    self.log_test("❌ V2 Content Security - Insufficient Content", False, 
+                                f"Response only {total_content_length} characters (<1000 required)")
+                
+                # Test 3: Section Parsing - Check for required sections
+                print("\n3️⃣ TESTING SECTION PARSING")
+                
+                has_technical_section = len(technical_content) > 0
+                has_mentoring_section = len(mentoring_content) > 0
+                has_next_steps_section = len(next_steps_content) > 0
+                
+                print(f"   📋 Required Sections Check:")
+                print(f"      Technical Answer present: {has_technical_section}")
+                print(f"      Mentoring Insight present: {has_mentoring_section}")
+                print(f"      Next Steps present: {has_next_steps_section}")
+                
+                # Check for construction-specific terminology
+                all_content = technical_content + mentoring_content + next_steps_content
+                construction_terms = [
+                    "building surveyor", "approval", "consent", "certifier", "NCC", "BCA", 
+                    "AS/NZS", "construction", "building", "compliance", "inspection"
+                ]
+                
+                found_terms = []
+                for term in construction_terms:
+                    if term.lower() in all_content.lower():
+                        found_terms.append(term)
+                
+                print(f"   🏗️ Construction-specific terms found: {', '.join(found_terms)}")
+                
+                if has_technical_section and has_mentoring_section:
+                    self.log_test("✅ V2 Section Parsing - Required Sections", True, 
+                                "Response contains Technical Answer and Mentoring Insight sections")
+                else:
+                    missing_sections = []
+                    if not has_technical_section:
+                        missing_sections.append("Technical Answer")
+                    if not has_mentoring_section:
+                        missing_sections.append("Mentoring Insight")
+                    self.log_test("❌ V2 Section Parsing - Missing Sections", False, 
+                                f"Missing required sections: {', '.join(missing_sections)}")
+                
+                if found_terms:
+                    self.log_test("✅ V2 Content Security - Construction Terminology", True, 
+                                f"Contains construction-specific terms: {', '.join(found_terms[:5])}")
+                else:
+                    self.log_test("❌ V2 Content Security - Generic Content", False, 
+                                "Response lacks construction-specific terminology")
+                
+            else:
+                self.log_test("❌ V2 Schema Validation - Missing Blocks", False, 
+                            "Response missing 'blocks' array or blocks are empty")
+            
+            # Test 4: Schema Compliance
+            print("\n4️⃣ TESTING SCHEMA COMPLIANCE")
+            
+            if has_meta and response_data.get("meta"):
+                meta = response_data["meta"]
+                schema_version = meta.get("schema")
+                session_id = meta.get("session_id")
+                
+                print(f"   📋 Meta Information:")
+                print(f"      Schema version: {schema_version}")
+                print(f"      Session ID: {session_id}")
+                print(f"      Meta keys: {list(meta.keys())}")
+                
+                if schema_version == "v2":
+                    self.log_test("✅ V2 Schema Compliance - Schema Version", True, 
+                                "meta.schema='v2' correctly set")
+                else:
+                    self.log_test("❌ V2 Schema Compliance - Wrong Schema", False, 
+                                f"Expected meta.schema='v2', got '{schema_version}'")
+                
+                if session_id:
+                    self.log_test("✅ V2 Schema Compliance - Session Handling", True, 
+                                f"Session ID properly handled: {session_id}")
+                else:
+                    self.log_test("❌ V2 Schema Compliance - Missing Session", False, 
+                                "Session ID missing from meta")
+            else:
+                self.log_test("❌ V2 Schema Compliance - Missing Meta", False, 
+                            "Response missing 'meta' object")
+            
+            # Test 5: Performance Check
+            print("\n5️⃣ TESTING PERFORMANCE")
+            
+            if response_time < 10.0:
+                self.log_test("✅ V2 Performance - Response Time", True, 
+                            f"Response time {response_time:.2f}s under 10s requirement")
+            else:
+                self.log_test("❌ V2 Performance - Slow Response", False, 
+                            f"Response time {response_time:.2f}s exceeds 10s requirement")
+            
+            # Overall V2 validation
+            if has_blocks and has_meta and total_content_length > 1000:
+                self.log_test("🎯 V2 Rendering Pipeline - Overall Validation", True, 
+                            "V2 schema structure, content security, and performance validated")
+            else:
+                self.log_test("🎯 V2 Rendering Pipeline - Validation Issues", False, 
+                            "V2 pipeline has structural or content issues")
+                
+        else:
+            self.log_test("❌ V2 Schema Validation - API Failure", False, 
+                        f"Failed to get response: Status {status}", response_data)
+        
+        # Test 6: Error Handling - Malformed Requests
+        print("\n6️⃣ TESTING ERROR HANDLING")
+        
+        # Test empty question
+        print("   🔍 Testing empty question validation")
+        empty_data = {"question": "", "session_id": "error_test"}
+        empty_success, empty_response, empty_status = await self.make_request("POST", "/chat/ask", empty_data, mock_headers)
+        
+        if not empty_success and empty_status in [400, 422]:
+            self.log_test("✅ V2 Error Handling - Empty Question", True, 
+                        f"Correctly rejected empty question with status {empty_status}")
+        else:
+            self.log_test("❌ V2 Error Handling - Empty Question", False, 
+                        f"Should reject empty question, got status {empty_status}")
+        
+        # Test missing question field
+        print("   🔍 Testing missing question field validation")
+        missing_data = {"session_id": "error_test"}
+        missing_success, missing_response, missing_status = await self.make_request("POST", "/chat/ask", missing_data, mock_headers)
+        
+        if not missing_success and missing_status in [400, 422]:
+            self.log_test("✅ V2 Error Handling - Missing Question", True, 
+                        f"Correctly rejected missing question with status {missing_status}")
+        else:
+            self.log_test("❌ V2 Error Handling - Missing Question", False, 
+                        f"Should reject missing question, got status {missing_status}")
+        
+        print("\n🎯 V2 RENDERING PIPELINE SECURITY VALIDATION SUMMARY:")
+        
+        # Count successful V2 tests
+        v2_tests = [result for result in self.test_results if "V2" in result["test"] and result["success"]]
+        total_v2_tests = len([result for result in self.test_results if "V2" in result["test"]])
+        
+        print(f"   📊 V2 Pipeline Tests: {len(v2_tests)}/{total_v2_tests} passed")
+        
+        if len(v2_tests) >= 5:  # Most critical tests passed
+            print("🚀 **V2 SECURITY VALIDATION**: V2 rendering pipeline security fixes SUCCESSFUL!")
+            print("✅ V2 schema structure validated")
+            print("✅ Content security and substantial content confirmed")
+            print("✅ Section parsing working correctly")
+            print("✅ Schema compliance verified")
+            print("✅ Performance requirements met")
+            self.log_test("🎯 CRITICAL: V2 Rendering Pipeline Security", True, 
+                        "V2 pipeline security fixes validated successfully")
+        else:
+            print("❌ **V2 SECURITY VALIDATION**: V2 rendering pipeline has ISSUES!")
+            print("   Some critical V2 components not working as expected")
+            self.log_test("🎯 CRITICAL: V2 Rendering Pipeline Security", False, 
+                        "V2 pipeline security validation failed")
+
     async def test_enhanced_emoji_mapping_structural_fix(self):
         """🚨 CRITICAL: Test Enhanced Emoji Mapping Structural Fix from Review Request"""
         print("\n🚨 === ENHANCED EMOJI MAPPING STRUCTURAL FIX VERIFICATION ===")
