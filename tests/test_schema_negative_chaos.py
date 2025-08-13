@@ -224,7 +224,7 @@ class TestSchemaNegativeChaos:
             
             # Verify validation
             try:
-                ChatResponse(**repaired)
+                validate_chat_response(repaired)
                 return True
             except:
                 return False
