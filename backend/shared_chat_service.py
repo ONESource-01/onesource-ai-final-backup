@@ -236,8 +236,8 @@ Document all compliance decisions and maintain comprehensive project records. Th
             Unified response structure with Enhanced Emoji Mapping
         """
         try:
-            # Step 1: Build unified system prompt
-            system_prompt = self._build_enhanced_system_prompt()
+            # Step 1: Build unified system prompt (with knowledge context if provided)
+            system_prompt = self._build_enhanced_system_prompt(user_context)
             
             # Step 2: Make unified model call
             if self.client:
@@ -245,8 +245,8 @@ Document all compliance decisions and maintain comprehensive project records. Th
                 ai_response = self._make_unified_openai_call(question, system_prompt)
                 tokens_used = 800  # Estimate for real calls
             else:
-                # Unified mock response
-                ai_response = self._get_unified_mock_response(question)
+                # Unified mock response (enhanced with knowledge context if available)
+                ai_response = self._get_unified_mock_response_with_context(question, user_context)
                 tokens_used = 750  # Estimate for mock calls
             
             # Step 3: Apply unified emoji mapping
