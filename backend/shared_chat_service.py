@@ -246,21 +246,48 @@ Effective compliance management begins with understanding your project's risk pr
     def _make_unified_openai_call_with_history(self, question: str, system_prompt: str, conversation_history: Optional[List[Dict]] = None) -> str:
         """
         Make unified OpenAI API call with conversation history for context
+        Enhanced with reference resolution for contextual pronouns
         """
         try:
-            # Build message history for OpenAI API
+            # Build message history for OpenAI API with context resolution
             messages = [{"role": "system", "content": system_prompt}]
             
-            # Add recent conversation history
-            if conversation_history:
-                recent_history = conversation_history[-4:]  # Last 2 Q&A pairs
+            # Add conversation context with entity tracking
+            if conversation_history and len(conversation_history) >= 2:
+                # Get last 2 complete conversation pairs (4 messages)
+                recent_history = conversation_history[-4:]
+                
+                # Extract main topic from previous user questions for reference resolution
+                main_topics = []
+                for msg in recent_history:
+                    if msg.get('type') == 'user':
+                        content = msg.get('content', '').lower()
+                        if 'acoustic' in content and 'lagging' in content:
+                            main_topics.append('acoustic lagging installation')
+                        elif 'fire' in content and 'safety' in content:
+                            main_topics.append('fire safety requirements')
+                        elif 'structural' in content:
+                            main_topics.append('structural requirements')
+                        elif 'water' in content and 'system' in content:
+                            main_topics.append('water system installation')
+                
+                # Add conversation history to messages
                 for msg in recent_history:
                     if msg.get('type') == 'user':
                         messages.append({"role": "user", "content": msg.get('content', '')})
                     elif msg.get('type') == 'ai':
-                        # Truncate AI responses for context (keep it concise)
-                        ai_content = msg.get('content', '')[:500]
+                        # Keep AI responses concise for context
+                        ai_content = msg.get('content', '')[:400] + "..."
                         messages.append({"role": "assistant", "content": ai_content})
+                
+                # REFERENCE RESOLUTION: If current question has pronouns, add context hint
+                contextual_pronouns = ['it', 'this', 'that', 'them', 'these', 'those']
+                has_pronoun = any(pronoun in question.lower() for pronoun in contextual_pronouns)
+                
+                if has_pronoun and main_topics:
+                    # Add context resolution hint to system prompt
+                    context_hint = f"\n\nIMPORTANT: The user is asking a follow-up question. In this context, pronouns like 'it', 'this', 'that' likely refer to: {main_topics[-1]}. Use this context to provide a specific, relevant answer."
+                    messages[0]["content"] += context_hint
             
             # Add current question
             messages.append({"role": "user", "content": question})
@@ -268,14 +295,14 @@ Effective compliance management begins with understanding your project's risk pr
             response = self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=messages,
-                temperature=0,  # Consistent temperature for testing
-                top_p=1,        # Consistent top_p
+                temperature=0.3,  # Slightly higher for better context understanding
+                top_p=1,
                 max_tokens=2000
             )
             return response.choices[0].message.content
         except Exception as e:
             print(f"Error getting OpenAI response with history: {e}")
-            # Return mock response as fallback
+            # Return context-aware mock response as fallback
             return self._get_unified_mock_response_with_conversation(question, None, conversation_history)
 
     def _get_unified_mock_response_with_conversation(self, question: str, user_context: Optional[Dict] = None, conversation_history: Optional[List[Dict]] = None) -> str:
