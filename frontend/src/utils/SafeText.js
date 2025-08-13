@@ -10,112 +10,121 @@ function escapeHtml(s) {
     .replace(/'/g, '&#39;');
 }
 
-/** Very small markdown-ish helpers: `code`, bullets, links, line breaks */
-function tokenizeLines(text) {
-  const out = [];
-  const lines = (text || '').split(/\r?\n/);
-
-  let listOpen = false;
-  const pushCloseList = () => {
-    if (listOpen) {
-      out.push(<ul key={`ul-close-${out.length}`} className="list-disc pl-6 my-2" />);
-      listOpen = false;
-    }
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const raw = lines[i] ?? '';
-    const line = raw.trim();
-
-    // unordered list: lines starting with "- "
-    if (/^- /.test(line)) {
-      if (!listOpen) {
-        out.push(<ul key={`ul-${i}`} className="list-disc pl-6 my-2" />);
-        listOpen = true;
+/** Safe inline formatting without dangerouslySetInnerHTML */
+function formatInlineText(text) {
+  if (!text) return text;
+  
+  // First escape HTML
+  let escaped = escapeHtml(text);
+  
+  // Split by various patterns and create React elements
+  const parts = [];
+  let remaining = escaped;
+  let keyCounter = 0;
+  
+  // Process **bold** text
+  const boldRegex = /\*\*([^*]+)\*\*/g;
+  let lastIndex = 0;
+  let match;
+  
+  while ((match = boldRegex.exec(escaped)) !== null) {
+    // Add text before match
+    if (match.index > lastIndex) {
+      const beforeText = escaped.slice(lastIndex, match.index);
+      if (beforeText) {
+        parts.push(<span key={`text-${keyCounter++}`}>{beforeText}</span>);
       }
-      const itemText = line.replace(/^- /, '');
-      out.push(
-        <li key={`li-${i}`}>{inlineFormat(itemText)}</li>
-      );
-      continue;
     }
-
-    // blank line = paragraph break
-    if (line === '') {
-      pushCloseList();
-      out.push(<br key={`br-${i}`} />);
-      continue;
-    }
-
-    // normal paragraph line
-    pushCloseList();
-    out.push(<p key={`p-${i}`} className="mb-2">{inlineFormat(raw)}</p>);
+    
+    // Add bold text
+    parts.push(<strong key={`bold-${keyCounter++}`} className="font-semibold">{match[1]}</strong>);
+    lastIndex = match.index + match[0].length;
   }
-  pushCloseList();
-  return out;
+  
+  // Add remaining text
+  if (lastIndex < escaped.length) {
+    const remainingText = escaped.slice(lastIndex);
+    if (remainingText) {
+      parts.push(<span key={`text-${keyCounter++}`}>{remainingText}</span>);
+    }
+  }
+  
+  // If no bold formatting found, just return escaped text
+  if (parts.length === 0) {
+    return escaped;
+  }
+  
+  return <>{parts}</>;
 }
 
-/** inline: backticks → <code>, **bold** → <strong>, _em_ → <em>, urls → <a> */
-function inlineFormat(text) {
-  const safe = escapeHtml(text);
-
-  // url autolink (http/https only)
-  const urlPattern = /\bhttps?:\/\/[^\s<]+/g;
-
-  // split by backticks for inline code
-  const parts = safe.split(/`([^`]+)`/g); // odd indexes are code
-  const nodes = [];
-
-  for (let i = 0; i < parts.length; i++) {
-    const chunk = parts[i];
-    if (i % 2 === 1) {
-      nodes.push(<code key={`code-${i}`} className="px-1 py-0.5 rounded bg-gray-100 text-sm">{chunk}</code>);
-    } else {
-      // bold **text** and italic _text_
-      let html = chunk
-        .replace(/\*\*([^*]+)\*\*/g, (_, m) => `<strong>${m}</strong>`)
-        .replace(/_([^_]+)_/g, (_, m) => `<em>${m}</em>`);
-
-      // convert urls to anchors safely (still escaped)
-      const pieces = [];
-      let lastIndex = 0;
-      let m;
-      urlPattern.lastIndex = 0; // reset regex
-      while ((m = urlPattern.exec(html)) !== null) {
-        const [url] = m;
-        const start = m.index;
-        if (start > lastIndex) {
-          const htmlSlice = html.slice(lastIndex, start);
-          if (htmlSlice) {
-            pieces.push(<span key={`t-${i}-${start}`} dangerouslySetInnerHTML={{ __html: htmlSlice }} />);
-          }
-        }
-        pieces.push(
-          <a key={`a-${i}-${start}`} href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline break-words hover:text-blue-800">
-            {url.replace(/^https?:\/\//, '')}
-          </a>
-        );
-        lastIndex = start + url.length;
-      }
-      if (lastIndex < html.length) {
-        const htmlSlice = html.slice(lastIndex);
-        if (htmlSlice) {
-          pieces.push(<span key={`t-end-${i}`} dangerouslySetInnerHTML={{ __html: htmlSlice }} />);
-        }
-      }
-      
-      if (pieces.length === 0) {
-        // No URLs found, just render the HTML directly
-        nodes.push(<span key={`span-${i}`} dangerouslySetInnerHTML={{ __html: html }} />);
-      } else {
-        nodes.push(<React.Fragment key={`frag-${i}`}>{pieces}</React.Fragment>);
-      }
+/** Process line-by-line content safely */
+function processLines(text) {
+  if (!text) return [];
+  
+  const lines = text.split(/\r?\n/);
+  const elements = [];
+  let inList = false;
+  let listItems = [];
+  
+  const flushList = () => {
+    if (inList && listItems.length > 0) {
+      elements.push(
+        <ul key={`ul-${elements.length}`} className="list-disc pl-6 my-2 space-y-1">
+          {listItems}
+        </ul>
+      );
+      listItems = [];
+      inList = false;
     }
-  }
-  return <>{nodes}</>;
+  };
+  
+  lines.forEach((line, index) => {
+    const trimmed = line.trim();
+    
+    // Empty line
+    if (!trimmed) {
+      flushList();
+      elements.push(<div key={`empty-${index}`} className="h-2" />);
+      return;
+    }
+    
+    // List item
+    if (trimmed.startsWith('- ')) {
+      if (!inList) {
+        inList = true;
+      }
+      const content = trimmed.slice(2).trim();
+      listItems.push(
+        <li key={`li-${index}`} className="text-gray-800">
+          {formatInlineText(content)}
+        </li>
+      );
+      return;
+    }
+    
+    // Regular paragraph
+    flushList();
+    elements.push(
+      <p key={`p-${index}`} className="mb-2 text-gray-800 leading-relaxed">
+        {formatInlineText(trimmed)}
+      </p>
+    );
+  });
+  
+  // Flush any remaining list
+  flushList();
+  
+  return elements;
 }
 
 export function SafeText({ text }) {
-  if (!text) return null;
-  return <div className="prose max-w-none text-gray-800 leading-relaxed">{tokenizeLines(text)}</div>;
+  if (!text || typeof text !== 'string') return null;
+  
+  const elements = processLines(text);
+  
+  return (
+    <div className="prose max-w-none text-gray-800 leading-relaxed">
+      {elements}
+    </div>
+  );
 }
