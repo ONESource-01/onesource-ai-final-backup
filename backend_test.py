@@ -6444,22 +6444,26 @@ class BackendTester:
         print("🔍 Results show whether unified architecture fixes conversation context bug")
 
 async def main():
-    """Run Unified Chat Architecture Testing with Conversation Context Focus"""
-    print("🚀 Starting Unified Chat Architecture Testing for ONESource-ai")
+    """Run V2 Rendering Pipeline Security Testing - PRIORITY FOCUS"""
+    print("🚀 Starting V2 Rendering Pipeline Security Testing for ONESource-ai")
     print(f"Backend URL: {BACKEND_URL}")
     print(f"API Base: {API_BASE}")
-    print("🎯 FOCUS: Testing UNIFIED CHAT ARCHITECTURE with Conversation Context Bug Fix")
+    print("🎯 PRIORITY FOCUS: V2 RENDERING PIPELINE SECURITY VALIDATION")
     print("=" * 80)
     
     async with BackendTester() as tester:
         # Run basic health check first
         await tester.test_basic_api_health()
         
+        # 🚨 CRITICAL: V2 Rendering Pipeline Security Testing - TOP PRIORITY
+        await tester.test_v2_rendering_pipeline_security_fixes()
+        
         # 🚨 CRITICAL: Test the Redis integration fix from review request
         await tester.test_critical_chat_endpoint_redis_fix()
         
-        # 🚨 CRITICAL: Unified Chat Architecture with Conversation Context Testing - MAIN FOCUS
-        await tester.test_unified_chat_architecture_conversation_context()
+        # Additional critical tests
+        await tester.test_enhanced_emoji_mapping_consistency_fix()
+        await tester.test_critical_subscription_fixes()
         
         # Print summary
         print("\n" + "=" * 80)
