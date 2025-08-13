@@ -35,7 +35,7 @@ export default function ResponseRenderer({ response }) {
                 </pre>
               );
             case "table":
-              return <TablePro key={i} {...(b as TableProProps)} />;
+              return <TablePro key={i} {...b} />;
             case "callout":
               return (
                 <div key={i} className="rounded-2xl border p-4 bg-accent/40 text-foreground">
