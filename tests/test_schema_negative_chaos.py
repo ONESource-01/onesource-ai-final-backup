@@ -158,7 +158,7 @@ class TestSchemaNegativeChaos:
                 
                 # Verify schema compliance
                 try:
-                    ChatResponse(**data)
+                    validate_chat_response(data)
                     print("✅ Redis failure handled gracefully - v2 response maintained")
                 except Exception as e:
                     pytest.fail(f"Redis failure broke v2 schema: {e}")
