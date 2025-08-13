@@ -38,6 +38,9 @@ from partner_service import PartnerService, partner_service
 from middleware.schema_guard import validate_chat_response  
 from core.observability import get_observability, record_request_metrics
 
+# Import Phase 3: Dynamic suggestions system
+from core.suggestions import detect_topic, suggest_actions
+
 # Import sample v2 endpoints for testing
 from sample_v2_endpoint import router as sample_router
 
