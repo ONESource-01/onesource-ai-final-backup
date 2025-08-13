@@ -5857,6 +5857,9 @@ async def main():
         # Run basic health check first
         await tester.test_basic_api_health()
         
+        # 🚨 CRITICAL: Test the Redis integration fix from review request
+        await tester.test_critical_chat_endpoint_redis_fix()
+        
         # 🚨 CRITICAL: Unified Chat Architecture with Conversation Context Testing - MAIN FOCUS
         await tester.test_unified_chat_architecture_conversation_context()
         
