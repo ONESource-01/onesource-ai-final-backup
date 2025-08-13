@@ -34,8 +34,9 @@ from weekly_reporting_service import WeeklyReportingService, test_weekly_report
 # Import Partner Service
 from partner_service import PartnerService, partner_service
 
-# Import schema guard
-from middleware.schema_guard import validate_chat_response
+# Import schema guard and observability
+from middleware.schema_guard import validate_chat_response  
+from core.observability import get_observability, record_request_metrics
 
 # Advanced AI Intelligence System
 class AIIntelligencePhases:
