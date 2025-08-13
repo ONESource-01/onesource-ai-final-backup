@@ -137,7 +137,13 @@ const ChatInterface = () => {
   const startNewConversation = () => {
     setMessages([]);
     setSessionId(null);
+    setShowNewSessionCallout(true);
     // Session will be created automatically when sending first message
+    
+    // Hide the callout after 4 seconds
+    setTimeout(() => {
+      setShowNewSessionCallout(false);
+    }, 4000);
   };
 
   const sendMessage = async () => {
