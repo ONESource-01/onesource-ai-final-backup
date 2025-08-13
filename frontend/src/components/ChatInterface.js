@@ -763,7 +763,7 @@ const ChatInterface = () => {
                                     paddingBottom: '0px'
                                   }}
                                   dangerouslySetInnerHTML={{
-                                    __html: formatAIResponse(message.content)
+                                    __html: message.content
                                   }}
                                 />
                               </div>
