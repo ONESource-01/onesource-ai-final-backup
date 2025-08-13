@@ -71,7 +71,15 @@ class SchemaObservability:
             
             # Request tracking
             "request_count": 0,
-            "start_time": time.time()
+            "start_time": time.time(),
+            
+            # Phase 3 metrics: Dynamic Prompts & Suggestions
+            "examples_served_total": 0,
+            "example_clicks_total": 0,
+            "suggested_action_clicks_total": 0,
+            "examples_dismissed_total": 0,
+            "example_ctr_by_topic": {},  # Click-through rate by topic
+            "suggested_action_ctr": {},  # CTR for suggested actions
         }
         
         # Latency buckets for percentile calculation
