@@ -156,9 +156,11 @@ class UnifiedChatService:
             
             # Step 8: Update conversation with final response
             if context_manager:
+                print(f"DEBUG: Updating conversation {conversation_id} with response length {len(formatted_text)}")
                 await context_manager.update_conversation_response(
                     conversation_id, formatted_text, tokens_used
                 )
+                print(f"DEBUG: Conversation {conversation_id} updated successfully")
             
             return response
             
