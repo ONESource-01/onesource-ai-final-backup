@@ -953,9 +953,10 @@ async def unified_chat_ask(
         
         # Initialize context manager if not already done
         if not hasattr(unified_chat_service, '_context_initialized'):
-            init_context_manager(db)
+            context_mgr = init_context_manager(db)
+            unified_chat_service._context_manager = context_mgr  # Store on service instance
             unified_chat_service._context_initialized = True
-            print("DEBUG: Context manager initialized")
+            print("DEBUG: Context manager initialized and stored on service")
         
         # Determine user info
         user_id = current_user["uid"] if current_user else None
