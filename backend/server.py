@@ -51,7 +51,7 @@ from sample_v2_endpoint import router as sample_router
 from prompts_endpoints import router as prompts_router
 
 # Import health endpoints for Phase 4
-from health_endpoints import router as health_router
+from backend.health_endpoints import router as health_router
 
 # Advanced AI Intelligence System
 class AIIntelligencePhases:
