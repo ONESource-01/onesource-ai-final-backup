@@ -1836,15 +1836,18 @@ async def ask_question_enhanced(
     question_data: ChatQuestion,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """Enhanced chat that searches both knowledge banks first, then uses AI"""
+    """Enhanced chat - UNIFIED BACKEND with knowledge bank integration"""
     try:
+        # Import shared service
+        from shared_chat_service import shared_chat_service
+        
         uid = current_user["uid"]
         
         # Search both Community and Personal Knowledge Banks
         community_results = await search_community_knowledge_bank(question_data.question, limit=3)
         personal_results = await search_personal_knowledge_bank(question_data.question, uid, limit=2)
         
-        # Build context from relevant documents
+        # Build enhanced user context for shared service
         knowledge_context = []
         partner_attributions = []
         
@@ -1865,90 +1868,20 @@ async def ask_question_enhanced(
                 excerpt = doc.get('extracted_text', '')[:500]
                 knowledge_context.append(f"From your personal documents: {excerpt}")
         
-        # Enhanced system prompt with knowledge context
-        system_prompt = f"""
-        You are a professional AU/NZ construction compliance assistant providing expert guidance.
-        
-        PRIORITY: Use the knowledge base content below FIRST, then supplement with your general knowledge.
-        
-        Available Knowledge Sources:
-        {chr(10).join(knowledge_context[:5])}
-        
-        When referencing Community Knowledge Bank content, attribute it properly.
-        Partner/Company sources found: {', '.join(set(partner_attributions))}
-        
-        When referencing personal documents, refer to them as "based on your uploaded documents."
-        
-        Provide structured response using the Enhanced Emoji Mapping:
-        # 🔧 **Technical Answer** - with references to uploaded documents when relevant
-        # 🧐 **Mentoring Insight** - contextual guidance considering user's professional background
-        
-        Use these exact section headers where applicable:
-        - 🔧 Technical Answer
-        - 🧐 Mentoring Insight  
-        - 📋 Next Steps
-        - 📊 Code Requirements
-        - ✅ Compliance Verification
-        - 🔄 Alternative Solutions
-        - 🏛️ Authority Requirements
-        - 📄 Documentation Needed
-        - ⚙️ Workflow Recommendations
-        - ❓ Clarifying Questions
-        
-        INTELLIGENT GUIDANCE PRINCIPLES:
-        - Focus on practical, actionable advice relevant to their expertise level
-        - Avoid obvious recommendations in areas they already specialize in
-        - Consider project context, timing, and compliance version relevance
-        - Keep compliance statements minimal and contextual
-        - No generic signatures or boilerplate endings
-        
-        Question: {question_data.question}
-        """
-        
-        # Get AI response with enhanced context
-        api_key = os.environ.get('OPENAI_API_KEY', '')
-        if not api_key or len(api_key) < 10:
-            # Mock AI response for testing
-            ai_response = f"""# 🔧 **Technical Answer:**
-            Based on the knowledge base search for "{question_data.question}", here are the key technical considerations:
-            
-            {knowledge_context[0] if knowledge_context else "No specific knowledge base content found for this query."}
-            
-            Refer to current AS/NZS standards and NCC requirements for your project's approval date.
-            
-            # 🧐 **Mentoring Insight:**
-            Key project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes.
-            """
-        else:
-            response = await openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": question_data.question}
-                ],
-                max_tokens=1000,
-                temperature=0.7
-            )
-            ai_response = response.choices[0].message.content
-        
-        # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency - Use correct 🧐 professor emoji
-        # Replace any incorrect emojis with the correct 🧐 emoji (professor with monocle)
-        ai_response = ai_response.replace("🧠 **Mentoring Insight**", "🧐 **Mentoring Insight**")
-        ai_response = ai_response.replace("💡 **Mentoring Insight**", "🧐 **Mentoring Insight**")
-        ai_response = ai_response.replace("🤓 **Mentoring Insight**", "🧐 **Mentoring Insight**")
-        ai_response = ai_response.replace("🧠 Mentoring Insight", "🧐 Mentoring Insight")
-        ai_response = ai_response.replace("💡 Mentoring Insight", "🧐 Mentoring Insight")
-        ai_response = ai_response.replace("🤓 Mentoring Insight", "🧐 Mentoring Insight")
-        
-        # Format response with partner attributions
-        formatted_response = {
-            "technical": ai_response,
-            "mentoring": "Enhanced response based on both Community and Personal Knowledge Banks.",
-            "format": "dual",
-            "knowledge_sources": len(community_results) + len(personal_results),
-            "partner_sources": partner_attributions,
-            "knowledge_used": len(knowledge_context) > 0
+        # Create enhanced user context for shared service
+        enhanced_context = {
+            "knowledge_context": knowledge_context,
+            "partner_attributions": partner_attributions,
+            "community_results": len(community_results),
+            "personal_results": len(personal_results)
         }
+        
+        # **UNIFIED BACKEND CALL - NO LEGACY LOGIC**
+        response_data = shared_chat_service.get_unified_chat_response(
+            question=question_data.question,
+            session_id=question_data.session_id or str(uuid.uuid4()),
+            user_context=enhanced_context  # Enhanced endpoint includes knowledge context
+        )
         
         # Update document reference counts for Community Knowledge Bank
         for result in community_results[:3]:
@@ -1970,27 +1903,37 @@ async def ask_question_enhanced(
         conversation_record = {
             "conversation_id": str(uuid.uuid4()),
             "user_id": uid,
-            "session_id": question_data.session_id or str(uuid.uuid4()),
+            "session_id": response_data["session_id"],
             "question": question_data.question,
-            "formatted_response": formatted_response,
+            "response": response_data["response"],  # Direct response from unified service
             "knowledge_sources_used": len(knowledge_context),
             "partner_attributions": partner_attributions,
             "community_sources": len(community_results),
             "personal_sources": len(personal_results),
             "timestamp": datetime.utcnow(),
-            "tokens_used": response.usage.total_tokens if 'response' in locals() and hasattr(response, 'usage') else 150
+            "tokens_used": response_data["tokens_used"]
         }
         
         await db.conversations.insert_one(conversation_record)
         
+        # Format response for enhanced endpoint compatibility
+        formatted_response = {
+            "technical": response_data["response"],  # Main unified response
+            "mentoring": "Enhanced response based on both Community and Personal Knowledge Banks.",
+            "format": "dual",
+            "knowledge_sources": len(community_results) + len(personal_results),
+            "partner_sources": partner_attributions,
+            "knowledge_used": len(knowledge_context) > 0
+        }
+        
         return {
             "response": formatted_response,
-            "session_id": conversation_record["session_id"],
+            "session_id": response_data["session_id"],
             "knowledge_enhanced": len(knowledge_context) > 0,
             "partner_content_used": len(partner_attributions) > 0,
             "community_sources_used": len(community_results),
             "personal_sources_used": len(personal_results),
-            "tokens_used": conversation_record["tokens_used"]
+            "tokens_used": response_data["tokens_used"]
         }
         
     except Exception as e:
