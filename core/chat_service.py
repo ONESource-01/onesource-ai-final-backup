@@ -90,6 +90,9 @@ class UnifiedChatService:
                 topics = context_manager.extract_context_topics(conversation_history)
                 context_hint = context_manager.build_context_hint_for_prompt(question, topics)
                 
+                # Update instrumentation
+                history_turns = len(conversation_history)
+                
                 # Debug context retrieval
                 print(f"DEBUG: Session {session_id} - Found {len(conversation_history)} conversations")
                 print(f"DEBUG: Extracted topics: {topics}")
