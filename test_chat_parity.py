@@ -229,9 +229,17 @@ class ParityTester:
         r1_followup = await self.make_request("/chat/ask", followup_payload)
         r2_followup = await self.make_request("/chat/ask-enhanced", followup_enhanced_payload)
         
-        # Check if both understand context
-        r1_understands = any(term in r1_followup.get("text", "").lower() for term in ["acoustic", "lagging", "installation", "timing"])
-        r2_understands = any(term in r2_followup.get("text", "").lower() for term in ["acoustic", "lagging", "installation", "timing"])
+        # Check if both understand context (look in blocks content for v2 schema)
+        def extract_content(response):
+            if "blocks" in response and response["blocks"]:
+                return " ".join([block.get("content", "") for block in response["blocks"]])
+            return response.get("text", "")
+        
+        r1_content = extract_content(r1_followup).lower()
+        r2_content = extract_content(r2_followup).lower()
+        
+        r1_understands = any(term in r1_content for term in ["acoustic", "lagging", "installation", "timing"])
+        r2_understands = any(term in r2_content for term in ["acoustic", "lagging", "installation", "timing"])
         
         if r1_understands and r2_understands:
             self.log_test("Context Parity - CRITICAL", True, "Both endpoints understand conversational context")
