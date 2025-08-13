@@ -88,7 +88,7 @@ class TestSchemaNegativeChaos:
             
             # Verify it validates
             try:
-                ChatResponse(**repaired)
+                validate_chat_response(repaired)
                 print(f"   ✅ Empty input repaired successfully")
             except Exception as e:
                 pytest.fail(f"Empty input repair failed validation: {e}")
