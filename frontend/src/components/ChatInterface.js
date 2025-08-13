@@ -1063,7 +1063,7 @@ const ChatInterface = () => {
               
               {/* Context Info Tooltip */}
               <div 
-                className="absolute right-14 top-3 text-gray-400 hover:text-gray-600 cursor-help"
+                className="absolute right-12 top-3 text-gray-400 hover:text-gray-600 cursor-help z-10"
                 title="Conversations remember context for 30 days per session"
               >
                 <Info className="h-4 w-4" />
