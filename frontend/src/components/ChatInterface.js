@@ -245,6 +245,9 @@ const ChatInterface = () => {
       const aiMessage = {
         id: Date.now() + 1,
         type: 'ai',
+        // Store the full V2 schema response
+        v2Response: response.data,
+        // Legacy content field for backward compatibility
         content: response.data.blocks?.[0]?.content || response.data.response?.technical || response.data.response || 'No response received',
         timestamp: new Date(),
         sources: response.data.sources || [],
