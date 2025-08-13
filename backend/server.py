@@ -1,4 +1,8 @@
 import os
+import sys
+# Add parent directory to Python path to access core module
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
