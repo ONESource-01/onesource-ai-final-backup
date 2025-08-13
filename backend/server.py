@@ -1968,7 +1968,7 @@ async def boost_response(
         
         Format your response with:
         - **Bold headings** for sections
-        - • Bullet points for key items
+        - Bullet points for key items
         - ✅ Checkmarks for compliant items
         - ⚠️ Warnings for important considerations
         - 🏗️ Icons for construction-specific content
