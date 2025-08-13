@@ -127,7 +127,48 @@ Focus on the mandatory provisions in NCC Section F1.2 and F1.5. These drive most
 3. **Material Procurement:** Source AS/NZS 3500 compliant materials and fittings
 4. **Installation Planning:** Coordinate licensed plumber availability for installation phases"""
 
-        # General construction compliance response with Enhanced Emoji Mapping
+        # Check for fire safety questions
+        if any(term in question.lower() for term in ['fire', 'safety']):
+            return """🔧 **Technical Answer:**
+
+Fire safety requirements for high-rise buildings in Australia follow the NCC Volume 1 and AS 1851 standards. Here's your comprehensive compliance guide:
+
+## **Core Fire Safety Framework**
+
+| **Standard** | **Application** | **Key Requirements** |
+|-------------|----------------|---------------------|
+| **NCC Volume 1 Section C** | Fire resistance, egress | Mandatory performance requirements |
+| **AS 1851** | Fire protection maintenance | System testing and maintenance |
+| **AS 2419** | Fire hydrant installations | Water supply and hydrant systems |
+| **AS/NZS 3786** | Smoke alarms | Detection and alarm systems |
+
+**Implementation Requirements:**
+
+1. **Fire Resistance Levels (FRL):** Minimum 120/120/120 for structural elements above 25m
+2. **Egress Systems:** Two independent escape routes, maximum travel distances
+3. **Fire Services:** Sprinkler systems, hydrant installations, fire brigade access
+4. **Smoke Management:** Pressurization systems, natural ventilation provisions
+5. **Detection Systems:** Early warning systems, emergency lighting
+
+🧐 **Mentoring Insight:**
+
+**Strategic Planning:**
+Fire safety compliance requires early integration with architectural and structural design. The most effective approach involves engaging fire safety engineers during concept design to avoid costly retrospective modifications.
+
+**Regulatory Coordination:**
+Building certifiers and fire authorities often have different interpretation approaches. Schedule preliminary meetings to clarify specific requirements and avoid approval delays.
+
+**Risk Management:**
+Consider performance-based solutions for complex buildings. These provide design flexibility while maintaining equivalent safety outcomes, often resulting in more cost-effective solutions.
+
+📋 **Next Steps:**
+
+1. **Fire Engineer Engagement:** Schedule early consultation for performance-based solutions
+2. **Authority Coordination:** Preliminary discussions with building certifier and fire authority
+3. **System Integration:** Coordinate fire services with structural and mechanical systems
+4. **Documentation Planning:** Develop comprehensive fire safety management plan"""
+
+        # Default general construction compliance response with Enhanced Emoji Mapping
         return """🔧 **Technical Answer:**
 
 For comprehensive AU/NZ construction compliance, your primary focus should be on the National Construction Code (NCC) Volume 1 (commercial) or Volume 2 (residential), combined with relevant AS/NZS standards:
