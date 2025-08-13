@@ -1128,284 +1128,54 @@ async def ask_question(
                 
                 if daily_questions_used >= 3:
                     raise HTTPException(
-                        status_code=402,
+                        status_code=403,
                         detail={
-                            "message": "Daily question limit reached. You can ask 3 more questions tomorrow, or upgrade to unlimited access.",
-                            "trial_info": {
-                                "remaining_questions": 0,
-                                "subscription_required": True,
-                                "reset_time": "tomorrow",
-                                "message": "Daily limit reached - 3 questions per day for free users. Upgrade for unlimited access!"
-                            }
+                            "type": "daily_limit_reached",
+                            "message": "You've reached your daily limit of 3 questions. Upgrade to ask unlimited questions.",
+                            "questions_used": daily_questions_used,
+                            "daily_limit": 3
                         }
                     )
-            
-            # Get user profile for context
-            user_profile = await firebase_service.get_user_profile(uid)
-            trial_warning = False
-            
-            # Increment daily count if still on trial
-            if (subscription["subscription_tier"] == "starter" and 
-                not subscription["subscription_active"]):
-                # Get today's date for daily limit tracking
-                today = datetime.utcnow().date()
-                daily_usage_key = f"daily_questions_{today.strftime('%Y%m%d')}"
-                await firebase_service.update_user_daily_count(uid, daily_usage_key, 1)
-        
-        # Use the same Enhanced Emoji Mapping system prompt as enhanced chat for consistency
-        enhanced_system_prompt = f"""
-        You are a professional AU/NZ construction compliance assistant providing expert guidance.
-        
-        CRITICAL REQUIREMENT: You MUST provide structured response using the Enhanced Emoji Mapping format.
-        
-        CONTEXTUAL INTELLIGENCE: 
-        - If the user asks about "water systems" or mentions a topic like "water systems", understand they're asking about plumbing/water system standards and codes
-        - Don't ask "which standard" when the context is clear from their question
-        - Be intelligent about inferring what construction standards they need based on the topic
-        - Provide comprehensive guidance without requiring additional clarification
-        
-        MANDATORY DUAL-LAYER STRUCTURE - YOU MUST INCLUDE BOTH SECTIONS:
-        1. 🔧 **Technical Answer:** - comprehensive technical guidance
-        2. 🧐 **Mentoring Insight:** - contextual guidance considering user's professional background
-        
-        EXACT SECTION HEADERS TO USE (MUST include emojis):
-        - 🔧 **Technical Answer:** (REQUIRED - MUST BE INCLUDED)
-        - 🧐 **Mentoring Insight:** (REQUIRED - MUST BE INCLUDED)  
-        - 📋 **Next Steps:** (optional)
-        - 📊 **Code Requirements:** (optional)
-        - ✅ **Compliance Verification:** (optional)
-        - 🔄 **Alternative Solutions:** (optional)
-        - 🏛️ **Authority Requirements:** (optional)
-        - 📄 **Documentation Needed:** (optional)
-        - ⚙️ **Workflow Recommendations:** (optional)
-        - ❓ **Clarifying Questions:** (optional)
-        
-        CRITICAL FORMATTING RULES:
-        - ALWAYS start with 🔧 **Technical Answer:** section header (with emoji)
-        - ALWAYS include 🧐 **Mentoring Insight:** section after technical answer (with emoji)
-        - Use professional markdown table format for comparisons when relevant
-        - Provide specific clause references with current year editions
-        - Include calculations with units, assumptions, and formulas where relevant
-        - Use proper spacing between sections for readability
-        
-        INTELLIGENT CONTEXT UNDERSTANDING:
-        - Water systems = plumbing standards (NCC Section F, AS/NZS 3500 series)
-        - Fire systems = fire safety requirements (NCC Section C, AS 1851, AS 2419)
-        - Structural = structural design standards (AS/NZS 1170 series, AS 3600, AS 4100)
-        - Electrical = electrical installation standards (AS/NZS 3000)
-        - Be proactive in understanding what they need rather than asking for clarification
-        
-        INTELLIGENT GUIDANCE PRINCIPLES:
-        - Focus on practical, actionable advice relevant to their expertise level
-        - Avoid obvious recommendations in areas they already specialize in  
-        - Consider project context, timing, and compliance version relevance
-        - Keep compliance statements minimal and contextual
-        - No generic signatures or boilerplate endings
-        
-        REMEMBER: Both 🔧 **Technical Answer:** and 🧐 **Mentoring Insight:** sections are MANDATORY for Enhanced Emoji Mapping consistency.
-        
-        Question: {chat_data.question}
-        """
-        
-        # Get AI response using the same logic as enhanced chat
-        api_key = os.environ.get('OPENAI_API_KEY', '')
-        if not api_key or len(api_key) < 10:
-            # Mock AI response with Enhanced Emoji Mapping and better contextual understanding
-            question_lower = chat_data.question.lower()
-            
-            if "water" in question_lower and ("system" in question_lower or "step" in question_lower):
-                ai_response_text = """🔧 **Technical Answer:**
-
-Water system compliance for AU/NZ construction follows the AS/NZS 3500 series and NCC Section F requirements. Here's your step-by-step implementation guide:
-
-## **Primary Standards & Compliance Framework**
-
-| **Standard** | **Application** | **Key Requirements** |
-|-------------|----------------|---------------------|
-| **AS/NZS 3500.1** | Cold water systems | Design, installation, commissioning |
-| **AS/NZS 3500.2** | Hot water systems | Temperature control, energy efficiency |
-| **AS/NZS 3500.4** | Heated water systems | Solar, heat pump, gas systems |
-| **NCC Volume 2 Part 2.4** | Residential compliance | Mandatory compliance pathway |
-
-**Step-by-Step Implementation:**
-
-1. **Design Phase:** Hydraulic consultant engagement for comprehensive system design
-2. **Authority Coordination:** Water authority approvals and connection applications
-3. **Material Selection:** AS/NZS 3500 series compliant fixtures and fittings
-4. **Installation Oversight:** Licensed plumber supervision and testing protocols
-5. **Commissioning:** Performance verification and compliance documentation
-
-🧐 **Mentoring Insight:**
-
-**Professional Development Focus:**
-Water system projects require early coordination between hydraulic consultants and your design team. The most common compliance issues arise from inadequate sizing calculations and improper material selections.
-
-**Project Risk Management:**
-Consider engaging your hydraulic engineer during concept design rather than detailed design. This prevents costly rework when system requirements affect architectural layouts. Many projects experience delays due to late-stage hydraulic design conflicts with structural elements.
-
-**Compliance Strategy:**
-Focus on the mandatory provisions in NCC Section F1.2 and F1.5. These drive most approval requirements. Alternative compliance pathways through AS/NZS 3500.1 provide flexibility for complex projects while maintaining compliance certainty.
-
-📋 **Next Steps:**
-
-1. **Design Coordination:** Schedule hydraulic consultant engagement for system sizing
-2. **Authority Consultation:** Confirm local water authority requirements and connection approvals  
-3. **Material Procurement:** Source AS/NZS 3500 compliant materials and fittings
-4. **Installation Planning:** Coordinate licensed plumber availability for installation phases"""
-
+                
+                # Update daily usage
+                await firebase_service.increment_daily_questions(uid, daily_usage_key)
+                
+                trial_warning = True
+                remaining_questions = 3 - (daily_questions_used + 1)
+                session_id = chat_data.session_id or str(uuid.uuid4())
+                user_profile = None
             else:
-                ai_response_text = f"""🔧 **Technical Answer:**
-
-Here's a comprehensive analysis addressing your construction compliance question: "{chat_data.question}"
-
-## **Key Requirements Analysis**
-
-| **Aspect** | **Primary Standard** | **Key Considerations** |
-|------------|---------------------|------------------------|
-| **Design Criteria** | AS/NZS 1170 Series | Structural loads and environmental factors |
-| **Fire Safety** | NCC Volume 1 | Emergency egress and fire-resistant construction |
-| **Accessibility** | NCC Volume 1 & DDA | Universal access compliance |
-| **Energy Efficiency** | NCC Section J | Thermal performance and sustainability |
-
-**Critical Design Elements:**
-• Professional engineering coordination across all disciplines
-• Authority consultation for approval pathway clarity
-• Material specification compliance verification
-• Installation methodology and sequencing requirements
-
-**Compliance Verification Points:**
-• Building approval authority pre-lodgement meetings
-• Professional certifications for structural, fire, and accessibility elements
-• Environmental considerations including energy efficiency and water management
-
-🧐 **Mentoring Insight:**
-
-**Professional Development Considerations:**
-Complex construction projects benefit from early engagement with specialist consultants across relevant disciplines. Consider the project's compliance matrix - identify which standards trigger mandatory professional oversight requirements.
-
-**Key Project Coordination Points:**
-• Structural engineer engagement during conceptual design phase
-• Fire safety engineer input for performance-based solutions
-• Building surveyor consultation for approval pathway optimization
-• Services coordination between disciplines for integrated outcomes
-
-**Risk Management Focus:**
-Professional construction delivery involves elevated compliance requirements. Ensure your project timeline accounts for authority consultation periods and professional certification processes. Consider alternative compliance pathways early to optimize project delivery outcomes.
-
-📋 **Next Steps:**
-
-1. **Authority Consultation:** Engage building approval authority for project-specific pathway guidance
-2. **Professional Team Assembly:** Coordinate specialist consultants for relevant disciplines
-3. **Compliance Strategy Development:** Create integrated compliance approach across all standards
-4. **Design Progression:** Advance with coordinated multi-disciplinary design methodology"""
-            
-            tokens_used = 450
-            model_used = "mock-gpt-4o"
-        else:
-            # Real OpenAI API call with Enhanced Emoji Mapping system prompt
-            import openai
-            openai_client = openai.AsyncOpenAI(api_key=api_key)
-            
-            response = await openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": enhanced_system_prompt},
-                    {"role": "user", "content": chat_data.question}
-                ],
-                max_tokens=1800,
-                temperature=0.2
-            )
-            raw_ai_response = response.choices[0].message.content
-            tokens_used = response.usage.total_tokens
-            model_used = "gpt-4o-mini"
-            
-            # 🚨 CRITICAL FORCED POST-PROCESSING - Guarantee Enhanced Emoji Mapping
-            # If OpenAI doesn't follow the system prompt, force the correct format
-            ai_response_text = raw_ai_response
-            
-            # Ensure it has the required sections - if not, force them
-            if "🔧 **Technical Answer**" not in ai_response_text and "**Technical Answer**" in ai_response_text:
-                ai_response_text = ai_response_text.replace("**Technical Answer**", "🔧 **Technical Answer**")
-            elif "Technical Answer" not in ai_response_text:
-                # If completely missing, prepend with proper header
-                ai_response_text = f"🔧 **Technical Answer:**\n\n{ai_response_text}"
-            
-            if "🧐 **Mentoring Insight**" not in ai_response_text and "**Mentoring Insight**" in ai_response_text:
-                ai_response_text = ai_response_text.replace("**Mentoring Insight**", "🧐 **Mentoring Insight**")
-            elif "Mentoring Insight" not in ai_response_text:
-                # If completely missing, append with proper section
-                ai_response_text += f"\n\n🧐 **Mentoring Insight:**\n\nKey project considerations include ensuring compliance version alignment with your approval timeline and coordinating with relevant specialists early in the design phase for optimal outcomes."
+                trial_warning = False
+                remaining_questions = None
+                session_id = chat_data.session_id or str(uuid.uuid4())
+                user_profile = None
         
-        # CRITICAL FIX: Ensure Enhanced Emoji Mapping consistency - Use correct 🧐 professor emoji
-        # Replace any incorrect emojis with the correct 🧐 emoji (professor with monocle)
-        ai_response_text = ai_response_text.replace("🧠 **Mentoring Insight**", "🧐 **Mentoring Insight**")
-        ai_response_text = ai_response_text.replace("💡 **Mentoring Insight**", "🧐 **Mentoring Insight**")
-        ai_response_text = ai_response_text.replace("🤓 **Mentoring Insight**", "🧐 **Mentoring Insight**")
-        ai_response_text = ai_response_text.replace("🧠 Mentoring Insight", "🧐 Mentoring Insight")
-        ai_response_text = ai_response_text.replace("💡 Mentoring Insight", "🧐 Mentoring Insight")
-        ai_response_text = ai_response_text.replace("🤓 Mentoring Insight", "🧐 Mentoring Insight")
+        # **UNIFIED BACKEND CALL - NO LEGACY LOGIC**
+        response_data = shared_chat_service.get_unified_chat_response(
+            question=chat_data.question,
+            session_id=session_id,
+            user_context=None  # Regular endpoint doesn't use enhanced features
+        )
         
-        # Create ai_response structure for backward compatibility
-        ai_response = {
-            "response": ai_response_text,
-            "tokens_used": tokens_used,
-            "model": model_used
-        }
-        
-        # Format response structure to match enhanced chat
-        response_structure = {
-            "technical": ai_response_text,
-            "mentoring": "Enhanced response with professional AU/NZ construction guidance using Enhanced Emoji Mapping.",
-            "format": "dual",
-            "knowledge_sources": 0,
-            "partner_sources": [],
-            "knowledge_used": False
-        }
-        
-        # Store conversation in database
-        conversation_data = {
-            "session_id": chat_data.session_id or str(uuid.uuid4()),
-            "user_id": current_user["uid"] if current_user else None,
-            "question": chat_data.question,
-            "response": ai_response["response"],
-            "formatted_response": response_structure,
-            "tokens_used": ai_response.get("tokens_used", 0),
-            "model": ai_response.get("model", "gpt-4o"),
-            "timestamp": datetime.utcnow()
-        }
-        
-        await db.conversations.insert_one(conversation_data)
-        
-        response_data = {
-            "response": ai_response_text,  # Send the formatted text directly like enhanced endpoint
-            "session_id": conversation_data["session_id"],
-            "tokens_used": tokens_used
-        }
-        
-        # Add trial warning for anonymous users
-        if trial_warning:
+        # Add trial information if applicable
+        if trial_warning and not current_user:
             response_data["trial_info"] = {
-                "message": "Sign up to unlock unlimited questions and advanced features",
-                "remaining_questions": "Limited access"
+                "remaining_questions": 3,
+                "message": "You have 3 free questions remaining today"
             }
-        elif current_user:
-            # Add subscription info for authenticated users
-            subscription = await firebase_service.check_user_subscription(current_user["uid"])
-            if subscription["subscription_tier"] == "starter" and not subscription["subscription_active"]:
-                # Get today's date for daily limit checking
-                today = datetime.utcnow().date()
-                daily_usage_key = f"daily_questions_{today.strftime('%Y%m%d')}"
-                daily_questions_used = subscription.get(daily_usage_key, 0)
-                remaining = max(0, 3 - daily_questions_used)
-                response_data["trial_info"] = {
-                    "remaining_questions": remaining,
-                    "message": f"You have {remaining} free questions remaining today" if remaining > 0 else "Daily limit reached - 3 questions per day for free users"
-                }
+        elif trial_warning and current_user:
+            response_data["trial_info"] = {
+                "remaining_questions": remaining_questions,
+                "message": f"You have {remaining_questions} free questions remaining today"
+            }
         
         return response_data
         
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing question: {str(e)}")
+        print(f"Error in ask_question: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 # Document Processing and AI Functions
 async def extract_text_from_file(file_content: bytes, content_type: str, filename: str) -> str:
