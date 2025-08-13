@@ -1655,7 +1655,7 @@ async def unified_chat_ask_enhanced(
         
         uid = current_user["uid"]
         
-        # Search knowledge banks for context
+        # Search knowledge banks for context (ENHANCED-SPECIFIC FEATURE)
         community_results = await search_community_knowledge_bank(question_data.question, limit=3)
         personal_results = await search_personal_knowledge_bank(question_data.question, uid, limit=2)
         
@@ -1686,13 +1686,13 @@ async def unified_chat_ask_enhanced(
         subscription = await firebase_service.check_user_subscription(uid)
         tier = "pro_plus" if subscription.get("subscription_tier") == "pro_plus" else "pro"
         
-        # Generate unified response with knowledge context
+        # Generate unified response - SAME CORE LOGIC AS REGULAR ENDPOINT
         response = await unified_chat_service.generate_response(
             question=question_data.question,
             session_id=question_data.session_id or str(uuid.uuid4()),
             tier=tier,
             user_id=uid,
-            knowledge_context=context_string
+            knowledge_context=context_string  # Only difference: enhanced knowledge context
         )
         
         # Update document reference counts
