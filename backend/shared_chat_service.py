@@ -284,51 +284,121 @@ Effective compliance management begins with understanding your project's risk pr
         """
         # Check for follow-up questions with context
         if conversation_history and len(conversation_history) >= 2:
-            # Get recent context
-            recent_msgs = conversation_history[-4:]  # Last 2 Q&A pairs
+            # Extract topics from all previous messages
             previous_topics = []
+            context_summary = []
             
-            for msg in recent_msgs:
+            for msg in conversation_history:
                 content = msg.get('content', '').lower()
-                if 'acoustic' in content:
+                msg_type = msg.get('type', '')
+                
+                # Extract topics from any message (user or AI)
+                if 'acoustic' in content or 'lagging' in content:
                     previous_topics.append('acoustic lagging')
-                elif 'fire' in content:
+                    if msg_type == 'user':
+                        context_summary.append(f"User previously asked about acoustic lagging")
+                elif 'fire' in content and 'safety' in content:
                     previous_topics.append('fire safety')
+                    if msg_type == 'user':
+                        context_summary.append(f"User previously asked about fire safety")
                 elif 'structural' in content:
                     previous_topics.append('structural requirements')
-                elif 'water' in content:
+                    if msg_type == 'user':
+                        context_summary.append(f"User previously asked about structural requirements")
+                elif 'water' in content and ('system' in content or 'plumbing' in content):
                     previous_topics.append('water systems')
+                    if msg_type == 'user':
+                        context_summary.append(f"User previously asked about water systems")
             
-            # Handle contextual follow-up questions
-            if any(word in question.lower() for word in ['when', 'where', 'how', 'why', 'what', 'it', 'this', 'that']) and previous_topics:
+            # Check if current question has contextual pronouns (it, this, that, when, where, how)
+            contextual_pronouns = ['it', 'this', 'that', 'when do i', 'where do i', 'how do i', 'why do i']
+            has_contextual_reference = any(pronoun in question.lower() for pronoun in contextual_pronouns)
+            
+            # If contextual pronouns found AND we have previous topics
+            if has_contextual_reference and previous_topics:
                 topic = previous_topics[-1]  # Most recent topic
                 
                 if 'acoustic' in topic:
                     return f"""🔧 **Technical Answer:**
 
-Based on our previous discussion about {topic}, installation timing depends on the construction phase:
+Based on our previous discussion about {topic}, installation timing follows these requirements:
 
-**Optimal Installation Timing:**
-- **Pre-drylining Phase:** Install acoustic lagging before wall linings go up
-- **During Services Installation:** Coordinate with electrical and mechanical trades
-- **After Structural Completion:** Ensure all structural work is complete first
+**Installation Timing Requirements:**
+- **Pre-drylining Phase:** Install acoustic lagging before wall linings and ceiling installation
+- **During Services Installation:** Coordinate with electrical and mechanical trades for integrated approach
+- **After Structural Completion:** Ensure all structural elements are complete and tested
 
-**Key Timing Considerations:**
-1. **Access Requirements:** Install while ceiling/wall cavities are accessible
-2. **Trade Coordination:** Schedule after rough-in services, before finishing trades
-3. **Weather Protection:** Ensure materials are protected from moisture during installation
+**NCC 2025 Compliance Timeline:**
+- **Design Phase:** Acoustic performance specifications must be included in building consent documentation
+- **Construction Phase:** Installation must occur at specified construction stages to meet performance requirements
+- **Pre-Occupancy:** Acoustic testing and verification required before building occupancy certificate
 
 🧐 **Mentoring Insight:**
 
-Timing acoustic installation correctly is critical for both performance and cost-effectiveness. Late installation often requires partial dismantling of completed work, significantly increasing project costs and delays.
+Timing acoustic installation correctly is critical for both acoustic performance and cost-effectiveness. Installing too late often requires dismantling completed work, significantly increasing project costs and potential delays to practical completion.
 
 📋 **Next Steps:**
 
 1. Coordinate with construction program for optimal installation timing
-2. Confirm material delivery aligns with installation window
-3. Schedule acoustic specialist during appropriate construction phase"""
+2. Confirm material delivery aligns with construction sequence  
+3. Schedule acoustic specialist during appropriate trade coordination phase"""
+
+                elif 'fire' in topic:
+                    return f"""🔧 **Technical Answer:**
+
+Based on our previous discussion about {topic}, installation timing follows specific construction phases:
+
+**Fire Safety Installation Sequence:**
+- **During Structural Phase:** Install fire-rated structural elements and penetration seals
+- **Services Installation:** Install detection systems, sprinklers, and emergency systems
+- **Pre-Completion:** Complete system testing and commissioning before occupancy
+
+🧐 **Mentoring Insight:**
+
+Fire safety system installation timing is governed by both practical construction sequence and regulatory inspection requirements. Early coordination with fire authorities ensures smooth approval processes.
+
+📋 **Next Steps:**
+
+1. Review fire safety installation program with building certifier
+2. Coordinate system installation with relevant trade packages
+3. Schedule fire authority inspections at appropriate construction milestones"""
+
+                elif 'structural' in topic:
+                    return f"""🔧 **Technical Answer:**
+
+Based on our previous discussion about {topic}, installation follows construction sequencing requirements:
+
+**Structural Installation Phases:**
+- **Foundation Phase:** Complete all below-ground structural elements first
+- **Superstructure Phase:** Install frame, slabs, and primary structural systems
+- **Services Integration:** Install structural supports for mechanical and electrical systems
+
+🧐 **Mentoring Insight:**
+
+Structural installation timing must align with overall construction methodology. Early structural engineer involvement in construction sequencing prevents coordination conflicts with other trades.
+
+📋 **Next Steps:**
+
+1. Confirm structural installation sequence with construction program
+2. Coordinate with relevant trades for integrated approach
+3. Schedule structural inspections at key construction milestones"""
+
+                else:
+                    return f"""🔧 **Technical Answer:**
+
+Based on our previous discussion about {topic}, installation timing depends on construction phase coordination and regulatory requirements.
+
+🧐 **Mentoring Insight:**
+
+Installation timing should be coordinated with the overall construction program to ensure optimal workflow and compliance verification.
+
+📋 **Next Steps:**
+
+1. Review installation requirements with relevant specialists
+2. Coordinate timing with construction program
+3. Confirm regulatory inspection schedules"""
         
-        # Get base response for new topics
+        # Get base response for new topics (no conversation context)
         return self._get_unified_mock_response_with_context(question, user_context)
 
     def _make_unified_openai_call(self, question: str, system_prompt: str) -> str:
