@@ -1137,9 +1137,6 @@ async def ask_question(
                         }
                     )
                 
-                # Update daily usage
-                await firebase_service.increment_daily_questions(uid, daily_usage_key)
-                
                 trial_warning = True
                 remaining_questions = 3 - (daily_questions_used + 1)
                 session_id = chat_data.session_id or str(uuid.uuid4())
