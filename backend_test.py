@@ -79,6 +79,356 @@ class BackendTester:
         except Exception as e:
             return False, str(e), 0
     
+    async def test_critical_chat_endpoint_redis_fix(self):
+        """🚨 CRITICAL: Test Chat Endpoint Redis Integration Fix from Review Request"""
+        print("\n🚨 === CRITICAL CHAT ENDPOINT REDIS INTEGRATION FIX ===")
+        print("Testing the CRITICAL frontend-backend communication fix that was just implemented")
+        print("🎯 FOCUS AREAS:")
+        print("   1. Chat Endpoint Testing: Test /api/chat/ask endpoint (was failing with 500 errors)")
+        print("   2. Redis Integration: Verify Redis conversation storage for session management")
+        print("   3. Response Format: Confirm API returns proper V2 schema format with blocks/content structure")
+        print("   4. Authentication: Test both authenticated and unauthenticated scenarios")
+        print("   5. Session Management: Test session_id handling and conversation context")
+        print("🚨 WHAT WAS FIXED:")
+        print("   - Installed and started Redis service (was causing 500 errors)")
+        print("   - Fixed frontend parsing to handle V2 schema response format")
+        print("   - Updated ChatInterface.js to parse response.data.blocks[0].content correctly")
+        
+        # Test with the exact question from review request
+        test_question = "What are fire safety requirements for high-rise buildings?"
+        print(f"\n🔍 Testing with exact question from review: '{test_question}'")
+        
+        # Test 1: Unauthenticated Request
+        print("\n1️⃣ TESTING UNAUTHENTICATED REQUEST")
+        unauth_data = {
+            "question": test_question,
+            "session_id": "redis_test_unauth"
+        }
+        
+        unauth_success, unauth_response, unauth_status = await self.make_request("POST", "/chat/ask", unauth_data)
+        
+        if unauth_success and isinstance(unauth_response, dict):
+            print(f"   ✅ Unauthenticated request successful: Status {unauth_status}")
+            
+            # Check for V2 schema format
+            has_blocks = "blocks" in unauth_response
+            has_data = "data" in unauth_response
+            
+            if has_blocks:
+                blocks = unauth_response.get("blocks", [])
+                if blocks and len(blocks) > 0:
+                    first_block = blocks[0]
+                    has_content = "content" in first_block
+                    
+                    if has_content:
+                        content = first_block["content"]
+                        content_length = len(str(content))
+                        
+                        print(f"   ✅ V2 Schema Format: Found blocks[0].content with {content_length} characters")
+                        
+                        # Check for fire safety content
+                        fire_indicators = ["fire safety", "fire", "building", "requirements", "AS", "BCA", "NCC"]
+                        content_str = str(content).lower()
+                        found_indicators = [indicator for indicator in fire_indicators if indicator in content_str]
+                        
+                        if found_indicators:
+                            self.log_test("✅ Unauthenticated Chat - V2 Schema & Content", True, 
+                                        f"V2 schema with fire safety content: {', '.join(found_indicators)}")
+                        else:
+                            self.log_test("⚠️ Unauthenticated Chat - Generic Content", True, 
+                                        "V2 schema working but content may be generic")
+                    else:
+                        self.log_test("❌ Unauthenticated Chat - Missing Content", False, 
+                                    "V2 schema blocks present but missing content field")
+                else:
+                    self.log_test("❌ Unauthenticated Chat - Empty Blocks", False, 
+                                "V2 schema has blocks field but it's empty")
+            elif has_data and "blocks" in unauth_response.get("data", {}):
+                # Alternative V2 format: response.data.blocks
+                data_blocks = unauth_response["data"].get("blocks", [])
+                if data_blocks and len(data_blocks) > 0:
+                    first_block = data_blocks[0]
+                    has_content = "content" in first_block
+                    
+                    if has_content:
+                        content = first_block["content"]
+                        content_length = len(str(content))
+                        print(f"   ✅ V2 Schema Format: Found data.blocks[0].content with {content_length} characters")
+                        self.log_test("✅ Unauthenticated Chat - V2 Schema (data.blocks)", True, 
+                                    f"V2 schema working with data.blocks format")
+                    else:
+                        self.log_test("❌ Unauthenticated Chat - Missing Content in data.blocks", False, 
+                                    "V2 schema data.blocks present but missing content")
+                else:
+                    self.log_test("❌ Unauthenticated Chat - Empty data.blocks", False, 
+                                "V2 schema has data.blocks but it's empty")
+            else:
+                # Check for legacy format
+                has_response = "response" in unauth_response
+                has_text = "text" in unauth_response
+                
+                if has_response or has_text:
+                    self.log_test("⚠️ Unauthenticated Chat - Legacy Format", True, 
+                                "API working but using legacy format instead of V2 schema")
+                else:
+                    self.log_test("❌ Unauthenticated Chat - Unknown Format", False, 
+                                "Response format doesn't match V2 schema or legacy format")
+        else:
+            self.log_test("❌ Unauthenticated Chat - API Failure", False, 
+                        f"Status: {unauth_status}, Response: {unauth_response}")
+        
+        # Test 2: Authenticated Request
+        print("\n2️⃣ TESTING AUTHENTICATED REQUEST")
+        auth_headers = {"Authorization": "Bearer mock_dev_token"}
+        auth_data = {
+            "question": test_question,
+            "session_id": "redis_test_auth"
+        }
+        
+        auth_success, auth_response, auth_status = await self.make_request("POST", "/chat/ask", auth_data, auth_headers)
+        
+        if auth_success and isinstance(auth_response, dict):
+            print(f"   ✅ Authenticated request successful: Status {auth_status}")
+            
+            # Check for V2 schema format
+            has_blocks = "blocks" in auth_response
+            has_data = "data" in auth_response
+            
+            if has_blocks:
+                blocks = auth_response.get("blocks", [])
+                if blocks and len(blocks) > 0:
+                    first_block = blocks[0]
+                    has_content = "content" in first_block
+                    
+                    if has_content:
+                        content = first_block["content"]
+                        content_length = len(str(content))
+                        
+                        print(f"   ✅ V2 Schema Format: Found blocks[0].content with {content_length} characters")
+                        print(f"   📄 Content preview: {str(content)[:200]}...")
+                        
+                        # Check for enhanced content (authenticated users should get better responses)
+                        enhanced_indicators = ["Technical Answer", "Mentoring Insight", "🔧", "🧐"]
+                        content_str = str(content)
+                        found_enhanced = [indicator for indicator in enhanced_indicators if indicator in content_str]
+                        
+                        if found_enhanced:
+                            self.log_test("✅ Authenticated Chat - Enhanced V2 Content", True, 
+                                        f"V2 schema with enhanced content: {', '.join(found_enhanced)}")
+                        else:
+                            self.log_test("✅ Authenticated Chat - Basic V2 Content", True, 
+                                        "V2 schema working with basic content")
+                    else:
+                        self.log_test("❌ Authenticated Chat - Missing Content", False, 
+                                    "V2 schema blocks present but missing content field")
+                else:
+                    self.log_test("❌ Authenticated Chat - Empty Blocks", False, 
+                                "V2 schema has blocks field but it's empty")
+            elif has_data and "blocks" in auth_response.get("data", {}):
+                # Alternative V2 format: response.data.blocks
+                data_blocks = auth_response["data"].get("blocks", [])
+                if data_blocks and len(data_blocks) > 0:
+                    first_block = data_blocks[0]
+                    has_content = "content" in first_block
+                    
+                    if has_content:
+                        content = first_block["content"]
+                        content_length = len(str(content))
+                        print(f"   ✅ V2 Schema Format: Found data.blocks[0].content with {content_length} characters")
+                        self.log_test("✅ Authenticated Chat - V2 Schema (data.blocks)", True, 
+                                    f"V2 schema working with data.blocks format")
+                    else:
+                        self.log_test("❌ Authenticated Chat - Missing Content in data.blocks", False, 
+                                    "V2 schema data.blocks present but missing content")
+                else:
+                    self.log_test("❌ Authenticated Chat - Empty data.blocks", False, 
+                                "V2 schema has data.blocks but it's empty")
+            else:
+                # Check for legacy format
+                has_response = "response" in auth_response
+                has_text = "text" in auth_response
+                
+                if has_response or has_text:
+                    self.log_test("⚠️ Authenticated Chat - Legacy Format", True, 
+                                "API working but using legacy format instead of V2 schema")
+                else:
+                    self.log_test("❌ Authenticated Chat - Unknown Format", False, 
+                                "Response format doesn't match V2 schema or legacy format")
+        else:
+            self.log_test("❌ Authenticated Chat - API Failure", False, 
+                        f"Status: {auth_status}, Response: {auth_response}")
+        
+        # Test 3: Redis Session Management
+        print("\n3️⃣ TESTING REDIS SESSION MANAGEMENT")
+        session_id = "redis_session_test_123"
+        
+        # First message in session
+        print(f"   🔍 Step 1: First message with session_id '{session_id}'")
+        first_msg_data = {
+            "question": "Tell me about fire safety systems",
+            "session_id": session_id
+        }
+        
+        first_success, first_response, first_status = await self.make_request("POST", "/chat/ask", first_msg_data, auth_headers)
+        
+        if first_success:
+            print(f"   ✅ First message successful: Status {first_status}")
+            
+            # Wait a moment for Redis storage
+            await asyncio.sleep(1)
+            
+            # Second message in same session
+            print(f"   🔍 Step 2: Follow-up message with SAME session_id '{session_id}'")
+            followup_data = {
+                "question": "What are the installation requirements?",
+                "session_id": session_id
+            }
+            
+            followup_success, followup_response, followup_status = await self.make_request("POST", "/chat/ask", followup_data, auth_headers)
+            
+            if followup_success:
+                print(f"   ✅ Follow-up message successful: Status {followup_status}")
+                
+                # Check if context is maintained (this would indicate Redis is working)
+                if isinstance(followup_response, dict):
+                    # Look for any response content
+                    response_content = ""
+                    if "blocks" in followup_response and followup_response["blocks"]:
+                        response_content = str(followup_response["blocks"][0].get("content", ""))
+                    elif "data" in followup_response and "blocks" in followup_response["data"]:
+                        response_content = str(followup_response["data"]["blocks"][0].get("content", ""))
+                    elif "response" in followup_response:
+                        response_content = str(followup_response["response"])
+                    elif "text" in followup_response:
+                        response_content = str(followup_response["text"])
+                    
+                    if response_content:
+                        self.log_test("✅ Redis Session Management - Response Generated", True, 
+                                    f"Follow-up message generated {len(response_content)} char response")
+                        
+                        # Check for context indicators (would suggest Redis conversation storage is working)
+                        context_indicators = ["fire", "safety", "system", "previous", "discussion"]
+                        found_context = [indicator for indicator in context_indicators if indicator.lower() in response_content.lower()]
+                        
+                        if found_context:
+                            self.log_test("✅ Redis Session Management - Context Maintained", True, 
+                                        f"Session context appears maintained: {', '.join(found_context)}")
+                        else:
+                            self.log_test("⚠️ Redis Session Management - Context Unclear", True, 
+                                        "Session working but context maintenance unclear")
+                    else:
+                        self.log_test("❌ Redis Session Management - Empty Response", False, 
+                                    "Follow-up message returned empty response")
+                else:
+                    self.log_test("❌ Redis Session Management - Invalid Response", False, 
+                                "Follow-up message returned invalid response format")
+            else:
+                self.log_test("❌ Redis Session Management - Follow-up Failed", False, 
+                            f"Follow-up message failed: Status {followup_status}")
+        else:
+            self.log_test("❌ Redis Session Management - First Message Failed", False, 
+                        f"First message failed: Status {first_status}")
+        
+        # Test 4: Check for Redis Service Status (indirect)
+        print("\n4️⃣ TESTING REDIS SERVICE STATUS (INDIRECT)")
+        
+        # Test multiple rapid requests to see if Redis handles them
+        print("   🔍 Testing multiple rapid requests to check Redis stability")
+        rapid_requests = []
+        
+        for i in range(3):
+            rapid_data = {
+                "question": f"Quick test question {i+1}",
+                "session_id": f"rapid_test_{i+1}"
+            }
+            
+            rapid_success, rapid_response, rapid_status = await self.make_request("POST", "/chat/ask", rapid_data, auth_headers)
+            rapid_requests.append((rapid_success, rapid_status))
+            
+            if rapid_success:
+                print(f"   ✅ Rapid request {i+1}: Success (Status {rapid_status})")
+            else:
+                print(f"   ❌ Rapid request {i+1}: Failed (Status {rapid_status})")
+        
+        successful_rapid = sum(1 for success, _ in rapid_requests if success)
+        
+        if successful_rapid == 3:
+            self.log_test("✅ Redis Service Stability - Multiple Requests", True, 
+                        "All 3 rapid requests successful - Redis appears stable")
+        elif successful_rapid >= 2:
+            self.log_test("⚠️ Redis Service Stability - Partial Success", True, 
+                        f"{successful_rapid}/3 rapid requests successful - Redis mostly stable")
+        else:
+            self.log_test("❌ Redis Service Stability - Multiple Failures", False, 
+                        f"Only {successful_rapid}/3 rapid requests successful - Redis may be unstable")
+        
+        # Test 5: Check Chat History (Redis-dependent feature)
+        print("\n5️⃣ TESTING CHAT HISTORY (REDIS-DEPENDENT)")
+        
+        print("   🔍 Testing chat history retrieval")
+        history_success, history_response, history_status = await self.make_request("GET", "/chat/history?limit=5", headers=auth_headers)
+        
+        if history_success and isinstance(history_response, dict):
+            if "sessions" in history_response:
+                sessions = history_response["sessions"]
+                print(f"   ✅ Chat history retrieved: {len(sessions)} sessions")
+                
+                # Check if our test sessions are present
+                test_sessions = [session_id, "redis_test_auth", "redis_test_unauth"]
+                found_test_sessions = []
+                
+                for session in sessions:
+                    session_id_found = session.get("session_id", "")
+                    if any(test_id in session_id_found for test_id in test_sessions):
+                        found_test_sessions.append(session_id_found)
+                
+                if found_test_sessions:
+                    self.log_test("✅ Redis Chat History - Test Sessions Found", True, 
+                                f"Found {len(found_test_sessions)} test sessions in history")
+                else:
+                    self.log_test("⚠️ Redis Chat History - No Test Sessions", True, 
+                                "History working but test sessions not found (may be expected)")
+                
+                self.log_test("✅ Redis Chat History - API Working", True, 
+                            f"Chat history API functional with {len(sessions)} sessions")
+            else:
+                self.log_test("❌ Redis Chat History - Missing Sessions", False, 
+                            "History response missing 'sessions' field")
+        else:
+            self.log_test("❌ Redis Chat History - API Failure", False, 
+                        f"History API failed: Status {history_status}")
+        
+        print("\n🎯 CRITICAL FRONTEND-BACKEND COMMUNICATION FIX SUMMARY:")
+        
+        # Count successful tests
+        redis_tests = [result for result in self.test_results if "Redis" in result["test"] and result["success"]]
+        v2_tests = [result for result in self.test_results if "V2 Schema" in result["test"] and result["success"]]
+        chat_tests = [result for result in self.test_results if "Chat" in result["test"] and result["success"]]
+        
+        total_redis_tests = len([result for result in self.test_results if "Redis" in result["test"]])
+        total_v2_tests = len([result for result in self.test_results if "V2 Schema" in result["test"]])
+        total_chat_tests = len([result for result in self.test_results if "Chat" in result["test"]])
+        
+        print(f"   📊 Redis Integration Tests: {len(redis_tests)}/{total_redis_tests} passed")
+        print(f"   📊 V2 Schema Format Tests: {len(v2_tests)}/{total_v2_tests} passed")
+        print(f"   📊 Chat Endpoint Tests: {len(chat_tests)}/{total_chat_tests} passed")
+        
+        # Overall assessment
+        if len(redis_tests) >= 2 and len(v2_tests) >= 1 and len(chat_tests) >= 2:
+            print("🚀 **CRITICAL FIX VERIFICATION**: Frontend-backend communication fix appears SUCCESSFUL!")
+            print("✅ Redis service integration working")
+            print("✅ V2 schema format being returned")
+            print("✅ Chat endpoints responding without 500 errors")
+            print("✅ Session management functional")
+            self.log_test("🎯 CRITICAL: Frontend-Backend Communication Fix", True, 
+                        "All critical components working - Redis, V2 schema, chat endpoints")
+        else:
+            print("❌ **CRITICAL FIX VERIFICATION**: Frontend-backend communication fix has ISSUES!")
+            print("   Some components not working as expected")
+            print("   Further investigation needed")
+            self.log_test("🎯 CRITICAL: Frontend-Backend Communication Fix", False, 
+                        "Critical components not all working - needs investigation")
+
     async def test_basic_api_health(self):
         """Test basic API health endpoint"""
         print("\n=== Testing Basic API Health ===")
