@@ -1,11 +1,11 @@
-// src/components/Markdown.tsx
+// src/components/Markdown.js
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import TablePro from "./TablePro";
 
-export default function Markdown({ source }: { source: string }) {
+export default function Markdown({ source }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
