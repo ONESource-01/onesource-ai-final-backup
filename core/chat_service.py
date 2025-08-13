@@ -169,7 +169,7 @@ class ChatService:
         topics: Optional[Dict[str, str]] = None
     ) -> ChatResponse:
         """
-        MAIN UNIFIED FUNCTION - used by both endpoints
+        MAIN UNIFIED FUNCTION - uses Redis conversation store
         Same logic for all tiers and endpoints - NO EXCEPTIONS
         """
         
@@ -179,50 +179,40 @@ class ChatService:
         history_turns = 0
         
         try:
-            # Step 1: Get conversation history from context manager (USE INITIALIZED MANAGER)
-            conversation_history = []
-            current_context_manager = None
+            # Step 1: Get conversation history from Redis store
+            conversation_store = get_conversation_store()
+            conversation_history = conversation_store.get(session_id)
+            history_turns = len(conversation_history)
             
-            # Get the initialized context manager from the service attribute
-            if hasattr(unified_chat_service, '_context_manager'):
-                current_context_manager = unified_chat_service._context_manager
-            elif context_manager:
-                current_context_manager = context_manager
-                
-            if current_context_manager:
-                conversation_history = await current_context_manager.get_conversation_context(session_id)
-                history_turns = len(conversation_history)
+            # LOGGING: Dispatch
+            print(f"DISPATCH: endpoint=unified, tier={tier}, session_id={session_id}, user_id={user_id}, has_knowledge={bool(knowledge_context)}, msg_count_before={history_turns}")
             
-            # Step 2: Build message history for LLM context (CRITICAL FIX)
-            # Convert stored conversations to LLM message format
-            messages = []
-            for conv in conversation_history:
-                # Add user message
-                if conv.get("question"):
-                    messages.append({"role": "user", "content": conv["question"]})
-                
-                # Add assistant message
-                if conv.get("response"):
-                    response_text = conv["response"]
-                    if isinstance(response_text, dict):
-                        response_text = response_text.get("text", str(response_text))
-                    messages.append({"role": "assistant", "content": str(response_text)})
+            # Step 2: Build message history for LLM context (REDIS VERSION)
+            # Conversation history is already in the right format: [{"role": "user", "content": "..."}, ...]
+            messages = conversation_history.copy()
             
             # Add current question to message history
             messages.append({"role": "user", "content": question})
             
-            # LOGGING: Dispatch
-            print(f"DISPATCH: endpoint=unified, tier={tier}, session_id={session_id}, user_id={user_id}, has_knowledge={bool(knowledge_context)}, msg_count_before={len(messages)-1}")
-            
-            # Step 3: Extract topics for context building
+            # Step 3: Extract topics for context building (simplified)
             context_topics = topics or {}
-            if current_context_manager and conversation_history:
-                extracted_topics = current_context_manager.extract_context_topics(conversation_history)
-                context_topics.update(extracted_topics)
-            
             context_hint = ""
-            if current_context_manager and context_topics:
-                context_hint = current_context_manager.build_context_hint_for_prompt(question, context_topics)
+            
+            if conversation_history and len(conversation_history) > 0:
+                # Simple topic extraction from recent conversation
+                recent_messages = conversation_history[-4:]  # Last 2 turns
+                topic_text = " ".join([msg.get("content", "") for msg in recent_messages])
+                
+                # Basic topic detection
+                if "acoustic" in topic_text.lower():
+                    context_topics["recent_topic"] = "acoustic lagging"
+                elif "fire" in topic_text.lower():
+                    context_topics["recent_topic"] = "fire safety"
+                elif "building" in topic_text.lower():
+                    context_topics["recent_topic"] = "building codes"
+                
+                if context_topics:
+                    context_hint = f"\n\nCONVERSATION CONTEXT:\nRecent discussion topics: {', '.join(context_topics.values())}\nCURRENT QUESTION CONTEXT:\nWhen the user refers to 'it', 'this', 'that', they likely mean: {context_topics.get('recent_topic', 'the previous topic')}"
             
             # Step 4: Build unified context using shared orchestrator
             unified_context = self.build_conversation_context(
@@ -271,20 +261,17 @@ class ChatService:
                 topics=context_topics
             )
             
-            # Step 8: CRITICAL - Persist conversation history (ATOMIC UPSERT)
-            if current_context_manager:
-                conversation_id = await current_context_manager.pre_save_conversation_stub(
-                    session_id, user_id, question
-                )
-                await current_context_manager.update_conversation_response(
-                    conversation_id, formatted_response["text"], tokens_used
-                )
-                
-                # LOGGING: After save
-                final_msg_count = len(messages)  # Original messages + current question
-                print(f"AFTER_SAVE: session_id={session_id}, msg_count_after={final_msg_count}, history_persisted=True")
-            else:
-                print(f"WARNING: No context manager available - conversation not persisted")
+            # Step 8: CRITICAL - Persist conversation history in Redis (ATOMIC UPSERT)
+            # Add the assistant's response to the history
+            updated_history = messages.copy()  # Contains user messages including current
+            updated_history.append({"role": "assistant", "content": formatted_response["text"]})
+            
+            # Store in Redis with TTL
+            conversation_store.set(session_id, updated_history)
+            
+            # LOGGING: After save
+            final_msg_count = len(updated_history)
+            print(f"AFTER_SAVE: session_id={session_id}, msg_count_after={final_msg_count}, history_persisted=True")
             
             # Step 9: Create unified response
             response = ChatResponse(
