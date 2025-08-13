@@ -67,13 +67,16 @@ class ConversationContextManager:
     async def get_conversation_context(self, session_id: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Get recent conversation history for context building
-        Returns conversations in chronological order (oldest first)
+        Returns conversations in chronological order (oldest first) for proper transcript building
         """
         try:
             conversations = await self.collection.find({
                 "session_id": session_id,
                 "status": "completed"  # Only completed conversations
             }).sort("timestamp", ASCENDING).limit(limit).to_list(length=limit)
+            
+            # Ensure conversations are ordered oldest → newest for proper transcript building
+            print(f"DEBUG: Context retrieval for {session_id} - {len(conversations)} conversations found, ordered oldest→newest")
             
             return conversations
         except Exception as e:
