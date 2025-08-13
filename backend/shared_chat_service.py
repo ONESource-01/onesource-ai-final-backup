@@ -239,7 +239,7 @@ Effective compliance management begins with understanding your project's risk pr
             "endpoint_unified": True
         }
 
-    def get_unified_chat_response(self, question: str, session_id: str, user_context: Optional[Dict] = None) -> Dict[str, Any]:
+    def get_unified_chat_response(self, question: str, session_id: str, user_context: Optional[Dict] = None, conversation_history: Optional[List[Dict]] = None) -> Dict[str, Any]:
         """
         Main unified function for generating chat responses
         Used by both regular and enhanced endpoints for 100% consistency
@@ -248,6 +248,7 @@ Effective compliance management begins with understanding your project's risk pr
             question: User's question
             session_id: Session identifier
             user_context: Optional user context (for enhanced features)
+            conversation_history: Optional conversation history for context
         
         Returns:
             Unified response structure with Enhanced Emoji Mapping
@@ -256,14 +257,19 @@ Effective compliance management begins with understanding your project's risk pr
             # Step 1: Build unified system prompt (with knowledge context if provided)
             system_prompt = self._build_enhanced_system_prompt(user_context)
             
-            # Step 2: Make unified model call
+            # Step 2: Add conversation context to system prompt
+            if conversation_history and len(conversation_history) > 0:
+                context_summary = self._build_conversation_context(conversation_history)
+                system_prompt += f"\n\nCONVERSATION CONTEXT:\n{context_summary}"
+            
+            # Step 3: Make unified model call with conversation history
             if self.client:
-                # Real OpenAI call with unified parameters
-                ai_response = self._make_unified_openai_call(question, system_prompt)
+                # Real OpenAI call with unified parameters and conversation history
+                ai_response = self._make_unified_openai_call_with_history(question, system_prompt, conversation_history)
                 tokens_used = 800  # Estimate for real calls
             else:
-                # Unified mock response (enhanced with knowledge context if available)
-                ai_response = self._get_unified_mock_response_with_context(question, user_context)
+                # Unified mock response with conversation context
+                ai_response = self._get_unified_mock_response_with_conversation(question, user_context, conversation_history)
                 tokens_used = 750  # Estimate for mock calls
             
             # Force consistency by ensuring response contains required sections
