@@ -57,7 +57,7 @@ class TestSchemaNegativeChaos:
         
         # Verify schema compliance
         try:
-            ChatResponse(**repaired_response)
+            validate_chat_response(repaired_response)
             print("✅ Malformed output successfully repaired to v2 schema")
         except Exception as e:
             pytest.fail(f"Repaired response doesn't validate: {e}")
