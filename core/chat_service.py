@@ -84,6 +84,11 @@ class UnifiedChatService:
                 conversation_history = await context_manager.get_conversation_context(session_id)
                 topics = context_manager.extract_context_topics(conversation_history)
                 context_hint = context_manager.build_context_hint_for_prompt(question, topics)
+                
+                # Debug context retrieval
+                print(f"DEBUG: Session {session_id} - Found {len(conversation_history)} conversations")
+                print(f"DEBUG: Extracted topics: {topics}")
+                print(f"DEBUG: Context hint generated: {bool(context_hint)}")
             
             # Step 3: Build system prompt with tier and context
             base_prompt = load_system_prompt(tier)
