@@ -69,4 +69,4 @@ export const sampleV2Enhanced = {
       { label: "Find fire engineer", payload: "directory:fire_engineers" }
     ]
   }
-} as const;
+};
