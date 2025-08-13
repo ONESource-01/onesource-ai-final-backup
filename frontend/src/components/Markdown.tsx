@@ -1,0 +1,36 @@
+// src/components/Markdown.tsx
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import TablePro from "./TablePro";
+
+export default function Markdown({ source }: { source: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw]}
+      components={{
+        // Intercept <table> and render via TablePro
+        table({ children }) {
+          // Simple extraction for common markdown tables.
+          // For complex tables, consider a rehype plugin that yields arrays directly.
+          const headerRow = (children as any)?.props?.children?.[0];
+          const body = (children as any)?.props?.children?.slice?.(1) ?? [];
+
+          const headers: string[] =
+            headerRow?.props?.children?.map((th: any) => th?.props?.children?.[0]?.props?.value ?? "") ?? [];
+
+          const rows = body.map((tr: any) =>
+            tr?.props?.children?.map((td: any) => td?.props?.children?.[0]?.props?.value ?? "")
+          );
+
+          return <TablePro headers={headers} rows={rows} caption="Markdown table" />;
+        },
+      }}
+      className="prose prose-sm md:prose-base dark:prose-invert max-w-none"
+    >
+      {source}
+    </ReactMarkdown>
+  );
+}
