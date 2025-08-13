@@ -125,6 +125,44 @@ class SchemaObservability:
         else:
             self.metrics["persistence_errors"] += 1
     
+    def record_examples_served(self, count: int, topics: List[str]):
+        """Record examples served to users"""
+        self.metrics["examples_served_total"] += count
+        
+        # Track by topic for CTR calculation
+        for topic in topics:
+            if topic not in self.metrics["example_ctr_by_topic"]:
+                self.metrics["example_ctr_by_topic"][topic] = {"served": 0, "clicked": 0}
+            self.metrics["example_ctr_by_topic"][topic]["served"] += 1
+    
+    def record_example_click(self, example_text: str, topic: Optional[str] = None):
+        """Record when user clicks an example question"""
+        self.metrics["example_clicks_total"] += 1
+        
+        if topic and topic in self.metrics["example_ctr_by_topic"]:
+            self.metrics["example_ctr_by_topic"][topic]["clicked"] += 1
+    
+    def record_suggested_action_click(self, label: str, topic: Optional[str] = None):
+        """Record when user clicks a suggested action"""
+        self.metrics["suggested_action_clicks_total"] += 1
+        
+        # Track CTR for suggested actions
+        action_key = f"{topic}:{label}" if topic else label
+        if action_key not in self.metrics["suggested_action_ctr"]:
+            self.metrics["suggested_action_ctr"][action_key] = {"shown": 0, "clicked": 0}
+        self.metrics["suggested_action_ctr"][action_key]["clicked"] += 1
+    
+    def record_suggested_action_shown(self, label: str, topic: Optional[str] = None):
+        """Record when a suggested action is shown to user"""
+        action_key = f"{topic}:{label}" if topic else label
+        if action_key not in self.metrics["suggested_action_ctr"]:
+            self.metrics["suggested_action_ctr"][action_key] = {"shown": 0, "clicked": 0}
+        self.metrics["suggested_action_ctr"][action_key]["shown"] += 1
+    
+    def record_examples_dismissed(self, reason: str):
+        """Record when examples are dismissed"""
+        self.metrics["examples_dismissed_total"] += 1
+    
     def calculate_percentiles(self, data: list, percentiles: list) -> Dict[str, float]:
         """Calculate percentiles from latency data"""
         if not data:
