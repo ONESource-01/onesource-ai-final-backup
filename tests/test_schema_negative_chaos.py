@@ -16,7 +16,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.schemas import CHAT_V2
-from middleware.schema_guard import ensure_v2_schema, validate_chat_response
+from middleware.schema_guard import validate_chat_response, schema_guard
 from core.stores.conversation_store import get_conversation_store, init_conversation_store
 
 
