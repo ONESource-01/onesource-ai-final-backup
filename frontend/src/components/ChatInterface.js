@@ -109,7 +109,7 @@ const ChatInterface = () => {
         
         // Auto-submit after a brief delay to show the populated message
         setTimeout(() => {
-          handleSendMessage(action.payload);
+          sendMessage(action.payload);
         }, 100);
         
       } catch (error) {
