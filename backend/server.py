@@ -1913,24 +1913,20 @@ async def ask_question_enhanced(
         
         await db.conversations.insert_one(conversation_record)
         
-        # Format response for enhanced endpoint compatibility
-        formatted_response = {
-            "technical": response_data["response"],  # Main unified response
-            "mentoring": "Enhanced response based on both Community and Personal Knowledge Banks.",
-            "format": "dual",
-            "knowledge_sources": len(community_results) + len(personal_results),
-            "partner_sources": partner_attributions,
-            "knowledge_used": len(knowledge_context) > 0
-        }
-        
         return {
-            "response": formatted_response,
+            "response": response_data["response"],  # Direct unified response (same as regular endpoint)
             "session_id": response_data["session_id"],
             "knowledge_enhanced": len(knowledge_context) > 0,
             "partner_content_used": len(partner_attributions) > 0,
             "community_sources_used": len(community_results),
             "personal_sources_used": len(personal_results),
-            "tokens_used": response_data["tokens_used"]
+            "tokens_used": response_data["tokens_used"],
+            # Additional enhanced metadata for compatibility
+            "enhanced_features": {
+                "knowledge_sources": len(community_results) + len(personal_results),
+                "partner_sources": partner_attributions,
+                "knowledge_used": len(knowledge_context) > 0
+            }
         }
         
     except Exception as e:
