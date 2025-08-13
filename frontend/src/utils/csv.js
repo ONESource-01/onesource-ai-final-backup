@@ -4,7 +4,7 @@ export function exportToCsv(
   headers,
   rows
 ) {
-  const encode = (v: any) => {
+  const encode = (v) => {
     const s = typeof v === "string" || typeof v === "number" ? String(v) : "";
     const needsQuotes = /[",\n]/.test(s);
     const escaped = s.replace(/"/g, '""');
