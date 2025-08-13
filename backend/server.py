@@ -2959,6 +2959,7 @@ async def get_observability_dashboard():
 
 # Include the router in the main app
 app.include_router(api_router)
+app.include_router(sample_router)  # V2 sample endpoints for testing
 
 app.add_middleware(
     CORSMiddleware,
