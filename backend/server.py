@@ -34,6 +34,9 @@ from weekly_reporting_service import WeeklyReportingService, test_weekly_report
 # Import Partner Service
 from partner_service import PartnerService, partner_service
 
+# Import schema guard
+from middleware.schema_guard import validate_chat_response
+
 # Advanced AI Intelligence System
 class AIIntelligencePhases:
     """3-Phase AI Intelligence System for Construction Industry"""
