@@ -60,6 +60,7 @@ class ConversationContextManager:
                     }
                 }
             )
+            print(f"DEBUG: Updated conversation response - conversation_id: {conversation_id}")
         except Exception as e:
             print(f"Error updating conversation response: {e}")
     
