@@ -1000,17 +1000,32 @@ async def ask_question(
             user_context=None  # Regular endpoint doesn't use enhanced features
         )
         
-        # Add trial information if applicable
+        # Add trial and subscription information  
         if trial_warning and not current_user:
-            response_data["trial_info"] = {
-                "remaining_questions": 3,
-                "message": "You have 3 free questions remaining today"
+            response_data["subscription_status"] = {
+                "is_trial": True,
+                "subscription_tier": "starter",
+                "subscription_active": False,
+                "trial_info": {
+                    "questions_remaining": 2,  # Decremented after this question
+                    "questions_used": 1
+                }
             }
         elif trial_warning and current_user:
-            response_data["trial_info"] = {
-                "remaining_questions": remaining_questions,
-                "message": f"You have {remaining_questions} free questions remaining today"
+            response_data["subscription_status"] = {
+                "is_trial": True,
+                "subscription_tier": "starter", 
+                "subscription_active": False,
+                "trial_info": {
+                    "questions_remaining": remaining_questions,
+                    "questions_used": 3 - remaining_questions
+                }
             }
+        elif current_user:
+            # Get actual subscription status for authenticated users
+            uid = current_user["uid"]
+            subscription = await firebase_service.check_user_subscription(uid)
+            response_data["subscription_status"] = subscription
         
         return response_data
         
