@@ -271,17 +271,19 @@ class ChatService:
             )
             
             # Step 8: CRITICAL - Persist conversation history (ATOMIC UPSERT)
-            if context_manager:
-                conversation_id = await context_manager.pre_save_conversation_stub(
+            if current_context_manager:
+                conversation_id = await current_context_manager.pre_save_conversation_stub(
                     session_id, user_id, question
                 )
-                await context_manager.update_conversation_response(
+                await current_context_manager.update_conversation_response(
                     conversation_id, formatted_response["text"], tokens_used
                 )
                 
                 # LOGGING: After save
                 final_msg_count = len(messages)  # Original messages + current question
                 print(f"AFTER_SAVE: session_id={session_id}, msg_count_after={final_msg_count}, history_persisted=True")
+            else:
+                print(f"WARNING: No context manager available - conversation not persisted")
             
             # Step 9: Create unified response
             response = ChatResponse(
