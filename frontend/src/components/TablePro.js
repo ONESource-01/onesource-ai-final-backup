@@ -126,7 +126,7 @@ export default function TablePro({
             {headers.map((h, j) => (
               <div key={j} className="flex justify-between gap-4 py-1">
                 <div className="text-xs text-muted-foreground">{h}</div>
-                <div className="text-sm max-w-[60%] text-right">{r[j] as any}</div>
+                <div className="text-sm max-w-[60%] text-right">{r[j]}</div>
               </div>
             ))}
           </div>
