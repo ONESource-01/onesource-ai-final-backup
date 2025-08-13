@@ -257,7 +257,19 @@ class SchemaObservability:
             },
             
             # Alert Status
-            "alerts": self.check_alert_conditions()
+            "alerts": self.check_alert_conditions(),
+            
+            # Phase 3: Dynamic Prompts & Suggestions
+            "dynamic_prompts": {
+                "examples_served_total": self.metrics["examples_served_total"],
+                "example_clicks_total": self.metrics["example_clicks_total"],
+                "suggested_action_clicks_total": self.metrics["suggested_action_clicks_total"],
+                "examples_dismissed_total": self.metrics["examples_dismissed_total"],
+                "overall_example_ctr_percent": round(overall_example_ctr, 2),
+                "example_ctr_by_topic": example_ctr_data,
+                "suggested_action_ctr": suggested_action_ctr_data,
+                "low_ctr_alert": overall_example_ctr < 1.0 if self.metrics["examples_served_total"] > 10 else False
+            }
         }
     
     def check_alert_conditions(self) -> Dict[str, Any]:
