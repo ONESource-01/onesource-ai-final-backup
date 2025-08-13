@@ -1702,7 +1702,8 @@ async def unified_chat_ask_enhanced(
             session_id=question_data.session_id or str(uuid.uuid4()),
             tier=tier,
             user_id=uid,
-            knowledge_context=context_string  # Only difference: enhanced knowledge context
+            knowledge_context=context_string,  # Only difference: enhanced knowledge context
+            topics=getattr(question_data, "topics", None)  # Pass through topics if provided
         )
         
         # Update document reference counts
