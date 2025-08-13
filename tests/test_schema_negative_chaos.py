@@ -78,7 +78,7 @@ class TestSchemaNegativeChaos:
         for empty_input in empty_inputs:
             print(f"   Testing empty input: {empty_input}")
             
-            repaired = ensure_v2_schema(empty_input)
+            repaired, was_repaired = validate_chat_response(empty_input)
             
             # Should return minimal valid v2 structure
             assert repaired["title"] is not None, f"Empty input {empty_input} didn't get title"
