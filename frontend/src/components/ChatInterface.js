@@ -73,6 +73,56 @@ const ChatInterface = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
+  // Phase 3: Listen for suggested action clicks
+  useEffect(() => {
+    const handleSuggestedActionClick = async (event) => {
+      const action = event.detail;
+      console.log('Suggested action clicked:', action);
+      
+      try {
+        // Track the click
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/telemetry/ui`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({
+            event_type: 'suggested_action_clicked',
+            user_id: user?.uid || 'anonymous',
+            session_id: sessionId,
+            metadata: {
+              label: action.label,
+              payload: action.payload
+            }
+          })
+        });
+        
+        // Handle special payloads
+        if (action.payload === 'table_export_csv') {
+          // This is handled by TablePro component
+          return;
+        }
+        
+        // For regular payloads, treat as a new question
+        setInputMessage(action.payload);
+        
+        // Auto-submit after a brief delay to show the populated message
+        setTimeout(() => {
+          handleSendMessage(action.payload);
+        }, 100);
+        
+      } catch (error) {
+        console.warn('Failed to track suggested action click:', error);
+        // Still proceed with the action
+        setInputMessage(action.payload);
+      }
+    };
+
+    window.addEventListener('suggested_action_clicked', handleSuggestedActionClick);
+    return () => window.removeEventListener('suggested_action_clicked', handleSuggestedActionClick);
+  }, [sessionId, user, idToken]);
+
   const checkSubscriptionStatus = async () => {
     try {
       const response = await apiEndpoints.getSubscriptionStatus();
