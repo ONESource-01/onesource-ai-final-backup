@@ -19,6 +19,7 @@ import PartnerUploadPolicy from "./components/PartnerUploadPolicy";
 import HelpCenter from "./components/HelpCenter";
 import ContactPage from "./components/ContactPage";
 import FeedbackPage from "./components/FeedbackPage";
+import V2TestPage from "./components/V2TestPage";
 import HeroBlocks, { HeroBlockSelector } from "./components/HeroBlocks";
 import BetaBanner from "./components/BetaBanner";
 import BetaAccessControl, { AdminOnly, BetaFeature } from "./components/BetaAccessControl";
