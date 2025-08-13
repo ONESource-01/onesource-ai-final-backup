@@ -174,7 +174,7 @@ class ConversationContextTester:
             followup_success, followup_response, followup_status = await self.make_request("POST", "/chat/ask", followup_data, mock_headers)
             
             if followup_success and isinstance(followup_response, dict):
-                followup_content = followup_response.get("text") or followup_response.get("response", "")
+                followup_content = followup_response.get("text", "")
                 followup_response_content = str(followup_content)
                 print(f"   ✅ Follow-up response received: {len(followup_response_content)} characters")
                 print(f"   📄 Follow-up response preview: {followup_response_content[:300]}...")
