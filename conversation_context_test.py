@@ -107,12 +107,19 @@ class ConversationContextTester:
         storage_success, storage_response, storage_status = await self.make_request("POST", "/chat/ask", storage_data, mock_headers)
         
         if storage_success and isinstance(storage_response, dict):
-            if "text" in storage_response or "response" in storage_response:
-                response_content = storage_response.get("text") or storage_response.get("response", "")
+            if "text" in storage_response:
+                response_content = storage_response.get("text", "")
                 self.log_test("✅ Test 1 - Single Conversation Storage", True, 
                             f"API returned successful response ({len(str(response_content))} chars)")
                 print(f"   ✅ Response received: {len(str(response_content))} characters")
                 print(f"   📄 Response preview: {str(response_content)[:200]}...")
+                
+                # Look for DISPATCH and AFTER_SAVE logs in response
+                if "DISPATCH:" in str(storage_response) or "AFTER_SAVE:" in str(storage_response):
+                    self.log_test("✅ Test 1 - New Logging Format Found", True, 
+                                "Found DISPATCH or AFTER_SAVE logs in response")
+                else:
+                    print("   📋 Note: DISPATCH/AFTER_SAVE logs not visible in response (check server logs)")
             else:
                 self.log_test("❌ Test 1 - Single Conversation Storage", False, 
                             "Response missing expected fields", storage_response)
