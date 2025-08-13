@@ -47,7 +47,7 @@ class TestSchemaNegativeChaos:
         }
         
         # Test schema guard repair
-        repaired_response = ensure_v2_schema(malformed_response)
+        repaired_response, was_repaired = validate_chat_response(malformed_response)
         
         # Verify repair worked
         assert "title" in repaired_response, "Repaired response missing title"
