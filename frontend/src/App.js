@@ -95,6 +95,7 @@ const AppContent = () => {
       <Route path="/help" element={<HelpCenter />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/feedback" element={<FeedbackPage />} />
+      <Route path="/v2-test" element={<V2TestPage />} />
       
       {/* Protected Routes */}
       <Route 
