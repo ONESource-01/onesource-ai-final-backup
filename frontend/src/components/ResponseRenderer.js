@@ -45,7 +45,6 @@ export default function ResponseRenderer({ response }) {
             case "image":
               return (
                 <figure key={i} className="rounded-2xl overflow-hidden border">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={b.src} alt={b.alt} className="w-full h-auto" />
                   {b.caption && (
                     <figcaption className="p-2 text-xs text-muted-foreground">{b.caption}</figcaption>
