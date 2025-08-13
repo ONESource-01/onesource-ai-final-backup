@@ -42,16 +42,24 @@ class UnifiedChatService:
         self._init_openai_client()
     
     def _init_openai_client(self):
-        """Initialize OpenAI client if API key available"""
+        """Initialize OpenAI client if API key available - lazy loading"""
+        if self.openai_client is not None:
+            return  # Already initialized
+            
+        # Load environment variables if not already loaded
+        from dotenv import load_dotenv
+        load_dotenv('/app/backend/.env')
+        
         api_key = os.environ.get('OPENAI_API_KEY')
         if api_key and len(api_key) > 10:
             try:
                 self.openai_client = openai.OpenAI(api_key=api_key)
+                print(f"✅ OpenAI client initialized successfully")
             except Exception as e:
                 print(f"Error initializing OpenAI client: {e}")
                 self.openai_client = None
         else:
-            print("No OpenAI API key found, using mock responses")
+            print("No OpenAI API key found, using context-aware fallback")
     
     async def generate_response(
         self,
