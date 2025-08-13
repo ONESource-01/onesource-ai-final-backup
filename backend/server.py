@@ -969,7 +969,8 @@ async def unified_chat_ask(
             session_id=chat_data.session_id or str(uuid.uuid4()),
             tier=tier,
             user_id=user_id,
-            knowledge_context=None  # Regular endpoint has no enhanced knowledge
+            knowledge_context=None,  # Regular endpoint has no enhanced knowledge
+            topics=getattr(chat_data, "topics", None)  # Pass through topics if provided
         )
         
         print(f"DEBUG: Unified chat service returned response length: {len(response.text)}")
