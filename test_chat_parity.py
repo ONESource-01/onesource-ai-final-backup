@@ -133,8 +133,8 @@ class ParityTester:
             self.log_test("Enhanced Emoji Mapping", False, f"Missing sections - regular: {3-len(r1_sections)}, enhanced: {3-len(r2_sections)}")
         
         # Check specific 🧐 **Mentoring Insight** consistency  
-        mentoring_in_r1 = "🧐 **Mentoring Insight**" in r1.get("text", "")
-        mentoring_in_r2 = "🧐 **Mentoring Insight**" in r2.get("text", "")
+        mentoring_in_r1 = "🧐 **Mentoring Insight**" in r1_content
+        mentoring_in_r2 = "🧐 **Mentoring Insight**" in r2_content
         
         if mentoring_in_r1 and mentoring_in_r2:
             self.log_test("Mentoring Insight Emoji", True, "Both endpoints use 🧐 **Mentoring Insight**")
