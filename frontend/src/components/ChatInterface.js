@@ -1016,6 +1016,18 @@ const ChatInterface = () => {
 
         {/* Input Form */}
         <div className="border-t border-gray-200 bg-white p-6">
+          {/* New Session Callout */}
+          {showNewSessionCallout && (
+            <div className="max-w-4xl mx-auto mb-4">
+              <Alert className="border-blue-200 bg-blue-50 animate-fade-in">
+                <MessageSquare className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-700 text-sm">
+                  New thread created — context resets
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+          
           <div className="flex items-start gap-3 max-w-4xl mx-auto">
             {/* Knowledge Enhanced Toggle */}
             <div className="flex items-center gap-2 mt-3">
