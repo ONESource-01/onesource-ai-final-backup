@@ -109,6 +109,12 @@ class UnifiedChatService:
             if context_hint:
                 base_prompt += context_hint
             
+            # Calculate prompt hash for parity verification
+            prompt_hash = hashlib.md5(base_prompt.encode()).hexdigest()[:8]
+            
+            # INSTRUMENTATION: Log all critical parameters
+            print(f"INSTRUMENT: endpoint=unified, session_id={session_id}, prompt_hash={prompt_hash}, history_turns={history_turns}, tier={tier}, temperature=0.3")
+            
             # Step 4: Generate AI response
             if self.openai_client:
                 raw_response = await self._call_openai_api(question, base_prompt, conversation_history)
