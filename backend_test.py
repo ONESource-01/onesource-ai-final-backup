@@ -6467,7 +6467,7 @@ async def main():
         
         # Print summary
         print("\n" + "=" * 80)
-        print("🎯 UNIFIED CHAT ARCHITECTURE TESTING SUMMARY")
+        print("🎯 V2 RENDERING PIPELINE SECURITY TESTING SUMMARY")
         print("=" * 80)
         
         total_tests = len(tester.test_results)
@@ -6480,35 +6480,35 @@ async def main():
         print(f"❌ Failed: {failed_tests}")
         print(f"📈 Success Rate: {success_rate:.1f}%")
         
-        # Focus on critical unified architecture results
-        critical_tests = [result for result in tester.test_results if "CRITICAL" in result["test"]]
-        critical_passed = sum(1 for result in critical_tests if result["success"])
-        critical_total = len(critical_tests)
+        # Focus on V2 pipeline results
+        v2_tests = [result for result in tester.test_results if "V2" in result["test"]]
+        v2_passed = sum(1 for result in v2_tests if result["success"])
+        v2_total = len(v2_tests)
         
-        print(f"\n🚨 CRITICAL UNIFIED ARCHITECTURE RESULTS:")
-        print(f"   📊 Critical Tests: {critical_total}")
-        print(f"   ✅ Critical Passed: {critical_passed}")
-        print(f"   ❌ Critical Failed: {critical_total - critical_passed}")
+        print(f"\n🚨 V2 RENDERING PIPELINE RESULTS:")
+        print(f"   📊 V2 Tests: {v2_total}")
+        print(f"   ✅ V2 Passed: {v2_passed}")
+        print(f"   ❌ V2 Failed: {v2_total - v2_passed}")
         
-        # Focus on context understanding results
-        context_tests = [result for result in tester.test_results if "Context Understanding" in result["test"]]
-        context_passed = sum(1 for result in context_tests if result["success"])
-        context_total = len(context_tests)
+        # Focus on security validation results
+        security_tests = [result for result in tester.test_results if "Security" in result["test"] or "Content" in result["test"]]
+        security_passed = sum(1 for result in security_tests if result["success"])
+        security_total = len(security_tests)
         
-        print(f"\n🗣️ CONVERSATION CONTEXT UNDERSTANDING RESULTS:")
-        print(f"   📊 Context Tests: {context_total}")
-        print(f"   ✅ Context Passed: {context_passed}")
-        print(f"   ❌ Context Failed: {context_total - context_passed}")
+        print(f"\n🔒 SECURITY VALIDATION RESULTS:")
+        print(f"   📊 Security Tests: {security_total}")
+        print(f"   ✅ Security Passed: {security_passed}")
+        print(f"   ❌ Security Failed: {security_total - security_passed}")
         
-        # Focus on architecture integration results
-        arch_tests = [result for result in tester.test_results if "Architecture" in result["test"] or "Unified" in result["test"]]
-        arch_passed = sum(1 for result in arch_tests if result["success"])
-        arch_total = len(arch_tests)
+        # Focus on schema compliance results
+        schema_tests = [result for result in tester.test_results if "Schema" in result["test"] or "Compliance" in result["test"]]
+        schema_passed = sum(1 for result in schema_tests if result["success"])
+        schema_total = len(schema_tests)
         
-        print(f"\n🏗️ UNIFIED ARCHITECTURE INTEGRATION RESULTS:")
-        print(f"   📊 Architecture Tests: {arch_total}")
-        print(f"   ✅ Architecture Passed: {arch_passed}")
-        print(f"   ❌ Architecture Failed: {arch_total - arch_passed}")
+        print(f"\n📋 SCHEMA COMPLIANCE RESULTS:")
+        print(f"   📊 Schema Tests: {schema_total}")
+        print(f"   ✅ Schema Passed: {schema_passed}")
+        print(f"   ❌ Schema Failed: {schema_total - schema_passed}")
         
         if failed_tests > 0:
             print(f"\n❌ FAILED TESTS:")
@@ -6516,37 +6516,37 @@ async def main():
                 if not result["success"]:
                     print(f"   - {result['test']}: {result['details']}")
         
-        # Critical success criteria check for unified architecture
-        critical_success_criteria = [
-            "CRITICAL: Regular Chat Context Understanding",
-            "CRITICAL: Enhanced Chat Context Understanding", 
-            "Core Architecture - Response Consistency",
-            "Core Architecture - Unified Schema",
-            "Context Manager - Database Storage"
+        # Critical success criteria check for V2 pipeline
+        v2_success_criteria = [
+            "V2 Schema Validation",
+            "V2 Content Security - Substantial Content",
+            "V2 Section Parsing - Required Sections",
+            "V2 Schema Compliance - Schema Version",
+            "V2 Performance - Response Time"
         ]
         
-        critical_passed_count = 0
-        for criteria in critical_success_criteria:
+        v2_passed_count = 0
+        for criteria in v2_success_criteria:
             for result in tester.test_results:
                 if criteria in result["test"] and result["success"]:
-                    critical_passed_count += 1
+                    v2_passed_count += 1
                     break
         
-        print(f"\n🎯 UNIFIED ARCHITECTURE SUCCESS CRITERIA:")
-        print(f"   📋 Critical Criteria Met: {critical_passed_count}/{len(critical_success_criteria)}")
+        print(f"\n🎯 V2 PIPELINE SUCCESS CRITERIA:")
+        print(f"   📋 Critical V2 Criteria Met: {v2_passed_count}/{len(v2_success_criteria)}")
         
-        if critical_passed_count >= 3:  # At least 3 out of 5 critical criteria
-            print("   ✅ UNIFIED ARCHITECTURE SUCCESS - Conversation context bug appears to be FIXED!")
-            print("   🎉 Both endpoints using unified services with proper context understanding")
+        if v2_passed_count >= 4:  # At least 4 out of 5 critical V2 criteria
+            print("   ✅ V2 RENDERING PIPELINE SUCCESS - Security fixes validated!")
+            print("   🎉 V2 schema structure, content security, and performance validated")
         else:
-            print("   ❌ UNIFIED ARCHITECTURE ISSUES - Conversation context bug may still be present!")
-            print("   🚨 Further investigation needed for unified chat services")
+            print("   ❌ V2 RENDERING PIPELINE ISSUES - Security validation incomplete!")
+            print("   🚨 Further investigation needed for V2 pipeline security")
         
-        print("\n🎉 Unified Chat Architecture Testing completed!")
+        print("\n🎉 V2 Rendering Pipeline Security Testing completed!")
         print("=" * 80)
         
         # Return appropriate exit code
-        return 0 if critical_passed_count >= 3 else 1
+        return 0 if v2_passed_count >= 4 else 1
 
 if __name__ == "__main__":
     try:
