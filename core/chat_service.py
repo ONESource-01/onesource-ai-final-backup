@@ -357,7 +357,7 @@ Technical issues can occur with complex systems. Consider providing more specifi
             return self._generate_context_aware_fallback(question, "starter", {})
 
     def _generate_context_aware_fallback(self, question: str, tier: str, topics: Dict[str, str]) -> str:
-        """Generate context-aware fallback response when OpenAI is not available"""
+        """Generate context-aware fallback response - ROUTES THROUGH SAME V2 FORMATTER"""
         
         # Context-aware responses for follow-up questions
         if topics and any(indicator in question.lower() for indicator in ['it', 'this', 'that', 'when do', 'where do', 'how do']):
@@ -453,7 +453,7 @@ Fire safety is the highest priority in construction compliance. Professional fir
 2. Engage qualified fire safety engineer
 3. Develop fire safety strategy for your project"""
         
-        # General construction response
+        # General construction response - NEVER RETURNS PLAIN TEXT
         return f"""## 🔧 **Technical Answer**
 
 Your question about "{question}" relates to important Australian construction standards and practices.
