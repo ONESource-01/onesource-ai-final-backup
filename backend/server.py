@@ -963,8 +963,8 @@ async def unified_chat_ask(
         
         print(f"DEBUG: Calling unified chat service with tier={tier}, user_id={user_id}")
         
-        # Generate unified response - NO ENDPOINT-SPECIFIC LOGIC
-        response = await unified_chat_service.generate_response(
+        # Generate unified response using SHARED ORCHESTRATOR - NO ENDPOINT-SPECIFIC LOGIC
+        response = await unified_chat_service.generate_unified_response(
             question=chat_data.question,
             session_id=chat_data.session_id or str(uuid.uuid4()),
             tier=tier,
