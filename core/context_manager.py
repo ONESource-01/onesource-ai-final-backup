@@ -201,4 +201,5 @@ def init_context_manager(db):
     """Initialize context manager with database connection"""
     global context_manager
     context_manager = ConversationContextManager(db)
+    print(f"DEBUG: Global context_manager initialized: {context_manager is not None}")
     return context_manager
