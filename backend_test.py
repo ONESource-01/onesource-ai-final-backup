@@ -817,12 +817,16 @@ class BackendTester:
             self.log_test("🎯 BREAKTHROUGH: Enhanced Emoji Mapping Structural Fix", False, 
                         "Enhanced Emoji Mapping consistency not achieved - structural fix incomplete")
 
-    async def test_conversation_context_functionality(self):
-        """🚨 CRITICAL: Test Conversation Context Functionality from Review Request"""
-        print("\n🚨 === CONVERSATION CONTEXT FUNCTIONALITY TESTING ===")
-        print("Testing the CRITICAL conversation context bug where follow-up questions don't understand previous context")
-        print("🎯 ISSUE: User reported follow-up questions don't understand previous context")
-        print("🎯 EXAMPLE: 'Tell me about acoustic lagging' → 'when do I need to install it?' should understand 'it' = acoustic lagging")
+    async def test_conversation_context_system_fixed(self):
+        """🚨 CRITICAL: Test FIXED Conversation Context System with Unified Orchestrator"""
+        print("\n🚨 === TESTING FIXED CONVERSATION CONTEXT SYSTEM ===")
+        print("Testing the FIXED conversation context system with the new unified orchestrator implementation")
+        print("🎯 CRITICAL TESTS:")
+        print("   1. Single Conversation Storage Test")
+        print("   2. Multi-turn Context Test - CRITICAL")
+        print("   3. Look for new logging format (DISPATCH, AFTER_SAVE, INSTRUMENT logs)")
+        print("   4. Database Verification")
+        print("🎯 EXPECTED: Conversation context bug should be RESOLVED with unified orchestrator")
         
         mock_headers = {"Authorization": "Bearer mock_dev_token"}
         
