@@ -1,0 +1,13 @@
+test_id,test_name,regular_schema_valid,enhanced_schema_valid,regular_emoji_valid,enhanced_emoji_valid,regular_insight_valid,enhanced_insight_valid,content_diff_bytes,identical_content,regular_content_length,enhanced_content_length,regular_model,enhanced_model,timestamp
+baseline,Baseline,True,True,True,True,True,True,51,False,304,355,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:16:40.011122
+explicit_emoji,Explicit Emoji Check,True,True,True,True,True,True,102,False,361,463,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:16:43.171995
+multiple_emojis,Multiple Emojis & Names,True,True,True,True,True,True,88,False,338,426,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:16:47.631350
+unicode_heavy,Unicode Heavy / Accents,True,True,True,True,True,True,86,False,1106,1192,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:03.742251
+rtl_text,Right-to-Left Text,True,True,True,True,True,True,15,False,740,725,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:09.679341
+long_text,Long Text / Truncation Guard,True,True,True,True,True,True,16,False,1297,1313,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:17.336386
+code_block,Code Block in Content,True,True,True,True,True,True,140,False,724,864,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:24.758229
+json_escaping,JSON-looking Content (Escaping Test),True,True,True,True,True,True,141,False,398,539,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:29.245802
+tooling_hint,Tooling Hint (Should be Inert),True,True,True,True,True,True,88,False,378,466,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:31.437596
+ambiguity,Ambiguity / Clarify Behavior,True,True,True,True,True,True,39,False,366,405,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:35.178146
+cjk_script,Non-Latin Script (CJK),True,True,True,True,True,True,16,False,504,488,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:40.248413
+stress_mix,Stress Mix (Emojis in Prompt),True,True,True,True,True,True,196,False,1045,849,gpt-4o-mini,gpt-4o-mini,2025-08-13T00:17:47.819843
