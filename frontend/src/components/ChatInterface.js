@@ -331,7 +331,41 @@ const ChatInterface = () => {
     formatted = formatted.replace(/\n\n/g, '<div class="mb-4"></div>');
     formatted = formatted.replace(/\n/g, '<br class="mb-1">');
     
-    // PHASE 3: PROFESSIONAL TABLE STYLING (WCAG-compliant)
+    // PHASE 3: ENHANCED TABLE FORMATTING
+    
+    // Convert markdown tables to proper HTML tables with professional styling
+    const tableRegex = /^\|(.+)\|\s*\n\|[-:\s|]+\|\s*\n((?:\|.+\|\s*\n?)+)/gm;
+    formatted = formatted.replace(tableRegex, (match, headerRow, bodyRows) => {
+      const headers = headerRow.split('|').map(h => h.trim()).filter(h => h);
+      const rows = bodyRows.trim().split('\n').map(row => 
+        row.split('|').map(cell => cell.trim()).filter(cell => cell)
+      );
+      
+      let tableHtml = '<div class="overflow-x-auto mb-6 shadow-sm rounded-lg border border-gray-200">';
+      tableHtml += '<table class="min-w-full bg-white">';
+      
+      // Header
+      tableHtml += '<thead><tr>';
+      headers.forEach(header => {
+        tableHtml += `<th class="px-6 py-4 bg-onesource-pale text-left text-sm font-bold text-gray-900 border-b border-gray-200 uppercase tracking-wider">${header}</th>`;
+      });
+      tableHtml += '</tr></thead>';
+      
+      // Body
+      tableHtml += '<tbody>';
+      rows.forEach((row, index) => {
+        tableHtml += `<tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">`;
+        row.forEach(cell => {
+          tableHtml += `<td class="px-6 py-4 text-sm text-gray-800 border-b border-gray-100 leading-relaxed">${cell}</td>`;
+        });
+        tableHtml += '</tr>';
+      });
+      tableHtml += '</tbody></table></div>';
+      
+      return tableHtml;
+    });
+    
+    // PROFESSIONAL TABLE STYLING (for any remaining <table> elements)
     formatted = formatted.replace(/<table/g, '<div class="overflow-x-auto mb-6 shadow-sm rounded-lg border border-gray-200"><table class="min-w-full bg-white"');
     formatted = formatted.replace(/<\/table>/g, '</table></div>');
     formatted = formatted.replace(/<th/g, '<th class="px-6 py-4 bg-onesource-pale text-left text-sm font-bold text-gray-900 border-b border-gray-200 uppercase tracking-wider"');
