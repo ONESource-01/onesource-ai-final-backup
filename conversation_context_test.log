@@ -1,0 +1,371 @@
+🚀 Starting Comprehensive Backend Testing for ONESource-ai
+Backend URL: https://ai-response-hub-3.preview.emergentagent.com
+API Base: https://ai-response-hub-3.preview.emergentagent.com/api
+🎯 FOCUS: Testing CRITICAL Conversation Context Functionality from review request
+================================================================================
+
+=== Testing Basic API Health ===
+✅ PASS API Health Check
+   Details: API running version 1.0.0
+
+🚨 === CONVERSATION CONTEXT FUNCTIONALITY TESTING ===
+Testing the CRITICAL conversation context bug where follow-up questions don't understand previous context
+🎯 ISSUE: User reported follow-up questions don't understand previous context
+🎯 EXAMPLE: 'Tell me about acoustic lagging' → 'when do I need to install it?' should understand 'it' = acoustic lagging
+
+1️⃣ TEST 1 - CONVERSATION CONTEXT CHAIN (ACOUSTIC LAGGING)
+Testing: First question about acoustic lagging, then follow-up asking 'when do I need to install it?'
+
+🔍 Step 1: Asking about acoustic lagging with session_id 'context_test_A'
+   ✅ First response received: 2074 characters
+   📄 First response preview: 🔧 **Technical Answer**  
+Acoustic lagging is essential for noise control in construction, particularly in commercial and multi-residential buildings. The National Construction Code (NCC) 2025 outlines...
+✅ PASS Test 1 - First Question (Acoustic Lagging)
+   Details: Response contains acoustic lagging content
+
+🔍 Step 2: Follow-up question with SAME session_id 'context_test_A'
+   ✅ Follow-up response received: 1295 characters
+   📄 Follow-up response preview: 🔧 **Technical Answer**  
+The requirement for installation of specific systems or components in construction projects is typically dictated by the National Construction Code (NCC) and relevant Australian Standards. For example, if you are referring to fire safety systems, the NCC mandates their insta...
+   🧐 Context understanding indicators:
+      - Contains 'acoustic': False
+      - Contains 'lagging': False
+      - Contains 'previous': False
+      - Contains 'discussion': False
+      - Contains 'based on our': False
+❌ FAIL ❌ Test 1 - Context Understanding (Acoustic Lagging)
+   Details: Follow-up question does NOT understand context - asks for clarification instead
+❌ FAIL ❌ Test 1 - Expected Context Phrase
+   Details: Response missing expected phrase about previous discussion
+
+2️⃣ TEST 2 - DIFFERENT CONTEXT CHAIN (FIRE SAFETY)
+Testing: First question about fire safety, then follow-up asking 'how do I implement this?'
+
+🔍 Step 1: Asking about fire safety with session_id 'context_test_B'
+   ✅ Fire safety response received: 1857 characters
+✅ PASS Test 2 - First Question (Fire Safety)
+   Details: Response contains fire safety content
+
+🔍 Step 2: Follow-up question with SAME session_id 'context_test_B'
+   ✅ Implementation response received: 358 characters
+   📄 Implementation response preview: To provide you with the most accurate guidance, could you please specify what you are looking to implement? This could relate to a specific construction project, compliance requirement, or a particular standard.
+
+🧐 **Mentoring Insight:**
+
+Consider project timing, specialist coordination, and systema...
+❌ FAIL ❌ Test 2 - Context Understanding (Fire Safety)
+   Details: Follow-up question does NOT understand fire safety context
+
+3️⃣ TEST 3 - SESSION ISOLATION
+Testing: Different session_ids should NOT share context
+
+🔍 Step 1: Asking about structural requirements with session_id 'context_test_C'
+   ✅ Structural response received in session context_test_C
+
+🔍 Step 2: Follow-up question with DIFFERENT session_id 'context_test_D'
+   ✅ Isolation response received: 289 characters
+   📄 Isolation response preview: To provide a precise answer, I need to know what specific system or component you are referring to for installation. Could you please clarify?
+
+🧐 **Mentoring Insight:**
+
+Consider project timing, specialist coordination, and systematic compliance documentation for optimal project outcomes....
+✅ PASS ✅ Test 3 - Session Isolation
+   Details: Different sessions properly isolated - no context sharing
+
+4️⃣ TEST 4 - DATABASE CONVERSATION STORAGE
+Testing: Verify conversations are stored in MongoDB and history retrieval works
+
+🔍 Testing conversation history retrieval
+   ✅ History retrieval successful: 10 sessions found
+✅ PASS ✅ Test 4 - Database Storage
+   Details: Conversations stored in database - found 10 sessions
+
+🎯 CONVERSATION CONTEXT TESTING SUMMARY:
+   📊 Context Tests: 2/5 passed
+❌ CONVERSATION CONTEXT ISSUES FOUND:
+   ❌ ❌ Test 1 - Context Understanding (Acoustic Lagging): Follow-up question does NOT understand context - asks for clarification instead
+   ❌ ❌ Test 1 - Expected Context Phrase: Response missing expected phrase about previous discussion
+   ❌ ❌ Test 2 - Context Understanding (Fire Safety): Follow-up question does NOT understand fire safety context
+❌ FAIL 🎯 CRITICAL: Conversation Context Functionality
+   Details: Conversation context issues found - 3 tests failed
+
+🚨 === ENHANCED EMOJI MAPPING STRUCTURAL FIX VERIFICATION ===
+🎯 **BREAKTHROUGH FIX IMPLEMENTED**: Modified regular chat endpoint to return AI response text directly
+🎯 **CRITICAL CHANGE**: Regular endpoint now returns: 'response': ai_response_text
+🎯 **EXPECTED RESULT**: 100% Enhanced Emoji Mapping consistency between regular and enhanced chat endpoints
+📋 Expected Enhanced Emoji Mapping structure:
+   🔧 **Technical Answer:**
+   🧐 **Mentoring Insight:** (professor with monocle)
+   ✅ Both endpoints should produce equivalent responses
+   ✅ No structural mismatches between endpoints
+
+🔍 Testing Water System Question: 'What are the water system requirements for construction?'
+   📝 Should have Complete Enhanced Emoji Mapping with 🧐 **Mentoring Insight:** section
+
+1️⃣ Testing POST /api/chat/ask for Water System Question
+   📝 Response length: 2134 characters
+   🔧 Has Technical Answer section: False
+   🧐 Has Mentoring Insight section: False
+   🧐 Uses correct emoji (🧐): True
+   ✅ Has Enhanced Emoji Mapping: False
+   📄 Response preview: 🔧 **Technical Answer:**  
+The water system requirements for construction in Australia and New Zealand are primarily outlined in the National Construction Code (NCC) and the AS/NZS 3500 series standards. Key requirements include:
+
+1. **NCC Section F - Health and Amenity:**
+   - **F1 - Water Supply:** Ensure a reliable and adequate supply of potable water for health and amenity. This includes:
+     - Sizing of water supply systems to meet demand.
+     - Installation of water-saving devices (e.g., dual-flush toilets, low-flow taps).
+   - **F2 - Sanitary and Other Facilities:** Adequate sanitary facilities must be provided, including:
+     - Sufficient number of toilets and handwashing facilities.
+     - Accessibility for all users.
+
+2. **AS/NZS 3500 Series:**
+   - **AS/NZS 3500.1:** Covers th...
+❌ FAIL ❌ Regular Chat - Water System Question - No Enhanced Mapping
+   Details: Missing Enhanced Emoji Mapping structure entirely
+✅ PASS Regular Chat - Water System Question - API Response
+   Details: Received 2134 char response
+
+2️⃣ Testing POST /api/chat/ask-enhanced for Water System Question
+   📝 Response length: 2082 characters
+   🔧 Has Technical Answer section: True
+   🧐 Has Mentoring Insight section: True
+   🧐 Uses correct emoji (🧐): True
+   ✅ Has Enhanced Emoji Mapping: True
+   📄 Response preview: 🔧 **Technical Answer**  
+Water system requirements for construction in Australia are primarily governed by the National Construction Code (NCC) and relevant Australian Standards. Key considerations include:
+
+1. **Water Supply and Quality**: 
+   - Compliance with AS/NZS 3500 series, which covers plumbing and drainage, ensuring safe and adequate water supply.
+   - NCC Volume Three outlines requirements for water supply systems, including pressure, flow rates, and quality standards.
+
+2. **Water Efficiency**: 
+   - NCC mandates water efficiency measures, including the use of water-saving fixtures and appliances.
+   - AS/NZS 6400 provides guidelines for the rating of water-efficient products.
+
+3. **Stormwater Management**: 
+   - NCC requires effective management of stormwater to prevent floodin...
+✅ PASS ✅ Enhanced Chat - Water System Question - Enhanced Emoji Mapping
+   Details: Complete Enhanced Emoji Mapping with 🧐 **Mentoring Insight:** section
+✅ PASS Enhanced Chat - Water System Question - API Response
+   Details: Received 2082 char response
+
+3️⃣ CRITICAL CONSISTENCY VERIFICATION for Water System Question
+   📊 Consistency Analysis:
+      Regular has Enhanced Mapping: False
+      Enhanced has Enhanced Mapping: True
+      Both use correct 🧐 emoji: True
+      Response format consistency: True
+❌ FAIL ❌ CRITICAL: Water System Question - Missing Enhanced Mapping
+   Details: Missing Enhanced Emoji Mapping in: Regular
+
+🔍 Testing Fire Safety Question: 'What are fire safety requirements for high-rise buildings in Australia?'
+   📝 Should have Complete Enhanced Emoji Mapping with both sections and 🧐 emoji consistently
+
+1️⃣ Testing POST /api/chat/ask for Fire Safety Question
+   📝 Response length: 2084 characters
+   🔧 Has Technical Answer section: False
+   🧐 Has Mentoring Insight section: False
+   🧐 Uses correct emoji (🧐): True
+   ✅ Has Enhanced Emoji Mapping: False
+   📄 Response preview: 🔧 **Technical Answer:**  
+Fire safety requirements for high-rise buildings in Australia are primarily governed by the National Construction Code (NCC) and relevant Australian Standards. Key considerations include:
+
+1. **NCC Section C - Fire Resistance**: 
+   - Buildings must achieve specific fire resistance levels (FRLs) for structural elements, typically requiring a minimum FRL of 60/60/60 for high-rise buildings.
+   - Fire compartmentation is essential to limit fire spread, necessitating fire-rated walls and floors.
+
+2. **NCC Section E - Services and Equipment**: 
+   - Installation of fire services such as sprinklers, fire hydrants, and fire detection and alarm systems is mandatory.
+   - High-rise buildings generally require a fully operational automatic sprinkler system (AS 2118) and sm...
+❌ FAIL ❌ Regular Chat - Fire Safety Question - No Enhanced Mapping
+   Details: Missing Enhanced Emoji Mapping structure entirely
+✅ PASS Regular Chat - Fire Safety Question - API Response
+   Details: Received 2084 char response
+
+2️⃣ Testing POST /api/chat/ask-enhanced for Fire Safety Question
+   📝 Response length: 2219 characters
+   🔧 Has Technical Answer section: True
+   🧐 Has Mentoring Insight section: True
+   🧐 Uses correct emoji (🧐): True
+   ✅ Has Enhanced Emoji Mapping: True
+   📄 Response preview: 🔧 **Technical Answer**  
+Fire safety requirements for high-rise buildings in Australia are primarily outlined in the National Construction Code (NCC) Volume One and relevant Australian Standards. Key requirements include:
+
+1. **Fire Resistance Levels (FRLs)**: Structural elements must achieve specified FRLs to ensure they can withstand fire exposure. This includes walls, floors, and ceilings, as detailed in NCC Table 3.1.1.
+
+2. **Automatic Fire Sprinkler Systems**: High-rise buildings must be equipped with automatic fire sprinkler systems in accordance with AS 2118. This standard outlines the design, installation, and maintenance of these systems.
+
+3. **Fire Detection and Alarm Systems**: Compliance with AS 1670 is required for fire detection and alarm systems, ensuring early warning in ca...
+✅ PASS ✅ Enhanced Chat - Fire Safety Question - Enhanced Emoji Mapping
+   Details: Complete Enhanced Emoji Mapping with 🧐 **Mentoring Insight:** section
+✅ PASS Enhanced Chat - Fire Safety Question - API Response
+   Details: Received 2219 char response
+
+3️⃣ CRITICAL CONSISTENCY VERIFICATION for Fire Safety Question
+   📊 Consistency Analysis:
+      Regular has Enhanced Mapping: False
+      Enhanced has Enhanced Mapping: True
+      Both use correct 🧐 emoji: True
+      Response format consistency: True
+❌ FAIL ❌ CRITICAL: Fire Safety Question - Missing Enhanced Mapping
+   Details: Missing Enhanced Emoji Mapping in: Regular
+
+🎯 FINAL STRUCTURAL FIX VERIFICATION:
+   📊 Enhanced Emoji Mapping Tests: 2/2 passed
+   📊 Endpoint Consistency Tests: 0/0 passed
+❌ STRUCTURAL FIX INCOMPLETE:
+   Regular and enhanced endpoints still have inconsistent Enhanced Emoji Mapping
+   Backend needs further investigation and fixes
+❌ FAIL 🎯 BREAKTHROUGH: Enhanced Emoji Mapping Structural Fix
+   Details: Enhanced Emoji Mapping consistency not achieved - structural fix incomplete
+
+🚨 === ENHANCED EMOJI MAPPING WATER SYSTEM FIX VERIFICATION ===
+Testing the CRITICAL Enhanced Emoji Mapping fix based on review request
+🎯 CRITICAL BUG FIXED: Water system questions were missing 🧐 **Mentoring Insight:** section
+🎯 CRITICAL VERIFICATION: Both endpoints should use 🧐 **Mentoring Insight:** (professor with monocle)
+🚨 MUST NOT use 🤓 (nerd face) or 🧠 (brain) emojis anywhere in responses
+📋 Expected Enhanced Emoji Mapping format:
+   🔧 **Technical Answer:**
+   🧐 **Mentoring Insight:** (MUST be 🧐 professor with monocle)
+   NO 🤓 (nerd face) or 🧠 (brain) emojis allowed
+
+🔍 Testing Water System Question: 'What are the water system requirements for construction?'
+   📝 CRITICAL: This was missing Mentoring Insight section before fix
+
+1️⃣ Testing POST /api/chat/ask for Water System Question
+   📝 Response length: 2089 characters
+   🔧 Has '🔧 Technical Answer': False
+   🧐 Has '🧐 Mentoring Insight' (CORRECT): False
+   🚨 Has wrong emoji (🤓 or 🧠): False
+   📄 Response preview: 🔧 **Technical Answer:**  
+The water system requirements for construction in Australia and New Zealand are primarily outlined in the National Construction Code (NCC) and the AS/NZS 3500 series standards. Key requirements include:
+
+1. **NCC Section F - Health and Amenity:**
+   - **F1.1**: Water Supply - Ensure that buildings have an adequate and safe water supply for health and amenity.
+   - **F2.1**: Sanitary Facilities - Provide sufficient sanitary facilities to meet the needs of occupants.
+   -...
+❌ FAIL ❌ Regular Chat - Water System Question - Missing Mentoring Emoji
+   Details: No Mentoring Insight section found
+❌ FAIL ❌ Regular Chat - Water System Question - Missing Technical Answer
+   Details: Missing 🔧 Technical Answer section
+✅ PASS Regular Chat - Water System Question - API Response
+   Details: Received 2089 char response
+
+2️⃣ Testing POST /api/chat/ask-enhanced for Water System Question
+   📝 Response length: 1993 characters
+   🔧 Has '🔧 Technical Answer': True
+   🧐 Has '🧐 Mentoring Insight' (CORRECT): True
+   🚨 Has wrong emoji (🤓 or 🧠): False
+   📄 Response preview: 🔧 **Technical Answer**  
+Water system requirements for construction are primarily governed by the National Construction Code (NCC) and relevant Australian Standards. Key considerations include:
+
+1. **Water Supply and Quality**: 
+   - Compliance with AS/NZS 3500 series, which covers plumbing and drainage, ensuring safe and adequate water supply.
+   - NCC Volume Three outlines requirements for water supply systems, including pressure, flow rates, and quality standards.
+
+2. **Plumbing and Drainage*...
+✅ PASS ✅ Enhanced Chat - Water System Question - CORRECT Mentoring Emoji (🧐)
+   Details: Uses 🧐 professor with monocle emoji as required
+✅ PASS ✅ Enhanced Chat - Water System Question - Technical Answer Emoji
+   Details: Has 🔧 Technical Answer
+✅ PASS Enhanced Chat - Water System Question - API Response
+   Details: Received 1993 char response
+
+🔍 Testing Fire Safety Question: 'What are fire safety requirements for high-rise buildings in Australia?'
+   📝 Should have complete dual-layer response structure
+
+1️⃣ Testing POST /api/chat/ask for Fire Safety Question
+❌ FAIL ❌ Regular Chat - Fire Safety Question - API Response
+   Details: Status: 502
+   ❌ Failed to get response from regular chat endpoint
+
+2️⃣ Testing POST /api/chat/ask-enhanced for Fire Safety Question
+❌ FAIL ❌ Enhanced Chat - Fire Safety Question - API Response
+   Details: Status: 502
+   ❌ Failed to get response from enhanced chat endpoint
+
+🎯 FINAL VERDICT FOR ENHANCED EMOJI MAPPING CONSISTENCY FIX:
+✅ Tested both Water System and Fire Safety questions
+✅ Verified both regular and enhanced chat endpoints
+✅ Checked for correct 🧐 professor with monocle emoji usage
+✅ Verified no incorrect 🤓 or 🧠 emojis are used
+🎉 CONCLUSION: Enhanced Emoji Mapping consistency testing completed
+
+🚨 === ENHANCED EMOJI MAPPING CONSISTENCY FIX VERIFICATION ===
+Testing the CRITICAL Enhanced Emoji Mapping fix based on review request
+🎯 CRITICAL VERIFICATION: Both endpoints should use 🧐 **Mentoring Insight:** (professor with monocle)
+🚨 MUST NOT use 🤓 (nerd face) or 🧠 (brain) emojis anywhere in responses
+🔍 Testing question: 'What are fire safety requirements for high-rise buildings in Australia?'
+📋 Expected Enhanced Emoji Mapping format:
+   🔧 **Technical Answer:**
+   🧐 **Mentoring Insight:** (MUST be 🧐 professor with monocle)
+   NO 🤓 (nerd face) or 🧠 (brain) emojis allowed
+
+1️⃣ Testing POST /api/chat/ask (Regular Chat) - MAIN FOCUS
+❌ FAIL ❌ Regular Chat - API Response
+   Details: Status: 502
+   ❌ Failed to get response from regular chat endpoint
+
+2️⃣ Testing POST /api/chat/ask-enhanced (Enhanced Chat) - COMPARISON
+❌ FAIL ❌ Enhanced Chat - API Response
+   Details: Status: 502
+   ❌ Failed to get response from enhanced chat endpoint
+
+3️⃣ Testing POST /api/chat/boost-response (Boost Response) - THIRD ENDPOINT
+❌ FAIL ❌ Boost Response - API Response
+   Details: Status: 502
+   ❌ Failed to get response from boost endpoint
+
+4️⃣ CRITICAL ENHANCED EMOJI MAPPING CONSISTENCY ANALYSIS
+❌ FAIL 🎯 Enhanced Emoji Mapping Consistency
+   Details: Cannot compare - insufficient working endpoints
+
+🎯 FINAL VERDICT FOR REVIEW REQUEST:
+⚠️ Enhanced Emoji Mapping Fix: CANNOT DETERMINE
+   No endpoints responded successfully
+🚨 CONCLUSION: Backend API failure - investigate server issues
+
+================================================================================
+🎯 COMPREHENSIVE BACKEND TESTING SUMMARY
+================================================================================
+📊 Total Tests: 32
+✅ Passed: 15
+❌ Failed: 17
+📈 Success Rate: 46.9%
+
+🗣️ CONVERSATION CONTEXT SPECIFIC RESULTS:
+   📊 Context Tests: 6
+   ✅ Context Passed: 2
+   ❌ Context Failed: 4
+
+🧐 EMOJI MAPPING SPECIFIC RESULTS:
+   📊 Emoji Tests: 7
+   ✅ Emoji Passed: 4
+   ❌ Emoji Failed: 3
+
+❌ FAILED TESTS:
+   - ❌ Test 1 - Context Understanding (Acoustic Lagging): Follow-up question does NOT understand context - asks for clarification instead
+   - ❌ Test 1 - Expected Context Phrase: Response missing expected phrase about previous discussion
+   - ❌ Test 2 - Context Understanding (Fire Safety): Follow-up question does NOT understand fire safety context
+   - 🎯 CRITICAL: Conversation Context Functionality: Conversation context issues found - 3 tests failed
+   - ❌ Regular Chat - Water System Question - No Enhanced Mapping: Missing Enhanced Emoji Mapping structure entirely
+   - ❌ CRITICAL: Water System Question - Missing Enhanced Mapping: Missing Enhanced Emoji Mapping in: Regular
+   - ❌ Regular Chat - Fire Safety Question - No Enhanced Mapping: Missing Enhanced Emoji Mapping structure entirely
+   - ❌ CRITICAL: Fire Safety Question - Missing Enhanced Mapping: Missing Enhanced Emoji Mapping in: Regular
+   - 🎯 BREAKTHROUGH: Enhanced Emoji Mapping Structural Fix: Enhanced Emoji Mapping consistency not achieved - structural fix incomplete
+   - ❌ Regular Chat - Water System Question - Missing Mentoring Emoji: No Mentoring Insight section found
+   - ❌ Regular Chat - Water System Question - Missing Technical Answer: Missing 🔧 Technical Answer section
+   - ❌ Regular Chat - Fire Safety Question - API Response: Status: 502
+   - ❌ Enhanced Chat - Fire Safety Question - API Response: Status: 502
+   - ❌ Regular Chat - API Response: Status: 502
+   - ❌ Enhanced Chat - API Response: Status: 502
+   - ❌ Boost Response - API Response: Status: 502
+   - 🎯 Enhanced Emoji Mapping Consistency: Cannot compare - insufficient working endpoints
+
+🎯 CRITICAL SUCCESS CRITERIA:
+   📋 Critical Tests Passed: 2/5
+   ❌ CRITICAL TESTS FAILED - Conversation context functionality needs attention!
+
+🎉 Comprehensive Backend Testing completed!
+================================================================================

@@ -1,0 +1,183 @@
+🚀 === ENHANCED EMOJI MAPPING CONSISTENCY FRAMEWORK ===
+Enterprise-grade testing for definitive emoji mapping validation
+Backend URL: https://ai-response-hub-3.preview.emergentagent.com
+Test Prompts: 12
+Endpoints: regular (/api/chat/ask) + enhanced (/api/chat/ask-enhanced)
+
+📋 Test 1/12: Baseline
+Prompt ID: baseline
+Prompt: Summarise in one sentence: "Enhanced Emoji Mapping must be identical across endpoints."...
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 223
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 2/12: Explicit Emoji Check
+Prompt ID: explicit_emoji
+Prompt: Return the 🧐 thinking emoji as part of your mapping under the name "insight"....
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 304
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: False - No insight emoji found in mapping
+
+📋 Test 3/12: Multiple Emojis & Names
+Prompt ID: multiple_emojis
+Prompt: Map the following concepts to emojis: insight, warning, success, failure, info....
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 279
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 4/12: Unicode Heavy / Accents
+Prompt ID: unicode_heavy
+Prompt: Explain: "Café customers said naïve use of emojis can mislead."...
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 1125
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 5/12: Right-to-Left Text
+Prompt ID: rtl_text
+Prompt: Translate this Arabic word and include it in the output: فضولي (curious). Provide your usual emoji m...
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 688
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 6/12: Long Text / Truncation Guard
+Prompt ID: long_text
+Prompt: Write a 150-word summary of how emoji can improve UX in construction apps, then return your emoji ma...
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 1313
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 7/12: Code Block in Content
+Prompt ID: code_block
+Prompt: Explain what this code does in plain English and include your emoji map:
+
+```
+def add(a,b): return a...
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 790
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 8/12: JSON-looking Content (Escaping Test)
+Prompt ID: json_escaping
+Prompt: Return a short message that includes this literal JSON snippet (do not parse it): {"key":"value"} an...
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 415
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 9/12: Tooling Hint (Should be Inert)
+Prompt ID: tooling_hint
+Prompt: If you have tools, ignore them. Just reply normally and include the emoji map....
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 313
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 10/12: Ambiguity / Clarify Behavior
+Prompt ID: ambiguity
+Prompt: Give a one-line recommendation for improving user onboarding. Include emoji map....
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 441
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 11/12: Non-Latin Script (CJK)
+Prompt ID: cjk_script
+Prompt: Provide the word "insight" in Japanese and include emoji mapping....
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 389
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📋 Test 12/12: Stress Mix (Emojis in Prompt)
+Prompt ID: stress_mix
+Prompt: User wrote: "We're stuck 😬—can you guide us 🧭 to a fix?" Provide response and emoji map....
+
+🔍 Testing ask endpoint...
+   ❌ Failed: 500 - 
+
+🔍 Testing ask-enhanced endpoint...
+   ✅ Status: 200
+   📏 Content Length: 897
+   📋 Schema Valid: True - Schema valid
+   🧐 Emoji Valid: True - Emojis valid and unescaped
+   🎯 Insight Check: True - Not applicable for this prompt
+
+📊 === GENERATING COMPREHENSIVE REPORTS ===
+✅ CSV Report: /app/emoji_test_results/emoji_consistency_report_20250813_001005.csv
+✅ Regular Requests: /app/emoji_test_results/requests_regular_20250813_001005.jsonl
+✅ Regular Responses: /app/emoji_test_results/responses_regular_20250813_001005.jsonl
+✅ Enhanced Requests: /app/emoji_test_results/requests_enhanced_20250813_001005.jsonl
+✅ Enhanced Responses: /app/emoji_test_results/responses_enhanced_20250813_001005.jsonl

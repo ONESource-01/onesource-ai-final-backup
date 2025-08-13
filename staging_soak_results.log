@@ -1,0 +1,51 @@
+🚀 STAGING SOAK TEST SUITE
+============================================================
+Target: http://localhost:8001
+Started: 2025-08-13T10:56:37.426979
+
+🔄 Multi-turn test (3 turns)
+   Turn 1: 9963ms
+   Turn 2: 6148ms
+   Turn 3: 4047ms
+
+🔄 Multi-turn test (5 turns)
+   Turn 1: 5165ms
+   Turn 2: 4433ms
+   Turn 3: 9792ms
+   Turn 4: 3995ms
+   Turn 5: 3900ms
+
+🔄 Multi-turn test (10 turns)
+   Turn 1: 6301ms
+   Turn 2: 4609ms
+   Turn 3: 4916ms
+   Turn 4: 4395ms
+   Turn 5: 3669ms
+   Turn 6: 5061ms
+   Turn 7: 5423ms
+   Turn 8: 4855ms
+   Turn 9: 4955ms
+   Turn 10: 4203ms
+
+🧪 Token pressure test
+   Token pressure: 23452ms, 1 blocks, 6642 chars
+
+⚡ Concurrent load test (5 requests)
+
+📊 SLO Compliance Check
+Traceback (most recent call last):
+  File "/app/tests/test_staging_soak.py", line 371, in <module>
+    results = run_staging_soak()
+              ^^^^^^^^^^^^^^^^^^
+  File "/app/tests/test_staging_soak.py", line 367, in run_staging_soak
+    return tester.run_soak_test_suite()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/tests/test_staging_soak.py", line 333, in run_soak_test_suite
+    slo_results = self.check_slo_compliance(results)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/tests/test_staging_soak.py", line 251, in check_slo_compliance
+    enhanced_p95 = statistics.quantiles(enhanced_latencies, n=20)[18] if enhanced_latencies else 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/statistics.py", line 794, in quantiles
+    raise StatisticsError('must have at least two data points')
+statistics.StatisticsError: must have at least two data points
