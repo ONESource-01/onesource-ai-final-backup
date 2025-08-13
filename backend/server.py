@@ -2907,6 +2907,27 @@ async def review_partner_application(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error reviewing partner application: {str(e)}")
 
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "service": "onesource-ai-backend"
+    }
+
+
+@app.get("/api/metrics/schema")
+async def schema_metrics():
+    """Schema validation metrics endpoint"""
+    from middleware.schema_guard import get_schema_metrics
+    metrics = get_schema_metrics()
+    
+    return {
+        "timestamp": datetime.now().isoformat(),
+        "schema_validation": metrics
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
