@@ -992,7 +992,6 @@ async def unified_chat_ask(
         }
         
         # SCHEMA GUARD: Validate and repair response to v2 format
-        from middleware.schema_guard import validate_chat_response, ensure_v2_schema
         validated_response, was_repaired = validate_chat_response(api_response)
         
         if was_repaired:
