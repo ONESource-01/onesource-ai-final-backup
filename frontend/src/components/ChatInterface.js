@@ -10,6 +10,7 @@ import { Separator } from './ui/separator';
 import UserProfile from './UserProfile';
 import OnboardingFlow from './OnboardingFlow';
 import LandingExamples from './LandingExamples';
+import V2Renderer from './V2Renderer';
 import { 
   AlertTriangle, Send, User, Bot, Clock, Crown, Zap, LogOut, 
   Copy, ThumbsUp, ThumbsDown, Search, Plus, MessageSquare,
