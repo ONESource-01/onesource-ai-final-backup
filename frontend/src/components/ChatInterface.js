@@ -116,6 +116,7 @@ const ChatInterface = () => {
   const loadConversation = async (conversationId) => {
     try {
       setLoading(true);
+      setShowNewSessionCallout(false); // Hide callout when loading existing conversation
       const response = await apiEndpoints.getConversation(conversationId);
       const conversationMessages = response.data.messages || [];
       
