@@ -81,11 +81,14 @@ class UnifiedChatService:
         
         # Step 1: Pre-save conversation stub (FIXES CONTEXT BUG)
         if context_manager:
+            print(f"DEBUG: Pre-saving conversation stub for session {session_id}")
             conversation_id = await context_manager.pre_save_conversation_stub(
                 session_id, user_id, question
             )
+            print(f"DEBUG: Pre-saved conversation with ID {conversation_id}")
         else:
             conversation_id = "no_context_manager"
+            print("DEBUG: No context manager available")
         
         try:
             # Step 2: Get conversation context
