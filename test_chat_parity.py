@@ -86,20 +86,20 @@ class ParityTester:
         r2_has_keys = all(key in r2 for key in required_keys)
         
         if r1_has_keys and r2_has_keys:
-            self.log_test("Structure Parity", True, "Both endpoints have required keys: text, emoji_map, meta")
+            self.log_test("Structure Parity", True, "Both endpoints have required v2 keys: title, summary, blocks, meta")
         else:
             missing_r1 = [k for k in required_keys if k not in r1]
             missing_r2 = [k for k in required_keys if k not in r2]
             self.log_test("Structure Parity", False, f"Missing keys - regular: {missing_r1}, enhanced: {missing_r2}")
         
-        # Check emoji_map is array in both
-        r1_emoji_array = isinstance(r1.get("emoji_map"), list)
-        r2_emoji_array = isinstance(r2.get("emoji_map"), list)
+        # Check blocks is array in both (v2 schema)
+        r1_blocks_array = isinstance(r1.get("blocks"), list)
+        r2_blocks_array = isinstance(r2.get("blocks"), list)
         
-        if r1_emoji_array and r2_emoji_array:
-            self.log_test("Emoji Map Array", True, "Both endpoints return emoji_map as array")
+        if r1_blocks_array and r2_blocks_array:
+            self.log_test("Blocks Array", True, "Both endpoints return blocks as array")
         else:
-            self.log_test("Emoji Map Array", False, f"Emoji map types - regular: {type(r1.get('emoji_map'))}, enhanced: {type(r2.get('emoji_map'))}")
+            self.log_test("Blocks Array", False, f"Blocks types - regular: {type(r1.get('blocks'))}, enhanced: {type(r2.get('blocks'))}")
 
     async def test_emoji_mapping_consistent(self):
         """Test 2: Enhanced Emoji Mapping consistency"""
