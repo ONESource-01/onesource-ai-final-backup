@@ -104,6 +104,18 @@
 
 user_problem_statement: Build ONESource-ai - a specialized AI assistant for the AU/NZ Construction Industry with Firebase authentication, Stripe payments, and OpenAI integration. Support professionals across architecture, engineering, HVAC, electrical, fire, etc. with dual-layer responses (Technical + Mentoring) and tiered access system.
 
+  - task: "Implement Conversation Context System for Follow-up Questions"
+    implemented: true
+    working: false
+    file: "backend/shared_chat_service.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL CONVERSATION CONTEXT BUG CONFIRMED! Comprehensive testing reveals the exact issue reported by the user where follow-up questions don't understand previous context. ❌ TEST 1 FAILED: Asked 'Tell me about acoustic lagging requirements' then 'when do I need to install it?' - the system did NOT understand 'it' refers to acoustic lagging. Response was generic asking for clarification instead of referencing previous discussion. ❌ TEST 2 FAILED: Asked 'What are fire safety requirements?' then 'how do I implement this?' - the system did NOT understand 'this' refers to fire safety requirements. ✅ SESSION ISOLATION WORKING: Different session_ids properly isolated (no context bleeding). ✅ DATABASE STORAGE WORKING: Conversations are being stored in MongoDB and history retrieval works. 🔍 ROOT CAUSE ANALYSIS: The shared_chat_service.py has conversation context logic implemented but it's not working properly. The conversation history is being retrieved but not being used effectively to understand contextual pronouns like 'it', 'this', 'that' in follow-up questions. The system falls back to asking for clarification instead of referencing previous context. This is a critical UX issue preventing launch as users have to repeat context in every question instead of having natural conversations."
+
 backend:
   - task: "Implement Knowledge Vault Document Upload System (POST /api/knowledge/upload-document)"
     implemented: true
