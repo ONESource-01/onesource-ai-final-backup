@@ -648,7 +648,7 @@ const ChatInterface = () => {
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-8 text-center">
               <img 
-                src="/onesource-icon.png" 
+                src="/ONESource_ICON.svg" 
                 alt="ONESource-ai" 
                 className="h-16 w-16 mb-4"
               />
