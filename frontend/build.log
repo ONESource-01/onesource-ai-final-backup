@@ -1,0 +1,21 @@
+Creating an optimized production build...
+Compiled successfully.
+
+File sizes after gzip:
+
+  269.35 kB (-31 B)  build/static/js/main.38ce0ea9.js
+  13.16 kB           build/static/css/main.6b4b654a.css
+
+The project was built assuming it is hosted at /.
+You can control this with the homepage field in your package.json.
+
+The build folder is ready to be deployed.
+You may serve it with a static server:
+
+  yarn global add serve
+  serve -s build
+
+Find out more about deployment here:
+
+  https://cra.link/deployment
+
