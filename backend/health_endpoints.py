@@ -58,6 +58,13 @@ def load_v2_prompt():
 # Load prompt at module import (startup)
 load_v2_prompt()
 
+# Log build metadata on boot
+print(f"[BOOT] ONESource-ai {BUILD_SHA} @ {BUILT_AT}")
+print(f"[BOOT] Environment: {os.environ.get('ENVIRONMENT', 'development')}")
+print(f"[BOOT] Redis: {bool(os.environ.get('REDIS_URL'))}")
+print(f"[BOOT] OpenAI: {bool(os.environ.get('OPENAI_API_KEY'))}")
+print(f"[BOOT] V2 Prompt: {bool(V2_PROMPT_CONTENT)}")
+
 @router.get("/health")
 async def health_check():
     """Kubernetes liveness probe"""
