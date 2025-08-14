@@ -46,21 +46,27 @@ post_chat() {
 assert_v2_shape() {
   local json="$1" env="$2" q="$3"
 
-  local schema tokens session tech mentor steps
+  local schema tokens session blocks_content title summary
   schema=$(jq -r '.meta.schema // empty' <<<"$json")
   tokens=$(jq -r '.meta.tokens_used // empty' <<<"$json")
   session=$(jq -r '.meta.session_id // empty' <<<"$json")
-  tech=$(jq -r '.response.technical // empty' <<<"$json")
-  mentor=$(jq -r '.response.mentoring // empty' <<<"$json")
-  steps=$(jq -r '.response.nextSteps | length' <<<"$json" 2>/dev/null || echo 0)
+  title=$(jq -r '.title // empty' <<<"$json")
+  summary=$(jq -r '.summary // empty' <<<"$json")
+  
+  # Get total content length from all blocks
+  blocks_content=$(jq -r '.blocks[]?.content // empty' <<<"$json" | tr -d '\n' | wc -c)
+  
+  # Count blocks that might contain next steps or technical content
+  blocks_count=$(jq -r '.blocks | length' <<<"$json" 2>/dev/null || echo 0)
 
   [[ "$schema" == "v2" ]] || fail "$env: schema != v2 for question: $q"
   [[ -n "$session" ]] || fail "$env: session_id missing for: $q"
-  [[ "${#tech}" -ge "$MIN_TECH" ]] || fail "$env: technical too short (${#tech} < $MIN_TECH) for: $q"
-  [[ "${#mentor}" -ge "$MIN_MENTOR" ]] || fail "$env: mentoring too short (${#mentor} < $MIN_MENTOR) for: $q"
-  [[ "$steps" -ge "$MIN_STEPS" ]] || fail "$env: nextSteps length $steps < $MIN_STEPS for: $q"
+  [[ -n "$title" ]] || fail "$env: title missing for: $q"
+  [[ -n "$summary" ]] || fail "$env: summary missing for: $q"
+  [[ "$blocks_content" -ge "$MIN_TECH" ]] || fail "$env: content too short (${blocks_content} < $MIN_TECH) for: $q"
+  [[ "$blocks_count" -ge 1 ]] || fail "$env: blocks count $blocks_count < 1 for: $q"
 
-  echo "   • $env OK → tokens_used=${tokens:-n/a}, session_id=${session:0:8}…"
+  echo "   • $env OK → tokens_used=${tokens:-n/a}, session_id=${session:0:8}…, content_chars=${blocks_content}"
 }
 
 # ---------- RUN ----------
