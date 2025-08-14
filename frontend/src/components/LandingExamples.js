@@ -77,9 +77,9 @@ export default function LandingExamples({ onExampleClick, onDismiss, userTopics 
       topics: userTopics
     });
 
-    // Mark as dismissed for this session
-    setDismissed(true);
-    sessionStorage.setItem('examples_dismissed', 'true');
+    // DON'T dismiss examples after clicking - let users try multiple examples
+    // setDismissed(true);
+    // sessionStorage.setItem('examples_dismissed', 'true');
 
     // Call parent callback
     if (onExampleClick) {
