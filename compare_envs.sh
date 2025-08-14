@@ -28,9 +28,19 @@ get_json() {
 
 post_chat() {
   local base="$1" q="$2"
-  curl -fsSL -H "Content-Type: application/json" \
+  local response
+  response=$(curl -s -H "Content-Type: application/json" \
+    -H "Authorization: Bearer demo_token" \
     -X POST "$base/api/chat/ask" \
-    -d "{\"question\":\"$q\",\"tier\":\"starter\",\"topics\":{}}"
+    -d "{\"question\":\"$q\",\"session_id\":\"test_$(date +%s)\",\"tier\":\"starter\",\"topics\":{}}")
+  
+  # Check for error response
+  if [[ "$response" == *"Internal server error"* ]]; then
+    echo "❌ API returned: $response"
+    fail "$base chat API returning 500 error"
+  fi
+  
+  echo "$response"
 }
 
 assert_v2_shape() {
