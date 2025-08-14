@@ -642,7 +642,7 @@ const UserProfile = ({ onClose, onPreferencesUpdate }) => {
               <div className="flex items-center">
                 <a href="/" className="cursor-pointer">
                   <img 
-                    src="/onesource-primary-logo.png" 
+                    src="/ONESource_ICON.svg" 
                     alt="ONESource-ai" 
                     className="h-4 w-auto"
                   />
