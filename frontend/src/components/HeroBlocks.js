@@ -36,7 +36,7 @@ const HeroBlocks = ({ variant = "default" }) => {
             </span>
           </h1>
           <p className="text-xl mb-8 max-w-4xl mx-auto" style={{ color: '#4b6b8b' }}>
-            Experience the only AI system designed specifically for AU/NZ construction professionals. Our 3-Phase Intelligence combines enhanced prompting, workflow intelligence, and specialized training to deliver expert-level responses with discipline-specific knowledge and project stage guidance.
+            Experience the only AI system designed specifically for AU/NZ construction professionals. Our advanced AI combines enhanced prompting, workflow intelligence, and specialized training to deliver expert-level responses with discipline-specific knowledge and project stage guidance.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
