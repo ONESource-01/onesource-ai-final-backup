@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ResponseRenderer snapshot test - V2 response structure 1`] = `
+<div>
+  <article
+    class="space-y-4"
+  >
+    <header>
+      <h2
+        class="text-xl font-semibold leading-tight flex items-center gap-2"
+      >
+        <span
+          aria-hidden="true"
+        >
+          🔧
+        </span>
+        <span
+          class="break-words"
+        >
+          ## 🔧 **Technical Answer**
+        </span>
+      </h2>
+      <p
+        class="text-sm text-muted-foreground mt-1"
+      >
+        Fire safety requirements for high-rise buildings in Australia
+      </p>
+    </header>
+    <div
+      class="space-y-4"
+    >
+      <div
+        data-testid="markdown-content"
+      >
+        ## 🔧 **Technical Answer**
+
+Fire safety requirements for high-rise buildings in Australia are governed by the National Construction Code (NCC) and Australian Standards (AS).
+
+## 🧐 **Mentoring Insight**
+
+Consider engaging a fire safety engineer for complex projects to ensure compliance with all applicable standards.
+
+## 📋 **Next Steps**
+1. Review NCC Volume 1
+2. Consult AS 1851
+3. Engage qualified professionals
+      </div>
+    </div>
+    <footer
+      class="pt-2"
+    >
+      <div
+        class="text-sm text-muted-foreground mb-2"
+      >
+        Would you like to…
+      </div>
+      <div
+        class="flex flex-wrap gap-2"
+      >
+        <button
+          class="px-3 py-1.5 rounded-full border text-sm hover:bg-accent/40 focus:outline-none focus:ring-2 focus:ring-ring"
+          type="button"
+        >
+          Get specific NCC clause
+        </button>
+        <button
+          class="px-3 py-1.5 rounded-full border text-sm hover:bg-accent/40 focus:outline-none focus:ring-2 focus:ring-ring"
+          type="button"
+        >
+          Fire safety checklist
+        </button>
+      </div>
+    </footer>
+  </article>
+</div>
+`;
