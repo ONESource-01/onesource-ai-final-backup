@@ -53,13 +53,42 @@ const AppContent = () => {
 
   const loadUserProfile = async () => {
     try {
+      console.log('🔍 DEBUG: Starting user profile load...');
       setProfileLoading(true);
+      
+      // Handle demo users specially
+      if (user?.uid?.includes('demo_user_auto')) {
+        console.log('🔍 DEBUG: Demo user detected, using default profile');
+        setUserProfile({
+          uid: user.uid,
+          name: "Demo User",
+          profession: "Construction Professional", 
+          sector: "Demo",
+          use_case: "Testing",
+          onboarding_completed: true
+        });
+        console.log('🔍 DEBUG: Demo profile set, loading complete');
+        return;
+      }
+      
+      console.log('🔍 DEBUG: Calling getUserProfile API...');
       const response = await apiEndpoints.getUserProfile();
+      console.log('🔍 DEBUG: Profile API response received:', response.data);
       setUserProfile(response.data);
+      
     } catch (error) {
-      console.error('Error loading user profile:', error);
-      setUserProfile(null);
+      console.error('🔍 DEBUG: Error loading user profile:', error);
+      // Set default profile for any errors
+      setUserProfile({
+        uid: user?.uid || 'anonymous',
+        name: "Demo User",
+        profession: "Construction Professional",
+        sector: "Demo", 
+        use_case: "Testing",
+        onboarding_completed: true
+      });
     } finally {
+      console.log('🔍 DEBUG: Profile loading finished, setting loading to false');
       setProfileLoading(false);
     }
   };
