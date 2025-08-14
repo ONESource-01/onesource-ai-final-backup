@@ -3,6 +3,7 @@ Health check endpoints for Kubernetes probes and diagnostics
 Implements BUILD MASTER DIRECTIVE requirements
 """
 import os
+import sys
 import json
 import hashlib
 from datetime import datetime
