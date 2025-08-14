@@ -226,22 +226,7 @@ const LandingPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 - 3-Phase AI Intelligence */}
-            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
-              <CardHeader>
-                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
-                  <Bot className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
-                  3-Phase AI Intelligence
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p style={{ color: '#4b6b8b' }}>
-                  Advanced construction AI with 3-phase intelligence system featuring enhanced prompting, workflow intelligence, and specialized training.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Feature 2 - Knowledge Vault */}
+            {/* Feature 1 - Knowledge Vault */}
             <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
                 <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
