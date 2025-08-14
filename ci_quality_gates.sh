@@ -90,7 +90,7 @@ fi
 # Gate 5: Critical Endpoints
 echo ""  
 echo "🔍 Gate 5: Critical Endpoints"
-BACKEND_URL="${API_BASE:-https://ai-response-hub-3.preview.emergentagent.com}"
+BACKEND_URL="${API_BASE:-https://ai-hotfix-prod.preview.emergentagent.com}"
 
 endpoints=("/api/health" "/api/prompt-info" "/api/version")
 for endpoint in "${endpoints[@]}"; do

@@ -3001,7 +3001,7 @@ class BackendTester:
             
             checkout_data = {
                 "package_id": package["package_id"],
-                "origin_url": "https://ai-response-hub-3.preview.emergentagent.com"
+                "origin_url": "https://ai-hotfix-prod.preview.emergentagent.com"
             }
             
             success, data, status = await self.make_request("POST", "/payment/checkout", checkout_data)
@@ -3042,7 +3042,7 @@ class BackendTester:
             
             checkout_data = {
                 "package_id": package["package_id"],
-                "origin_url": "https://ai-response-hub-3.preview.emergentagent.com"
+                "origin_url": "https://ai-hotfix-prod.preview.emergentagent.com"
             }
             
             success, data, status = await self.make_request("POST", "/payment/checkout", checkout_data, mock_headers)
@@ -3062,7 +3062,7 @@ class BackendTester:
         # Test invalid package (should cause error, not spinning)
         invalid_checkout_data = {
             "package_id": "invalid_package",
-            "origin_url": "https://ai-response-hub-3.preview.emergentagent.com"
+            "origin_url": "https://ai-hotfix-prod.preview.emergentagent.com"
         }
         
         success, data, status = await self.make_request("POST", "/payment/checkout", invalid_checkout_data)
@@ -3088,7 +3088,7 @@ class BackendTester:
         # Test a simple checkout to verify Stripe is responding
         simple_checkout = {
             "package_id": "pro",
-            "origin_url": "https://ai-response-hub-3.preview.emergentagent.com"
+            "origin_url": "https://ai-hotfix-prod.preview.emergentagent.com"
         }
         
         success, data, status = await self.make_request("POST", "/payment/checkout", simple_checkout)

@@ -12,7 +12,7 @@ from pathlib import Path
 async def test_frontend_formatting_consistency():
     """Test that both endpoints produce consistent frontend formatting"""
     
-    backend_url = "https://ai-response-hub-3.preview.emergentagent.com"
+    backend_url = "https://ai-hotfix-prod.preview.emergentagent.com"
     test_question = "What are fire safety requirements for high-rise buildings in Australia?"
     
     async with aiohttp.ClientSession() as session:

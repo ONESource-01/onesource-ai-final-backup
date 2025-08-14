@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ---------- CONFIG ----------
-: "${PREVIEW_BASE:=https://ai-response-hub-3.preview.emergentagent.com}"
+: "${PREVIEW_BASE:=https://ai-hotfix-prod.preview.emergentagent.com}"
 : "${PROD_BASE:=https://app.onesource-ai.com}"
 
 # Test questions (add more as needed)

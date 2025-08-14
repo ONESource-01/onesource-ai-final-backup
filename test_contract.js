@@ -8,7 +8,7 @@ const Ajv = require('ajv');
 const fs = require('fs');
 const https = require('https');
 
-const API_BASE = process.env.API_BASE || 'https://ai-response-hub-3.preview.emergentagent.com';
+const API_BASE = process.env.API_BASE || 'https://ai-hotfix-prod.preview.emergentagent.com';
 const schema = JSON.parse(fs.readFileSync('./schema/ChatResponseV2.json', 'utf8'));
 
 const ajv = new Ajv({ allErrors: true });
