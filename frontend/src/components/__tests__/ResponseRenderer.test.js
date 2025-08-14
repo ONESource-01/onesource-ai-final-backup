@@ -98,8 +98,9 @@ describe('ResponseRenderer', () => {
 
     render(<ResponseRenderer response={responseWithMultipleBlocks} />);
     
-    // Check markdown content
-    expect(screen.getByTestId('markdown-content')).toBeInTheDocument();
+    // Check markdown content (use getAllByTestId for multiple elements)
+    const markdownElements = screen.getAllByTestId('markdown-content');
+    expect(markdownElements).toHaveLength(2); // markdown and list both use Markdown component
     
     // Check code block
     const codeBlock = screen.getByText("console.log('JavaScript code example');");
