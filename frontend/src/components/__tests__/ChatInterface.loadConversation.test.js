@@ -22,17 +22,15 @@ jest.mock('../../contexts/AuthContext', () => ({
 }));
 
 // Mock API endpoints
-const mockApiEndpoints = {
-  getUserProfile: jest.fn(),
-  getSubscriptionStatus: jest.fn(),
-  getChatHistory: jest.fn(),
-  getChatSession: jest.fn(),
-  askQuestion: jest.fn(),
-  askEnhancedQuestion: jest.fn(),
-};
-
 jest.mock('../../utils/api', () => ({
-  apiEndpoints: mockApiEndpoints,
+  apiEndpoints: {
+    getUserProfile: jest.fn(),
+    getSubscriptionStatus: jest.fn(),
+    getChatHistory: jest.fn(),
+    getChatSession: jest.fn(),
+    askQuestion: jest.fn(),
+    askEnhancedQuestion: jest.fn(),
+  },
   setAuthToken: jest.fn(),
 }));
 
