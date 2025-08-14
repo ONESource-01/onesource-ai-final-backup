@@ -121,21 +121,30 @@ function parseV2Sections(blocks) {
 
 // Extract section content after header
 function extractSection(content, sectionName) {
-  // Fixed regex pattern for section extraction
-  const regex = new RegExp(`##\\s*🔧\\s*\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##\\s*[🧐📋]|$)`, 'i');
+  // Define emoji patterns for each section
+  const emojiMap = {
+    'Technical Answer': '🔧',
+    'Mentoring Insight': '🧐', 
+    'Next Steps': '📋'
+  };
+  
+  const emoji = emojiMap[sectionName] || '';
+  
+  // Primary regex: ## emoji **Section Name**
+  const regex = new RegExp(`##\\s*${emoji}\\s*\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##\\s*[🔧🧐📋]|$)`, 'i');
   const match = content.match(regex);
   if (match) {
     return match[1].trim();
   }
   
-  // Fallback: look for any content after section name with emoji
-  const fallbackRegex = new RegExp(`🔧\\s*\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##|🧐|📋|$)`, 'i');
+  // Fallback: emoji **Section Name** without ##
+  const fallbackRegex = new RegExp(`${emoji}\\s*\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##|[🔧🧐📋]|$)`, 'i');
   const fallbackMatch = content.match(fallbackRegex);
   if (fallbackMatch) {
     return fallbackMatch[1].trim();
   }
   
-  // Final fallback: section name only
+  // Final fallback: **Section Name** only
   const simpleRegex = new RegExp(`\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##|\\*\\*[A-Z]|$)`, 'i');
   const simpleMatch = content.match(simpleRegex);
   if (simpleMatch) {
