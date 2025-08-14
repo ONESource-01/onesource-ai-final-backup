@@ -10,7 +10,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ChatInterface from '../ChatInterface';
-import { AuthContext } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 // Mock the API utilities
 jest.mock('../../utils/api', () => ({
