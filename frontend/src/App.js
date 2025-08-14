@@ -350,7 +350,7 @@ const LandingPage = () => {
             <div>
               <div className="flex items-center mb-4">
                 <img 
-                  src="/onesource-primary-logo.png" 
+                  src="/ONESource_ICON.svg" 
                   alt="ONESource-ai" 
                   className="h-18 w-auto mr-3"
                 />
