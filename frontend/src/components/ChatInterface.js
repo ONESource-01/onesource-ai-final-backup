@@ -358,68 +358,11 @@ const ChatInterface = () => {
     }
   };
 
+  // DISABLED: Booster functionality removed per BUILD MASTER DIRECTIVE
+  // Single V2 message per turn - no second assistant messages
   const handleBooster = async (messageId) => {
-    console.log("🚀 BOOST DEBUG - Starting with messageId:", messageId);
-    console.log("🚀 BOOST DEBUG - Booster usage:", boosterUsage);
-    
-    if (boosterUsage.remaining <= 0) {
-      alert('You have used your daily booster. Try again tomorrow!');
-      return;
-    }
-
-    setBoostingMessage(messageId);
-
-    try {
-      // Find the user question that triggered this AI response
-      const messageIndex = messages.findIndex(m => m.id === messageId);
-      const userMessage = messageIndex > 0 ? messages[messageIndex - 1] : null;
-      
-      console.log("🚀 BOOST DEBUG - Message index:", messageIndex);
-      console.log("🚀 BOOST DEBUG - User message found:", userMessage);
-      
-      if (!userMessage || userMessage.type !== 'user') {
-        throw new Error('Could not find original user question');
-      }
-
-      const requestData = {
-        question: userMessage.content,
-        current_tier: subscriptionStatus?.subscription_tier || 'starter',
-        target_tier: 'pro'
-      };
-      
-      console.log("🚀 BOOST DEBUG - Request data:", requestData);
-      console.log("🚀 BOOST DEBUG - Calling boosterChat API...");
-
-      const response = await apiEndpoints.boosterChat(requestData);
-      
-      console.log("🚀 BOOST DEBUG - Response received:", response);
-
-      const boosterMessage = {
-        id: Date.now() + Math.random(),
-        type: 'ai',
-        content: response.data.boosted_response,
-        timestamp: new Date(),
-        isBooster: true,
-        sources: response.data.sources || []
-      };
-
-      console.log("🚀 BOOST DEBUG - Booster message created:", boosterMessage);
-
-      setMessages(prev => [...prev, boosterMessage]);
-      setBoosterUsage(prev => ({ 
-        used: true,
-        remaining: prev.remaining - 1 
-      }));
-
-      console.log("🚀 BOOST DEBUG - Success!");
-
-    } catch (error) {
-      console.error('🚀 BOOST DEBUG - Error:', error);
-      console.error('🚀 BOOST DEBUG - Error response:', error.response);
-      alert(`Failed to generate boosted response: ${error.message}`);
-    } finally {
-      setBoostingMessage(null);
-    }
+    console.log("🚫 BOOSTER DISABLED - V2 schema provides complete responses");
+    return;
   };
 
   const renderPersonalizationIndicator = () => {
