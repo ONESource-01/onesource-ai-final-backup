@@ -735,7 +735,8 @@ const ChatInterface = () => {
                                 <Copy className="h-4 w-4" />
                               </Button>
 
-                              {!message.isBooster && boosterUsage.remaining > 0 && (
+                            {/* BOOST BUTTON DISABLED - V2 schema provides complete responses */}
+                            {false && !message.isBooster && boosterUsage.remaining > 0 && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
