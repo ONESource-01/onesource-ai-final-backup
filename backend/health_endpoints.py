@@ -123,7 +123,7 @@ async def version_info():
             "bytes": int(os.environ.get('V2_PROMPT_BYTES', 0))
         },
         "runtime": {
-            "python": f"{os.sys.version_info.major}.{os.sys.version_info.minor}.{os.sys.version_info.micro}",
+            "python": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
             "redisEnabled": bool(os.environ.get('REDIS_URL')),
             "environment": os.environ.get('ENVIRONMENT', 'development')
         }
