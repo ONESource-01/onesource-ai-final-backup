@@ -73,7 +73,7 @@ describe('ResponseRenderer', () => {
   test('displays emoji correctly in header', () => {
     render(<ResponseRenderer response={mockV2Response} />);
     
-    const emojiElement = screen.getByLabelText('', { hidden: true }); // aria-hidden emoji
+    const emojiElement = screen.getByRole('heading').querySelector('span[aria-hidden="true"]');
     expect(emojiElement).toHaveTextContent('🔧');
   });
 
