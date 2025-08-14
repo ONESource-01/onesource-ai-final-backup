@@ -446,7 +446,7 @@ const ChatInterface = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <img 
-                src="/onesource-icon.png" 
+                src="/ONESource_ICON.svg" 
                 alt="ONESource-ai" 
                 className="h-8 w-8"
               />
