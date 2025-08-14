@@ -26,20 +26,28 @@ class ConversationStore(ABC):
 
 
 class RedisConversationStore(ConversationStore):
-    """Redis implementation with atomic operations and retry logic"""
+    """Redis implementation with support for both local Redis and Upstash cloud Redis"""
     
     def __init__(self, redis_url: str = None):
         self.redis_url = redis_url or os.environ.get("REDIS_URL", "redis://localhost:6379")
-        self.r = redis.Redis.from_url(self.redis_url, decode_responses=True)
-        self.max_history_turns = 16  # Trim to last 12-16 turns
+        self.upstash_token = os.environ.get("REDIS_TOKEN")
+        self.max_history_turns = 16
         
-        # Test connection
-        try:
-            self.r.ping()
-            print(f"✅ Redis connection established: {self.redis_url}")
-        except redis.ConnectionError as e:
-            print(f"❌ Redis connection failed: {e}")
-            raise
+        # Check if using Upstash (HTTPS URL)
+        if self.redis_url.startswith("https://") and self.upstash_token:
+            self.use_upstash = True
+            print(f"✅ Using Upstash Redis: {self.redis_url}")
+        else:
+            self.use_upstash = False
+            self.r = redis.Redis.from_url(self.redis_url, decode_responses=True)
+            
+            # Test local Redis connection
+            try:
+                self.r.ping()
+                print(f"✅ Local Redis connection established: {self.redis_url}")
+            except redis.ConnectionError as e:
+                print(f"❌ Redis connection failed: {e}")
+                raise
     
     def get(self, session_id: str) -> List[Dict[str, Any]]:
         """Get conversation history with atomic operation"""
