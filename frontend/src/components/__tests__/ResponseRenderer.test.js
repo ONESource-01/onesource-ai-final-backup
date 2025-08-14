@@ -1,7 +1,10 @@
 /**
  * Frontend Response Renderer Tests
  * Comprehensive testing for V2 response rendering functionality
+ * @jest-environment jsdom
  */
+
+/* eslint-env jest */
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
