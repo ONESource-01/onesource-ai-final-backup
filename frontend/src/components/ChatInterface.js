@@ -126,13 +126,19 @@ const ChatInterface = () => {
 
   const checkSubscriptionStatus = async () => {
     try {
+      console.log('🔍 DEBUG: Starting subscription check...');
+      setLoading(true);
       const response = await apiEndpoints.getSubscriptionStatus();
+      console.log('🔍 DEBUG: Subscription check completed:', response.data);
       setSubscriptionStatus(response.data);
       setTrialInfo(response.data.trial_info);
     } catch (error) {
-      console.error('Failed to get subscription status:', error);
+      console.error('🔍 DEBUG: Subscription check failed:', error);
       setSubscriptionStatus({ tier: 'free', is_trial: true });
       setTrialInfo({ questions_remaining: 3, questions_used: 0 });
+    } finally {
+      console.log('🔍 DEBUG: Subscription check finished, setting loading to false');
+      setLoading(false);
     }
   };
 
