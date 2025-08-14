@@ -795,7 +795,7 @@ Selecting the correct experience level ensures you receive responses that match 
               <Card className="border-2 border-onesource-pale bg-onesource-white">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-onesource-dark">
-                    <img src="/onesource-icon.png" alt="ONESource-ai" className="h-5 w-5" />
+                    <img src="/ONESource_ICON.svg" alt="ONESource-ai" className="h-5 w-5" />
                     ONESource-ai Assistant
                   </CardTitle>
                 </CardHeader>
