@@ -49,7 +49,11 @@ jest.mock('../V2Renderer', () => ({ response }) => (
 ));
 
 describe('ChatInterface - LoadConversation', () => {
+  let mockApiEndpoints;
+
   beforeEach(() => {
+    // Get fresh mock references
+    mockApiEndpoints = require('../../utils/api').apiEndpoints;
     jest.clearAllMocks();
     
     // Setup default API responses
