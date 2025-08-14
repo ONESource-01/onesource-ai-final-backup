@@ -11,6 +11,17 @@ RUN npm run build
 # Python backend
 FROM python:3.11-slim
 
+# Accept build args
+ARG GIT_SHA
+ARG BUILT_AT
+
+# Persist as env for the runtime container
+ENV GIT_SHA=${GIT_SHA}
+ENV BUILT_AT=${BUILT_AT}
+
+# Optional: extra flags to surface
+ENV FLAGS="redis_enabled:true"
+
 # System dependencies
 RUN apt-get update && apt-get install -y \
     redis-server \
