@@ -45,8 +45,10 @@ COPY prompts/v2_system_prompt.txt /app/prompts/v2_system_prompt.txt
 # Copy built frontend
 COPY --from=frontend-build /app/frontend/build ./frontend/build
 
-# Create supervisor config
+# Create supervisor config and startup script
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 # Expose ports
 EXPOSE 3000 8001
@@ -55,5 +57,5 @@ EXPOSE 3000 8001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:8001/api/health || exit 1
 
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+# Start with our custom startup script that ensures Redis is running
+CMD ["/usr/local/bin/start.sh"]
