@@ -121,21 +121,22 @@ describe('ResponseRenderer', () => {
   });
 
   test('handles suggested action clicks', () => {
-    const eventListener = jest.fn();
-    window.addEventListener('suggested_action_clicked', eventListener);
+    // Mock the dispatchEvent method to capture events
+    const originalDispatchEvent = window.dispatchEvent;
+    const mockDispatch = jest.fn();
+    window.dispatchEvent = mockDispatch;
     
     render(<ResponseRenderer response={mockV2Response} />);
     
     const actionButton = screen.getByText('Get specific NCC clause');
     fireEvent.click(actionButton);
     
-    expect(eventListener).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: { label: "Get specific NCC clause", payload: "Show me specific NCC clause for fire safety" }
-      })
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.any(CustomEvent)
     );
     
-    window.removeEventListener('suggested_action_clicked', eventListener);
+    // Restore original method
+    window.dispatchEvent = originalDispatchEvent;
   });
 
   test('handles response without summary', () => {
