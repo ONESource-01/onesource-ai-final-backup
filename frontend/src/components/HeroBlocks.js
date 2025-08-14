@@ -29,10 +29,6 @@ const HeroBlocks = ({ variant = "default" }) => {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center">
-          <Badge className="w-fit mx-auto mb-6" style={{ backgroundColor: '#0f2f57', color: '#f8fafc' }}>
-            🧠 3-Phase AI Intelligence
-          </Badge>
-          
           <h1 className="text-5xl font-bold mb-6" style={{ color: '#0f2f57' }}>
             Advanced Construction
             <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
