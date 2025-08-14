@@ -81,24 +81,6 @@ const ChatInterface = () => {
       console.log('Suggested action clicked:', action);
       
       try {
-        // Track the click
-        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/telemetry/ui`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({
-            event_type: 'suggested_action_clicked',
-            user_id: user?.uid || 'anonymous',
-            session_id: sessionId,
-            metadata: {
-              label: action.label,
-              payload: action.payload
-            }
-          })
-        });
-        
         // Handle special payloads
         if (action.payload === 'table_export_csv') {
           // This is handled by TablePro component
@@ -114,7 +96,7 @@ const ChatInterface = () => {
         }, 100);
         
       } catch (error) {
-        console.warn('Failed to track suggested action click:', error);
+        console.warn('Failed to handle suggested action click:', error);
         // Still proceed with the action
         setInputMessage(action.payload);
       }
