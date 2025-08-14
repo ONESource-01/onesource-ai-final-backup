@@ -79,7 +79,7 @@ export default function V2Renderer({ response }) {
 // Parse V2 schema blocks into sections
 function parseV2Sections(blocks) {
   if (!blocks || !Array.isArray(blocks)) {
-    return { additional: [] };
+    return { technical: null, mentoring: null, nextSteps: null, nextStepsArray: [], additional: [] };
   }
   
   const sections = {
@@ -95,21 +95,23 @@ function parseV2Sections(blocks) {
     
     const content = block.content;
     
+    // Parse all sections from the single block (NOT else if)
     // Technical Answer section
     if (content.includes('🔧') && content.includes('Technical Answer')) {
       sections.technical = extractSection(content, 'Technical Answer');
     }
     // Mentoring section  
-    else if (content.includes('🧐') && content.includes('Mentoring Insight')) {
+    if (content.includes('🧐') && content.includes('Mentoring Insight')) {
       sections.mentoring = extractSection(content, 'Mentoring Insight');
     }
     // Next Steps section
-    else if (content.includes('📋') && content.includes('Next Steps')) {
+    if (content.includes('📋') && content.includes('Next Steps')) {
       sections.nextSteps = extractSection(content, 'Next Steps');
       sections.nextStepsArray = extractNextStepsArray(content);
     }
-    // Other content
-    else {
+    
+    // If no sections found, treat as additional content
+    if (!content.includes('🔧') && !content.includes('🧐') && !content.includes('📋')) {
       sections.additional.push(block);
     }
   });
