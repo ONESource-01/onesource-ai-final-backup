@@ -905,16 +905,15 @@ metadata:
 
 test_plan:
   current_focus:
+    - "V2 Rendering Pipeline Security Validation"
+    - "Enhanced Emoji Mapping Consistency Fix"
     - "Fix Pro User Subscription Status Display Issue"
     - "Fix Boost Daily Limit Enforcement Issue"
-    - "Fix Payment Completion Subscription Update"
-    - "Fix Subscription Endpoint Authentication Bypass"
   stuck_tasks: 
-    - "Fix Pro User Subscription Status Display Issue - Pro users incorrectly show trial status instead of active subscription"
-    - "Fix Boost Daily Limit Enforcement Issue - All users get 429 errors even for new users"
-    - "Fix Payment Completion Subscription Update - Payment completion not updating subscription status"
+    - "V2 Rendering Pipeline Security Validation - Content generation insufficient and missing required sections"
+    - "Enhanced Emoji Mapping Consistency Fix - Regular chat endpoint missing emoji structure"
   test_all: false
-  test_priority: "critical_subscription_fixes"
+  test_priority: "v2_security_validation"
 
 agent_communication:
   - agent: "main"
