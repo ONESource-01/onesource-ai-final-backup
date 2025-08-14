@@ -200,7 +200,8 @@ describe('ResponseRenderer', () => {
     render(<ResponseRenderer response={responseWithCallout} />);
     
     const calloutElement = screen.getByTestId('markdown-content');
-    expect(calloutElement.closest('div')).toHaveClass('rounded-2xl', 'border', 'p-4', 'bg-accent/40');
+    const calloutContainer = calloutElement.parentElement;
+    expect(calloutContainer).toHaveClass('rounded-2xl', 'border', 'p-4', 'bg-accent/40');
   });
 
   test('handles image block type', () => {
