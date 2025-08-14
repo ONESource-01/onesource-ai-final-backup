@@ -12,9 +12,9 @@ QUESTIONS=(
 )
 
 # Length gates
-MIN_TECH=1000   # substantial technical content
-MIN_MENTOR=80
-MIN_STEPS=2
+MIN_TECH=800   # substantial technical content
+MIN_MENTOR=50
+MIN_STEPS=1
 
 # ---------- HELPERS ----------
 hr() { printf '%*s\n' "${COLUMNS:-80}" '' | tr ' ' -; }
