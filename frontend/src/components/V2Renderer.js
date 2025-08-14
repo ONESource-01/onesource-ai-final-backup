@@ -121,20 +121,28 @@ function parseV2Sections(blocks) {
 
 // Extract section content after header
 function extractSection(content, sectionName) {
-  const regex = new RegExp(`##\\s*�[^\\*]+\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##|$)`, 'i');
+  // Fixed regex pattern for section extraction
+  const regex = new RegExp(`##\\s*🔧\\s*\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##\\s*[🧐📋]|$)`, 'i');
   const match = content.match(regex);
   if (match) {
     return match[1].trim();
   }
   
-  // Fallback: look for any content after section name
-  const fallbackRegex = new RegExp(`${sectionName}\\*\\*([\\s\\S]*?)(?=##|\\*\\*[A-Z]|$)`, 'i');
+  // Fallback: look for any content after section name with emoji
+  const fallbackRegex = new RegExp(`🔧\\s*\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##|🧐|📋|$)`, 'i');
   const fallbackMatch = content.match(fallbackRegex);
   if (fallbackMatch) {
     return fallbackMatch[1].trim();
   }
   
-  return content;
+  // Final fallback: section name only
+  const simpleRegex = new RegExp(`\\*\\*${sectionName}\\*\\*([\\s\\S]*?)(?=##|\\*\\*[A-Z]|$)`, 'i');
+  const simpleMatch = content.match(simpleRegex);
+  if (simpleMatch) {
+    return simpleMatch[1].trim();
+  }
+  
+  return null;
 }
 
 // Extract numbered steps from Next Steps
