@@ -12,6 +12,11 @@ import '@testing-library/jest-dom';
 import ChatInterface from '../ChatInterface';
 import { useAuth } from '../../contexts/AuthContext';
 
+// Mock the useAuth hook
+jest.mock('../../contexts/AuthContext', () => ({
+  useAuth: jest.fn()
+}));
+
 // Mock the API utilities
 jest.mock('../../utils/api', () => ({
   apiEndpoints: {
