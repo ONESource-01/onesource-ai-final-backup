@@ -1,0 +1,48 @@
+# ONESource-ai Docker Ignore
+# CRITICAL: Do NOT ignore prompts directory
+# !prompts/
+# !prompts/v2_system_prompt.txt
+
+# Development files
+node_modules/
+.git/
+.gitignore
+*.log
+*.tmp
+.env.local
+.env.development
+
+# Frontend development
+frontend/node_modules/
+frontend/build/
+frontend/.env.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Backend development  
+backend/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+backend/venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+*.coverage
+.nyc_output/
+
+# Documentation
+docs/
+README.md
+*.md
