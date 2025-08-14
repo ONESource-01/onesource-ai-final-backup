@@ -17,7 +17,7 @@ const PrivacyPolicy = () => {
         <div className="bg-white rounded-lg shadow-sm p-8" style={{ borderColor: '#c9d6e4', border: '1px solid' }}>
           <div className="flex items-center mb-8">
             <img 
-              src="/onesource-primary-logo.png" 
+              src="/ONESource_ICON.svg" 
               alt="ONESource-ai" 
               className="h-24 w-auto mr-4"
             />
