@@ -6,6 +6,7 @@ Persistence backbone for session history with TTL=30d
 import json
 import os
 import redis
+import requests
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 
