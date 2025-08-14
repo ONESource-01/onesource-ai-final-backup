@@ -264,7 +264,7 @@ const OnboardingFlow = ({ onComplete }) => {
       <Card className="w-full max-w-5xl shadow-2xl">
         <CardHeader className="text-center pb-6">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <img src="/onesource-icon.png" alt="ONESource-ai" className="h-12 w-12" />
+            <img src="/ONESource_ICON.svg" alt="ONESource-ai" className="h-12 w-12" />
             <CardTitle className="text-3xl font-bold text-gray-900">
               Welcome to ONESource-ai
             </CardTitle>
