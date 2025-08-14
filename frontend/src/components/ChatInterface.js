@@ -873,10 +873,15 @@ const ChatInterface = () => {
                       <img 
                         src="/ONESource_ICON.svg" 
                         alt="ONESource-ai" 
-                        className="h-8 w-8 animate-pulse"
+                        className="h-12 w-12 animate-pulse"
                       />
                     </div>
                     <div className="flex items-center gap-2">
+                      <img 
+                        src="/ONESource_ICON.svg" 
+                        alt="ONESource-ai" 
+                        className="h-6 w-6 animate-pulse"
+                      />
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2" style={{ borderColor: '#0f2f57' }}></div>
                       <span className="text-sm" style={{ color: '#4b6b8b' }}>Thinking...</span>
                     </div>
