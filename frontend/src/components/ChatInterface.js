@@ -157,20 +157,42 @@ const ChatInterface = () => {
     try {
       setLoading(true);
       setShowNewSessionCallout(false); // Hide callout when loading existing conversation
-      const response = await apiEndpoints.getChatSession(conversationId);
-      const conversationMessages = response.data.messages || [];
+      const { data } = await apiEndpoints.getChatSession(conversationId);
+      const msgs = Array.isArray(data?.messages) ? data.messages : [];
       
-      const formattedMessages = conversationMessages.map(msg => ({
+      const formattedMessages = msgs.map(msg => ({
         id: Date.now() + Math.random(),
         type: msg.role === 'user' ? 'user' : 'ai',
         content: msg.content,
-        timestamp: new Date()
+        timestamp: new Date(msg.timestamp || Date.now())
       }));
       
       setMessages(formattedMessages);
       setSessionId(conversationId);
+      
+      // Telemetry for successful load
+      console.log('chat_load_conversation', {
+        conversation_id: conversationId,
+        status: 'success',
+        messages: formattedMessages.length
+      });
     } catch (error) {
       console.error('Failed to load conversation:', error);
+      
+      // Telemetry for failed load
+      console.log('chat_load_conversation', {
+        conversation_id: conversationId,
+        status: 'error',
+        error: error?.message
+      });
+      
+      // Show user-friendly error instead of generic error bubble
+      setMessages([{
+        id: Date.now(),
+        type: 'system',
+        content: 'Could not load conversation. Please try again.',
+        timestamp: new Date()
+      }]);
     } finally {
       setLoading(false);
     }
