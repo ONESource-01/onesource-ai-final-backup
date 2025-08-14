@@ -226,7 +226,22 @@ const LandingPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 - Knowledge Vault */}
+            {/* Feature 1 - Standards & Code Compliance */}
+            <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
+              <CardHeader>
+                <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
+                  <Shield className="h-6 w-6 mr-2" style={{ color: '#4b6b8b' }} />
+                  Standards & Code Compliance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p style={{ color: '#4b6b8b' }}>
+                  Expert guidance on NCC, AS/NZS standards, and BCA requirements with up-to-date compliance information for your projects.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Feature 2 - Knowledge Vault */}
             <Card style={{ backgroundColor: '#f8fafc', borderColor: '#95a6b7' }}>
               <CardHeader>
                 <CardTitle className="flex items-center" style={{ color: '#0f2f57' }}>
