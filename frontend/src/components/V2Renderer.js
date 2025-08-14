@@ -65,13 +65,6 @@ export default function V2Renderer({ response }) {
           </div>
         ))}
       </div>
-      
-      {/* Schema version for debugging */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="text-xs text-gray-400 mt-4">
-          Schema: {meta?.schema} | Tokens: {meta?.tokens_used}
-        </div>
-      )}
     </article>
   );
 }
