@@ -105,9 +105,9 @@ async def readiness_check():
 
 @router.get("/version")
 async def version_info():
-    """Build metadata and feature flags"""
+    """Build metadata and feature flags with runtime info"""
     return {
-        "version": VERSION,
+        "version": BUILD_SHA,  # Use commit SHA as version
         "builtAt": BUILT_AT,
         "commitSha": BUILD_SHA,
         "commitUrl": f"https://github.com/onesource-ai/app/commit/{BUILD_SHA}" if BUILD_SHA != 'unknown' else None,
@@ -116,6 +116,15 @@ async def version_info():
             "REDIS_ENABLED": bool(os.environ.get('REDIS_URL')),
             "OPENAI_CONFIGURED": bool(os.environ.get('OPENAI_API_KEY')),
             "V2_PROMPT_LOADED": bool(V2_PROMPT_CONTENT)
+        },
+        "prompt": {
+            "path": "prompts/v2_system_prompt.txt",
+            "bytes": int(os.environ.get('V2_PROMPT_BYTES', 0))
+        },
+        "runtime": {
+            "python": f"{os.sys.version_info.major}.{os.sys.version_info.minor}.{os.sys.version_info.micro}",
+            "redisEnabled": bool(os.environ.get('REDIS_URL')),
+            "environment": os.environ.get('ENVIRONMENT', 'development')
         }
     }
 
