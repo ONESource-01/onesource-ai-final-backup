@@ -269,6 +269,9 @@ const ChatInterface = () => {
     } catch (error) {
       console.error('❌ CHAT ERROR:', error);
       console.error('❌ ERROR DETAILS:', error.response);
+      console.error('❌ ERROR STACK:', error.stack);
+      console.error('❌ ERROR AT STEP:', 'Processing response data');
+      
       const errorMessage = {
         id: Date.now() + 1,
         type: 'ai',
